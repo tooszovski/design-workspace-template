@@ -1,5 +1,5 @@
 {
-  "_comment": "Коммитится в репозиторий. Хук push-guard запрещает пуш в интеграционную и релизную ветки — см. specs/core/git-policy.spec.md. Личные настройки и allow-list — в .claude/settings.local.json (gitignored).",
+  "_comment": "Committed to the repository. The push-guard hook blocks pushes to the integration and release branches — see specs/core/git-policy.spec.md. Personal settings and the allow-list live in .claude/settings.local.json (gitignored).",
   "hooks": {
     "PreToolUse": [
       {

@@ -1,42 +1,42 @@
 ---
 name: figma-structure
 layer: domain
-purpose: Организация Figma-файла — страницы, секции, статусы, обложка, работа через MCP
+purpose: Figma file organization — pages, sections, statuses, cover, working through MCP
 applies_to:
-  task_keywords: ["figma", "файл", "структура", "страница", "секция", "навигация по файлу", "cover"]
-  triggers: ["нужно понять, где в файле лежит нужный фрейм", "аудит организации файла"]
+  task_keywords: ["figma", "file", "structure", "page", "section", "file navigation", "cover"]
+  triggers: ["need to locate a frame inside a file", "audit of file organization"]
 owner: figma-analyst
 ---
 
 # Figma File Structure
 
-## Роли файлов
+## File roles
 
-| Файл | Ключ | Содержимое |
+| File | Key | Contents |
 |---|---|---|
-| Design System | `<FIGMA_DS_FILE_KEY>` | Foundations, компоненты, иконки — публикуется как библиотека |
-| Product | `<FIGMA_PRODUCT_FILE_KEY>` | Экраны продукта, потребляет библиотеку |
+| Design System | `<FIGMA_DS_FILE_KEY>` | Foundations, components, icons — published as a library |
+| Product | `<FIGMA_PRODUCT_FILE_KEY>` | Product screens, consumes the library |
 
-Смешивание ролей запрещено: компонент, живущий в продуктовом файле дольше одной задачи, — кандидат в библиотеку (`core/design-system.spec.md`).
+Mixing the roles is forbidden: a component that lives in the product file longer than one task is a candidate for the library (`core/design-system.spec.md`).
 
-## Страницы
+## Pages
 
-Порядок и префиксы — по `core/naming.spec.md`:
+Order and prefixes follow `core/naming.spec.md`:
 
-| Страница | Назначение | Статус для аудита |
+| Page | Purpose | Audit status |
 |---|---|---|
-| `📐 Cover` | обложка: название, владелец, версия ДС, ссылки | пропускается |
-| `🚧 WIP` | текущая работа, нестабильно | аудит только по запросу |
-| `✅ <Раздел>` | сданные экраны | **аудитируется всегда** |
-| `📦 Components` | компоненты (только в файле ДС) | аудитируется |
-| `🎨 Foundations` | цвет, типографика, spacing, эффекты | аудитируется |
-| `🗃 Archive` | устаревшее | пропускается |
+| `📐 Cover` | cover: name, owner, DS version, links | skipped |
+| `🚧 WIP` | work in progress, unstable | audited only on request |
+| `✅ <Section>` | delivered screens | **always audited** |
+| `📦 Components` | components (DS file only) | audited |
+| `🎨 Foundations` | color, type, spacing, effects | audited |
+| `🗃 Archive` | obsolete | skipped |
 
-Фрейм на `🚧 WIP` не может быть источником handoff. Перевод в `✅` = заявление о готовности и запуск DoD-проверки.
+A frame on `🚧 WIP` cannot be the source of a handoff. Moving it to `✅` is a claim of readiness and starts the DoD check.
 
-## Секции внутри страницы
+## Sections within a page
 
-Экраны группируются в Sections по потоку, не по времени создания:
+Screens are grouped into sections by flow, not by creation date:
 
 ```
 ✅ Checkout
@@ -46,40 +46,40 @@ owner: figma-analyst
 └── [Section] Confirmation
 ```
 
-Одна секция = один шаг потока со всеми состояниями и брейкпоинтами. Порядок секций слева направо повторяет порядок шагов для пользователя.
+One section is one step of the flow with all its states and breakpoints. Section order, left to right, mirrors the order the user experiences.
 
-## Обложка
+## The cover
 
-`📐 Cover` содержит: название продукта, владельца дизайна, версию потребляемой библиотеки, дату последнего ревью, ссылки на ТЗ и на репозиторий. Агент читает обложку первой — из неё берётся версия ДС для сверки.
+`📐 Cover` carries the product name, the design owner, the consumed library version, the date of the last review, and links to requirements and to the repository. The agent reads the cover first — that is where the DS version for comparison comes from.
 
-## Работа через MCP
+## Working through MCP
 
-### Правильный порядок
+### The right order
 
-1. Уточнить у человека **file key + node id** нужного фрейма или секции. Без node id весь файл тянуть нельзя.
-2. `mcp__figma__get_figma_data` с `nodeId` → структура, слои, привязки к variables и стилям.
-3. Кэшировать ответ в `.figma-cache/<file-key>/<node-id>.json`.
-4. `mcp__figma__download_figma_images` — только если нужна визуальная проверка (иерархия, плотность, ощущение), а не состав.
+1. Ask the human for the **file key plus node id** of the frame or section. Never pull a whole file without a node id.
+2. `mcp__figma__get_figma_data` with `nodeId` → structure, layers, bindings to variables and styles.
+3. Cache the response in `.figma-cache/<file-key>/<node-id>.json`.
+4. `mcp__figma__download_figma_images` — only when you need a visual check (hierarchy, density, feel), not a composition check.
 
-### Как достать node id
+### Getting a node id
 
-Из ссылки Figma: `.../design/<FILE_KEY>/<name>?node-id=<NODE_ID>`. В URL id приходит через дефис (`1234-5678`), в API — через двоеточие (`1234:5678`). Конвертировать при запросе.
+From a Figma link: `.../design/<FILE_KEY>/<name>?node-id=<NODE_ID>`. The URL uses a hyphen (`1234-5678`); the API uses a colon (`1234:5678`). Convert on request.
 
-### Ограничения
+### Limits
 
-- Ответ по большой секции легко превышает разумный контекст — запрашивать по одному фрейму.
-- Если MCP недоступен или файл закрыт правами — это `FAIL: figma access`, а не повод достраивать структуру по догадкам (`core/workspace.spec.md`).
+- A response for a large section easily exceeds a workable context — request one frame at a time.
+- If MCP is unavailable or the file is permission-locked, that is `FAIL: figma access`, not license to reconstruct the structure from guesswork (`core/workspace.spec.md`).
 
 ## Findings
 
-| Код | Severity | Когда |
+| Code | Severity | When |
 |---|---|---|
-| `STRUCTURE` | MINOR | фрейм вне секции |
-| `STRUCTURE` | IMPORTANT | экран на `✅`-странице без всех брейкпоинтов; секции не отражают порядок потока |
-| `STRUCTURE` | CRITICAL | handoff ссылается на фрейм со страницы `🚧 WIP` или `🗃 Archive` |
+| `STRUCTURE` | MINOR | frame outside any section |
+| `STRUCTURE` | IMPORTANT | a screen on a `✅` page missing breakpoints; sections that do not mirror flow order |
+| `STRUCTURE` | CRITICAL | a handoff pointing at a frame on `🚧 WIP` or `🗃 Archive` |
 
 ## Cross-refs
 
-- core/naming.spec.md — имена страниц и фреймов
-- domain/states.spec.md — какие состояния обязаны быть в секции
-- domain/handoff.spec.md — что попадает в спеку для разработки
+- core/naming.spec.md — page and frame names
+- domain/states.spec.md — which states a section must contain
+- domain/handoff.spec.md — what reaches the engineering spec

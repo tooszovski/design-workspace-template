@@ -1,40 +1,40 @@
 # `.claude/agents/`
 
-Материализованные роли из `specs/workflows/team-dispatch.spec.md`. Каждый файл — определение subagent'а: frontmatter с ограничением инструментов + системный промпт, опирающийся на спеки.
+Materialized roles from `specs/workflows/team-dispatch.spec.md`. Each file defines a subagent: frontmatter with tool restrictions plus a system prompt that leans on the specs.
 
-## Файлы
+## Files
 
-| File | Роль | Кем запускается |
+| File | Role | Launched by |
 |---|---|---|
-| `design-lead.md` | оркестратор задачи Standard/Full | точка входа |
-| `figma-analyst.md` | выгрузка и разбор макета через MCP | design-lead, шаг 2 |
-| `handoff-author.md` | пишет `handoff.md` | design-lead, шаг 8 |
-| `reviewer-designsystem.md` | ревью соответствия ДС | design-lead, шаг 7 |
-| `reviewer-a11y.md` | ревью доступности | design-lead, шаг 7 |
-| `reviewer-ux-copy.md` | ревью текстов | design-lead, шаг 7 |
+| `design-lead.md` | orchestrator for a Standard/Full task | the entry point |
+| `figma-analyst.md` | export and breakdown through MCP | design-lead, step 2 |
+| `handoff-author.md` | writes `handoff.md` | design-lead, step 8 |
+| `reviewer-designsystem.md` | DS compliance review | design-lead, step 7 |
+| `reviewer-a11y.md` | accessibility review | design-lead, step 7 |
+| `reviewer-ux-copy.md` | copy review | design-lead, step 7 |
 
-## Как вызывать
+## How to invoke
 
 ```
 Agent({
   description: "Review catalog a11y",
   subagent_type: "reviewer-a11y",
-  prompt: "Фреймы задачи ABC-142, node 1234:5678. Focus: состояния фильтра."
+  prompt: "Frames for task ABC-142, node 1234:5678. Focus: filter states."
 })
 ```
 
-Трёх ревьюеров запускать **одним сообщением** — они независимы и не должны ждать друг друга.
+Launch the three reviewers **in one message** — they are independent and must not wait on each other.
 
-## Чего здесь нет и почему
+## What is missing, and why
 
-- **Отдельного «дизайнера»** — макеты собирает человек. Claude read-only в Figma (D-02), поэтому агента, который «рисует», быть не может.
-- **`reviewer-motion`** — моушен встречается редко; проверка встроена в `design-lead` через `domain/prototyping.spec.md`. Появится потребность — завести отдельного.
-- **`tokens-engineer`** — экспорт токенов детерминирован и живёт в команде `/design.tokens`, отдельный агент ему не нужен.
+- **A "designer" agent** — designs are built by a human. Claude is read-only in Figma (D-02), so an agent that draws cannot exist.
+- **`reviewer-motion`** — motion comes up rarely; the check is folded into `design-lead` through `domain/prototyping.spec.md`. Add a dedicated one if the need appears.
+- **`tokens-engineer`** — token export is deterministic and lives in the `/design.tokens` command; a separate agent buys nothing.
 
 ## Fallback
 
-Если система subagent'ов недоступна, `design-lead` использует `general-purpose` с briefing'ом, собранным из спек. Это эквивалентно: `.claude/agents/*.md` — удобство, не контракт.
+If the subagent system is unavailable, `design-lead` uses `general-purpose` with a briefing assembled from the specs. That is equivalent: `.claude/agents/*.md` is a convenience, not a contract.
 
-## Поддержка
+## Maintenance
 
-При изменении спек синхронизировать промпты. Агент читает спеки в runtime, но ключевые правила продублированы в промпте ради надёжности — расхождение между ними хуже, чем отсутствие дубля.
+When specs change, sync the prompts. Agents read specs at runtime, but key rules are duplicated in the prompts for reliability — and a mismatch between the two is worse than no duplication at all.

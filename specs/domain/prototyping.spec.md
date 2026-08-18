@@ -1,76 +1,76 @@
 ---
 name: prototyping
 layer: domain
-purpose: Прототипы и анимация — что прототипировать, глубина, тайминги, передача моушена в разработку
+purpose: Prototypes and motion — what to prototype, depth, timings, handing motion to engineering
 applies_to:
-  task_keywords: ["прототип", "prototype", "анимация", "animation", "переход", "transition", "моушен", "motion", "интерактив"]
-  triggers: ["задача требует показать поток или поведение во времени"]
+  task_keywords: ["prototype", "animation", "transition", "motion", "interaction"]
+  triggers: ["task needs to show a flow or behavior over time"]
 owner: design-lead
 ---
 
 # Prototyping & Motion
 
-## Когда нужен прототип
+## When a prototype is needed
 
-| Нужен | Не нужен |
+| Needed | Not needed |
 |---|---|
-| Поток из ≥3 шагов, где важна последовательность | Одиночный статичный экран |
-| Нетривиальный переход, который сложно описать словами | Стандартный переход из ДС |
-| Валидация с пользователями | Внутреннее согласование цвета |
-| Спорное взаимодействие, где нужно «пощупать» | Экран, где всё решает вёрстка |
+| A flow of 3+ steps where sequence matters | A single static screen |
+| A non-obvious transition that words describe poorly | A standard DS transition |
+| Validation with users | An internal color review |
+| A contested interaction that has to be felt | A screen decided entirely by layout |
 
-Прототип — инструмент коммуникации, не обязательный артефакт. Прототип ради галочки съедает время и устаревает быстрее макета.
+A prototype is a communication tool, not a mandatory artifact. A prototype built for the checkbox eats time and goes stale faster than the design.
 
-## Глубина
+## Depth
 
-Проектируется **happy path целиком** плюс ветки, которые обсуждаются. Не нужно связывать все состояния всех экранов: недосвязанный прототип на 200 связей хуже, чем связанный на 12.
+Cover the **whole happy path** plus the branches under discussion. There is no need to wire every state of every screen: an under-wired prototype with 200 connections is worse than a coherent one with 12.
 
-В `spec.md` задачи указывается, что покрыто прототипом, чтобы читающий не считал отсутствие связи багом.
+The task's `spec.md` states what the prototype covers, so a reader does not mistake a missing connection for a bug.
 
-## Моушен
+## Motion
 
-Анимация имеет причину. Допустимые причины: показать связь между состояниями, направить внимание, смягчить резкое изменение, дать обратную связь на действие. «Красиво» причиной не является.
+Animation has a reason. Valid reasons: showing the relationship between states, directing attention, softening an abrupt change, acknowledging an action. "It looks nice" is not a reason.
 
-### Тайминги
+### Timings
 
-| Тип | Длительность | Кривая |
+| Kind | Duration | Curve |
 |---|---|---|
-| Микро-обратная связь (нажатие, чекбокс) | 100–150мс | ease-out |
-| Появление/исчезновение элемента | 200–250мс | ease-out / ease-in |
-| Переход между экранами | 250–350мс | ease-in-out |
-| Крупный оверлей, шторка | 300–400мс | ease-out |
+| Micro-feedback (press, checkbox) | 100–150ms | ease-out |
+| Element appearing or leaving | 200–250ms | ease-out / ease-in |
+| Screen transition | 250–350ms | ease-in-out |
+| Large overlay, sheet | 300–400ms | ease-out |
 
-Всё, что дольше 400мс, воспринимается как тормоз. Всё, что короче 100мс, не читается.
+Anything past 400ms reads as sluggish. Anything under 100ms is not perceived at all.
 
-### Правила
+### Rules
 
-- Входящая анимация быстрее исходящей: появление важнее, исчезновение не должно задерживать.
-- Движение по одной оси. Одновременные сдвиг, поворот и масштаб выглядят как сбой.
-- Анимация не блокирует ввод: пользователь может нажать кнопку до окончания перехода.
-- Повторяющиеся анимации (в списках) — с задержкой ≤50мс между элементами и не более 5 элементов в каскаде.
-- Для `prefers-reduced-motion` предусмотрен вариант: движение заменяется на fade или снимается (`domain/accessibility.spec.md`).
+- Entry is faster than exit: appearing matters, disappearing must not hold the user up.
+- Movement along one axis. Simultaneous translate, rotate, and scale reads as a glitch.
+- Animation never blocks input: the user can press a button before a transition finishes.
+- Repeating animations (in lists) use a stagger of 50ms or less and cascade across no more than five items.
+- A `prefers-reduced-motion` variant exists: motion becomes a fade or is removed (`domain/accessibility.spec.md`).
 
-## Передача в разработку
+## Handing motion to engineering
 
-Прототип Figma **не является спецификацией моушена** — он не передаёт точные кривые и не читается из кода. В handoff моушен описывается таблицей:
+A Figma prototype **is not a motion specification** — it does not carry exact curves and cannot be read from code. In the handoff, motion is described as a table:
 
-| Элемент | Триггер | Свойство | От → До | Длительность | Кривая | Задержка |
+| Element | Trigger | Property | From → To | Duration | Curve | Delay |
 |---|---|---|---|---|---|---|
-| Шторка | нажатие «Оплатить» | translateY | 100% → 0 | 300мс | ease-out | 0 |
-| Подложка | то же | opacity | 0 → 0.4 | 300мс | linear | 0 |
+| Sheet | tap "Pay" | translateY | 100% → 0 | 300ms | ease-out | 0 |
+| Scrim | same | opacity | 0 → 0.4 | 300ms | linear | 0 |
 
-Без такой таблицы разработчик придумает свои значения, и они будут другими на каждом экране.
+Without that table the engineer will invent values, and they will differ on every screen.
 
 ## Findings
 
-| Код | Severity | Когда |
+| Code | Severity | When |
 |---|---|---|
-| `MOTION` | MINOR | тайминг вне рекомендованного диапазона |
-| `MOTION` | IMPORTANT | моушен есть в прототипе, но не описан в handoff; нет варианта для reduced-motion |
-| `MOTION` | CRITICAL | анимация блокирует ввод; мигание чаще 3 Гц |
+| `MOTION` | MINOR | timing outside the recommended range |
+| `MOTION` | IMPORTANT | motion exists in the prototype but is absent from the handoff; no reduced-motion variant |
+| `MOTION` | CRITICAL | animation blocks input; flashing above 3Hz |
 
 ## Cross-refs
 
-- domain/states.spec.md — переходы между состояниями
+- domain/states.spec.md — transitions between states
 - domain/accessibility.spec.md — reduced motion
-- domain/handoff.spec.md — таблица моушена в спеке
+- domain/handoff.spec.md — the motion table in the spec

@@ -1,52 +1,52 @@
 ---
 name: git-policy
 layer: core
-purpose: Что не коммитить, ветки, rebase, правила пуша в design-workspace
+purpose: What not to commit, branches, rebase, push rules in a design workspace
 always_loaded: true
 owner: design-lead
 ---
 
 # Git Policy
 
-Репозиторий workspace'а хранит **правила и спеки**, не макеты. Всё тяжёлое и генерируемое остаётся вне git.
+The workspace repository stores **rules and specs**, not designs. Everything heavy or generated stays out of git.
 
 ## Never commit
 
-| Что | Почему |
+| What | Why |
 |---|---|
-| `CLAUDE.md`, `AGENTS.md`, `.cursorrules` | инструкции агента, не артефакт проекта |
-| `*-plan.md`, `*-scratch.md` | черновики сессии |
-| `.mcp.json` | содержит доступы; коммитится только `.mcp.json.example` |
-| `.figma-cache/` | выгрузки Figma, протухают за часы |
-| `exports/assets/**` | бинарники, генерируются из Figma |
-| `*.png`, `*.jpg`, `*.fig`, `*.sketch` | макеты и мокапы — они в Figma |
-| `/specs` | если выбран Obsidian-режим, спеки живут в vault |
-| `.claude/settings.local.json` | личные настройки |
-| `.DS_Store`, `*.log` | мусор |
+| `CLAUDE.md`, `AGENTS.md`, `.cursorrules` | agent instructions, not project artifacts |
+| `*-plan.md`, `*-scratch.md` | session scratch files |
+| `.mcp.json` | contains credentials; only `.mcp.json.example` is committed |
+| `.figma-cache/` | Figma exports that go stale within hours |
+| `exports/assets/**` | binaries, regenerated from Figma |
+| `*.png`, `*.jpg`, `*.fig`, `*.sketch` | designs and mockups — they live in Figma |
+| `/specs` | in Obsidian mode, specs live in the vault |
+| `.claude/settings.local.json` | personal settings |
+| `.DS_Store`, `*.log` | noise |
 
-Исключение: `exports/tokens/**` коммитится, если при init выбран режим версионирования токенов в этом репозитории.
+Exception: `exports/tokens/**` is committed when init chose to version tokens in this repository.
 
-## Ветки
+## Branches
 
-| Ветка | Роль |
+| Branch | Role |
 |---|---|
-| `<RELEASE_BRANCH>` | стабильные правила, из неё разворачиваются новые проекты |
-| `<INTEGRATION_BRANCH>` | интеграция изменений спек |
-| `design/<PROJECT_PREFIX>-NNN-<slug>` | работа по задаче |
-| `ds/<slug>` | изменения дизайн-системы |
+| `<RELEASE_BRANCH>` | stable rules; new projects are cut from here |
+| `<INTEGRATION_BRANCH>` | integration of spec changes |
+| `design/<PROJECT_PREFIX>-NNN-<slug>` | work on a task |
+| `ds/<slug>` | design-system changes |
 
-## Правила
+## Rules
 
-- **Rebase, не merge-commit** при подтягивании `<INTEGRATION_BRANCH>` в рабочую ветку. История спек должна читаться линейно.
-- **Push только своих веток.** `<INTEGRATION_BRANCH>`, `<RELEASE_BRANCH>` и теги пушит человек. Enforced хуком `.claude/hooks/git-push-guard.sh`.
-- **Никаких `--force`** в общих ветках. В своей — только если ветка не расшарена.
-- Изменение `core/*.spec.md` требует отдельного коммита и внятного сообщения — эти файлы читают все агенты.
+- **Rebase, not merge commits** when pulling `<INTEGRATION_BRANCH>` into a working branch. Spec history should read linearly.
+- **Push your own branches only.** `<INTEGRATION_BRANCH>`, `<RELEASE_BRANCH>`, and tags are pushed by a human. Enforced by the `.claude/hooks/git-push-guard.sh` hook.
+- **No `--force`** on shared branches. On your own branch, only if nobody else has it.
+- Changing `core/*.spec.md` warrants its own commit and a clear message — every agent reads those files.
 
-## Что делать с бинарниками
+## What to do with binaries
 
-Если экспорт нужно передать разработке — путь через `<CODE_REPO_PATH>` или файловый обмен, не через этот репозиторий. Ассеты в git превращают клон workspace'а в гигабайты за полгода.
+If an export needs to reach engineering, route it through `<CODE_REPO_PATH>` or file sharing, not through this repository. Assets in git turn a workspace clone into gigabytes within six months.
 
 ## Cross-refs
 
-- core/commits.spec.md — формат сообщений
-- core/workspace.spec.md — что где лежит
+- core/commits.spec.md — message format
+- core/workspace.spec.md — what lives where

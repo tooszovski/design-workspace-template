@@ -1,55 +1,55 @@
 ---
 name: ddr-template
 kind: template
-purpose: Design Decision Record — фиксация выбора между валидными альтернативами
+purpose: Design Decision Record — capturing a choice between valid alternatives
 owner: design-lead
 ---
 
-# DDR-NNN · <Решение одной строкой>
+# DDR-NNN · <The decision in one line>
 
 ```yaml
 ddr_id: DDR-NNN
 task_ref: <PROJECT_PREFIX>-NNN
 status: proposed | accepted | superseded
-supersedes: <DDR-NNN или ->
+supersedes: <DDR-NNN or ->
 date: <YYYY-MM-DD>
 ```
 
-## Контекст
+## Context
 
-Что происходит и почему решение вообще потребовалось. Без контекста через полгода запись бесполезна: будет понятно «что», но не «зачем».
+What is going on and why a decision was needed at all. Without context the record is useless six months from now: the "what" will be clear, the "why" will not.
 
-Ограничения, которые действовали на момент решения: сроки, техника, существующие паттерны, договорённости с разработкой.
+The constraints in force at the time: deadlines, technical limits, existing patterns, agreements with engineering.
 
-## Варианты
+## Options
 
-### A — <название>
-Описание. **Плюсы:** … **Минусы:** …
+### A — <name>
+Description. **Pros:** … **Cons:** …
 
-### B — <название>
-Описание. **Плюсы:** … **Минусы:** …
+### B — <name>
+Description. **Pros:** … **Cons:** …
 
-Вариант «оставить как есть» — тоже вариант и заслуживает строки, если он рассматривался.
+"Leave it as it is" is also an option and deserves a line whenever it was considered.
 
-## Решение
+## Decision
 
-Выбран **<вариант>**.
+**<Option>** was chosen.
 
-Почему именно он: какое свойство перевесило. Не «он лучше», а «он лучше по <критерию>, потому что в этом проекте <критерий> важнее <другого критерия>».
+Why that one: which property tipped the balance. Not "it is better", but "it is better on <criterion>, because on this project <criterion> outweighs <other criterion>".
 
-## Последствия
+## Consequences
 
-**Хорошие:**
-- <что стало возможно>
+**Good:**
+- <what became possible>
 
-**Плохие:**
-- <чем заплатили — этот список обязателен, решение без цены не решение>
+**Bad:**
+- <what it cost — this list is mandatory; a decision with no price is not a decision>
 
-**Затронутые потребители** (для изменений ДС):
+**Affected consumers** (for DS changes):
 
-| Экран / компонент | Что нужно сделать | Задача |
+| Screen / component | What needs doing | Task |
 |---|---|---|
 
-## Когда пересмотреть
+## When to revisit
 
-Условие, при котором решение перестанет быть верным: «если появится третий брейкпоинт», «если библиотека перейдёт на 3.0». Без этого DDR превращается в вечный закон.
+The condition under which the decision stops being right: "if a third breakpoint appears", "if the library moves to 3.0". Without this, a DDR becomes permanent law.

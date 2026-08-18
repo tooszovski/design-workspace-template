@@ -1,166 +1,167 @@
 # CLAUDE.md
 
-Bootstrap-документ для Claude Code и любых subagent-ов, работающих с этим design-workspace.
+Bootstrap document for Claude Code and every subagent working in this design workspace.
 
-Все детальные правила вынесены в `specs/` (SDD spec-структура). Этот файл — entry point, не source of truth.
+All detailed rules live in `specs/` (an SDD spec structure). This file is the entry point, not the source of truth.
 
 ## Project
 
-`<PROJECT_NAME>` — продуктовый дизайн для `<ORG_NAME>`.
+`<PROJECT_NAME>` — product design for `<ORG_NAME>`.
 
-- Основной инструмент: **Figma** (доступ через Figma MCP)
-- Дизайн-система: `<DS_LIBRARY_NAME>`, файл `<FIGMA_DS_FILE_KEY>`
-- Продуктовые макеты: файл `<FIGMA_PRODUCT_FILE_KEY>`
-- Платформы: `<PLATFORMS>`
-- Spacing-шкала: base `<SPACING_BASE>` → `<SPACING_SCALE>`
+- Primary tool: **Figma** (accessed through Figma MCP)
+- Design system: `<DS_LIBRARY_NAME>`, file `<FIGMA_DS_FILE_KEY>`
+- Product designs: file `<FIGMA_PRODUCT_FILE_KEY>`
+- Platforms: `<PLATFORMS>`
+- Spacing scale: base `<SPACING_BASE>` → `<SPACING_SCALE>`
 - Accessibility baseline: WCAG `<WCAG_LEVEL>`
-- Dev language: `<DEV_LANGUAGE>`
+- Product interface language: `<DEV_LANGUAGE>`
 
-Constitution (D-01..D-14) — `specs/core/project.spec.md §1`.
+Constitution (D-01..D-14) lives in `specs/core/project.spec.md §1`.
 
-## Первый запуск
+## First run
 
-Если в файлах остались placeholder'ы вида `<UPPER_CASE>` — workspace не настроен. Запустить:
+If files still contain `<UPPER_CASE>` placeholders, the workspace is not configured. Run:
 
 ```
 /design.init
 ```
 
-Claude проведёт интервью (AskUserQuestion), проставит значения, отключит ненужные модули и вычистит `specs/INDEX.md`. Shell-альтернатива без Claude Code — `./scripts/init.sh`.
+Claude will run the interview (through AskUserQuestion), substitute the values, remove unused modules, and clean up `specs/INDEX.md`. The shell alternative, without Claude Code, is `./scripts/init.sh`.
 
-Проверка: `grep -rE '<[A-Z_]+>' specs/ CLAUDE.md README.md` — пусто.
+Verify with: `grep -rE '<[A-Z_]+>' specs/ CLAUDE.md README.md` — it should return nothing.
 
-## Workspace Layout
+## Workspace layout
 
-- Claude Code запускается из workspace root.
-- Оркестраторные файлы (CLAUDE.md, `.claude/`, `specs/`) — здесь.
-- Исходники дизайна живут **в Figma**, не в репозитории. Локально хранятся только спеки, токены и экспортированные ассеты.
-- `specs/` — **symlink** на Obsidian vault `Projects/<PROJECT_NAME>/Specs/` (если при init выбран vault). Спеки живут в vault, в git workspace-репо не входят (`/specs` в `.gitignore`). Все пути `specs/...` работают через symlink — не «переносить их обратно» в репо.
-- `./code` — опциональный symlink на кодовый репозиторий, нужен только для drift-check и экспорта токенов. По умолчанию отсутствует.
-- `./exports` — сгенерированные токены и ассеты (gitignored, если не решено иначе).
+- Claude Code runs from the workspace root.
+- Orchestration files (CLAUDE.md, `.claude/`, `specs/`) live here.
+- Design source lives **in Figma**, not in the repository. Only specs, tokens, and exported assets are stored locally.
+- `specs/` is a **symlink** to the Obsidian vault at `Projects/<PROJECT_NAME>/Specs/` (when init selected a vault). Specs live in the vault and are excluded from the git workspace repository (`/specs` in `.gitignore`). Every `specs/...` path resolves through the symlink — do not "move them back" into the repository.
+- `./code` is an optional symlink to the implementation repository, needed only for drift checks and token export. Absent by default.
+- `./exports` holds generated tokens and assets (gitignored unless decided otherwise).
 
-См. `specs/core/workspace.spec.md`.
+See `specs/core/workspace.spec.md`.
 
-## Vault и onto-vault (зоны ответственности)
+## The vault and the onto agent (zones of responsibility)
 
-Obsidian vault делят два независимых агентских контура: **ты** (workspace-агент, дизайн по `specs/`) и **onto-агент** (онтологический слой знаний по CLAUDE.md vault'а). Ни один не читает bootstrap другого, поэтому таблица зон продублирована в обоих канонах и меняется **только синхронно**:
+Two independent agent loops share the Obsidian vault: **you** (the workspace agent, designing against `specs/`) and the **onto agent** (the ontological knowledge layer, running against the vault's own CLAUDE.md). Neither reads the other's bootstrap, so the zone table is duplicated in both canons and **changes only in lockstep**:
 
-| Зона | Кто пишет | Твоя роль |
+| Zone | Who writes | Your role |
 |---|---|---|
-| `Projects/<P>/Specs/`, `Projects/<P>/Tasks/` | ты | твоя зона (через symlink / полный путь) |
-| `Projects/<P>/ТЗ/` | человек / продуктовая команда | только чтение |
-| `onto/`, `sources/`, `ontology.yaml`, `.ontovault/` | onto-агент | **не трогать никогда** |
+| `Projects/<P>/Specs/`, `Projects/<P>/Tasks/` | you | your zone (through the symlink or a full path) |
+| `Projects/<P>/Requirements/` | human / product team | read only |
+| `onto/`, `sources/`, `ontology.yaml`, `.ontovault/` | onto agent | **never touch** |
 
-**Задача считается завершённой по финальной записи в `worklog.md`** задачи (`— DONE: ...`) — это триггер дистилляции для onto-агента. Ссылки на vault-артефакты — всегда полным vault-относительным путём (`[[Projects/<P>/Tasks/<task-id>/worklog.md]]`), не basename.
+**A task counts as finished on the final `worklog.md` entry** (`— DONE: ...`) — that is the distillation trigger for the onto agent. Links to vault artifacts always use the full vault-relative path (`[[Projects/<P>/Tasks/<task-id>/worklog.md]]`), never a basename.
 
-Полный контракт: `specs/core/vault-contract.spec.md`.
+The full contract is in `specs/core/vault-contract.spec.md`.
 
-## SDD Spec Structure
+## SDD spec structure
 
 ```
 specs/
-├── INDEX.md           — карта всех spec с триггерами
-├── LOADER.md          — контракт on-demand подгрузки (schema v2)
+├── INDEX.md           — map of every spec with its triggers
+├── LOADER.md          — on-demand loading contract (schema v2)
 ├── core/              — always loaded
-│   ├── project.spec.md         — Constitution D-01..D-14 + DoD + источники правды
-│   ├── workspace.spec.md       — layout, Figma как source of truth
-│   ├── vault-contract.spec.md  — контракт с Obsidian vault и onto-агентом
-│   ├── design-system.spec.md   — иерархия ДС, что считается каноном
-│   ├── naming.spec.md          — нейминг слоёв, компонентов, переменных, фреймов
-│   ├── git-policy.spec.md      — что не коммитить, ветки
+│   ├── project.spec.md         — Constitution D-01..D-14, DoD, sources of truth
+│   ├── workspace.spec.md       — layout, Figma as source of truth
+│   ├── vault-contract.spec.md  — contract with the Obsidian vault and the onto agent
+│   ├── design-system.spec.md   — DS hierarchy, what counts as canonical
+│   ├── naming.spec.md          — naming for layers, components, variables, frames
+│   ├── git-policy.spec.md      — what not to commit, branches
 │   └── commits.spec.md         — Conventional Commits, author, language
-├── domain/            — on-demand по triggers
+├── domain/            — on demand, by trigger
 │   └── figma-structure, components, variables, color, typography, layout,
 │       states, accessibility, prototyping, ux-writing, tokens-export,
 │       handoff, assets
-├── workflows/         — по mode
+├── workflows/         — by mode
 │   └── task-modes, design-workflow, clarify, critique, review-pipeline,
 │       handoff-quality, drift-check, decision-gates, versioning,
 │       team-dispatch, agent-log, checkpoint, anti-patterns
 ├── per-epic/
-│   └── EPIC-TEMPLATE.md        — дизайн-эпик (SDD level 2)
+│   └── EPIC-TEMPLATE.md        — design epic (SDD level 2)
 └── per-task/
-    ├── DESIGN-TASK-TEMPLATE.spec.md — pre-spec дизайн-задачи (Job + AC + Guardrails + DoR)
-    ├── QUICK-TEMPLATE.spec.md       — тонкая спека для Quick mode
-    ├── COMPONENT-TEMPLATE.md        — спецификация компонента ДС
+    ├── DESIGN-TASK-TEMPLATE.spec.md — task pre-spec (problem, AC, guardrails, DoR)
+    ├── QUICK-TEMPLATE.spec.md       — thin spec for Quick mode
+    ├── COMPONENT-TEMPLATE.md        — DS component specification
     └── DDR-TEMPLATE.md              — Design Decision Record
 ```
 
-**Сквозной пример заполнения:** `bootstrap/examples/` — end-to-end mock-фича со всеми артефактами.
+**A worked example:** `bootstrap/examples/` holds an end-to-end mock feature with every artifact.
 
 ## Loading rules
 
 **Every subagent must:**
-1. Прочитать `specs/INDEX.md` — увидеть все доступные spec'и.
-2. Прочитать **все `specs/core/*.spec.md`** — always loaded (включая Constitution в `project.spec.md §1`).
-3. По task scope (figma_nodes / surfaces / task_keywords / attachments) подгрузить matching `specs/domain/*.spec.md`.
-4. По mode (Quick / Standard / Full) подгрузить matching `specs/workflows/*.spec.md`.
 
-См. `specs/LOADER.md` для полного контракта.
+1. Read `specs/INDEX.md` to see what is available.
+2. Read **every `specs/core/*.spec.md`** — always loaded (the Constitution included, in `project.spec.md §1`).
+3. Load matching `specs/domain/*.spec.md` by task scope (figma_nodes / surfaces / task_keywords / attachments).
+4. Load matching `specs/workflows/*.spec.md` by mode (Quick / Standard / Full).
+
+See `specs/LOADER.md` for the full contract.
 
 ## Task entry point
 
-Для **большого эпика** (>1 экран / новый раздел) — начать с `specs/per-epic/EPIC-TEMPLATE.md`.
+For a **large epic** (more than one screen, or a new section), start from `specs/per-epic/EPIC-TEMPLATE.md`.
 
-Для новой задачи:
+For a new task:
 
 1. **Mode detection** — `specs/workflows/task-modes.spec.md`.
-2. **Design workflow** (Standard/Full) — `specs/workflows/design-workflow.spec.md` (включая states-контракт 4a/4b/4c — `specs/workflows/handoff-quality.spec.md`).
-3. **Pre-spec** — создать по соответствующему шаблону:
+2. **Design workflow** (Standard/Full) — `specs/workflows/design-workflow.spec.md`, including the states contract 4a/4b/4c (`specs/workflows/handoff-quality.spec.md`).
+3. **Pre-spec** — create it from the matching template:
    - Standard / Full → `specs/per-task/DESIGN-TASK-TEMPLATE.spec.md`
    - Quick → `specs/per-task/QUICK-TEMPLATE.spec.md`
-   - Новый компонент ДС → `specs/per-task/COMPONENT-TEMPLATE.md`
-   - Спорное решение зафиксировать → `specs/per-task/DDR-TEMPLATE.md`
-4. **Где живут per-task артефакты** — `<PER_TASK_SPEC_LOCATION>/<task-id>/`, см. `specs/core/project.spec.md §5`.
+   - A new DS component → `specs/per-task/COMPONENT-TEMPLATE.md`
+   - A contested decision to record → `specs/per-task/DDR-TEMPLATE.md`
+4. **Where per-task artifacts live** — `<PER_TASK_SPEC_LOCATION>/<task-id>/`, see `specs/core/project.spec.md §5`.
 
-## Slash-команды
+## Slash commands
 
-| Команда | Что делает |
+| Command | What it does |
 |---|---|
-| `/design.init` | Первичная настройка workspace: интервью + проставление значений |
-| `/design.audit` | Аудит Figma-файла по правилам ДС: detached, хардкод, spacing, состояния |
-| `/design.handoff` | Из фрейма Figma → handoff-спека для разработки |
-| `/design.tokens` | Variables Figma → tokens JSON (+ платформенный экспорт) |
-| `/design.drift` | Сверка реализации в `./code` с макетом |
-| `/design.critique` | Дизайн-критика макета: иерархия, состояния, a11y, тексты |
+| `/design.init` | first-run setup: interview and value substitution |
+| `/design.audit` | audit a Figma file against DS rules: detached, hardcoded, spacing, states |
+| `/design.handoff` | Figma frame → engineering handoff spec |
+| `/design.tokens` | Figma variables → tokens JSON, plus platform export |
+| `/design.drift` | compare the implementation in `./code` against the design |
+| `/design.critique` | design critique: hierarchy, states, accessibility, copy |
 
 ## Hard rules (always applied)
 
-Эти правила в core, **всегда** активны независимо от mode и domain:
+These live in core and are **always** active, regardless of mode and domain:
 
-- **Figma — единственный source of truth для визуала.** Локальные `.md` описывают, но не заменяют макет — `specs/core/workspace.spec.md`
-- **Ничего не менять в Figma без явного разрешения человека** — Claude по умолчанию read-only в Figma; запись только через ручные шаги, описанные в handoff — `specs/core/design-system.spec.md`
-- **Никаких хардкод-значений** там, где есть variable/style — `specs/domain/variables.spec.md`
-- **Нейминг по контракту** — `specs/core/naming.spec.md`
-- **Все состояния обязательны** до сдачи — `specs/domain/states.spec.md`
-- **WCAG `<WCAG_LEVEL>` — минимум**, не пожелание — `specs/domain/accessibility.spec.md`
-- **Conventional Commits (терсеный стиль, без body), no AI mentions** — `specs/core/commits.spec.md`
-- **Never commit:** CLAUDE.md, `*-plan.md`, .md instructions, экспортированные PNG-мокапы, `.figma-cache/` — `specs/core/git-policy.spec.md`
+- **Figma is the only source of truth for visuals.** Local `.md` files describe the design but never replace it — `specs/core/workspace.spec.md`
+- **Never change anything in Figma without explicit human permission** — Claude is read-only in Figma by default; writes happen only through manual steps described in the handoff — `specs/core/design-system.spec.md`
+- **No hardcoded values** where a variable or style exists — `specs/domain/variables.spec.md`
+- **Naming follows the contract** — `specs/core/naming.spec.md`
+- **Every state is mandatory** before handoff — `specs/domain/states.spec.md`
+- **WCAG `<WCAG_LEVEL>` is the floor**, not an aspiration — `specs/domain/accessibility.spec.md`
+- **Conventional Commits (terse, no body), no AI mentions** — `specs/core/commits.spec.md`
+- **Never commit:** CLAUDE.md, `*-plan.md`, `.md` instructions, exported PNG mockups, `.figma-cache/` — `specs/core/git-policy.spec.md`
 
 ## Stop conditions (Tier 2 — hard stop)
 
-См. `specs/workflows/decision-gates.spec.md`:
+See `specs/workflows/decision-gates.spec.md`:
 
-- Clarify needed (продуктовый вопрос без ответа в ТЗ)
-- Нужен выбор между несколькими валидными дизайн-направлениями
-- Любой CRITICAL finding (DS_VIOLATION / A11Y / DESIGN_DRIFT)
-- Изменение публичного компонента ДС (breaking change для потребителей)
-- Scope violation (правка вне заявленных фреймов)
+- Clarify needed (a product question the requirements do not answer)
+- A choice between several valid design directions is required
+- Any CRITICAL finding (DS_VIOLATION / A11Y / DESIGN_DRIFT)
+- A change to a public DS component (breaking change for consumers)
+- Scope violation (edits outside the declared frames)
 - Reroute limit reached
-- Требуется запись в Figma (Claude read-only)
+- A write to Figma is required (Claude is read-only)
 
 ## Memory and auto-memory
 
-Системный memory loader (если включён в Claude Code) загружается автоматически. Memory дополняет, не заменяет, специфику этого workspace.
+The system memory loader, when enabled in Claude Code, loads automatically. Memory complements this workspace's specifics; it does not replace them.
 
 ## Template provenance
 
-Этот workspace собран по шаблону `design-workspace-template`. После клонирования:
+This workspace was built from the `design-workspace-template`. After cloning:
 
-1. Запустить `./scripts/setup-tools.sh` (проверит Claude Code, node, подключит Figma MCP).
-2. Запустить `/design.init` в Claude Code (или `./scripts/init.sh`).
-3. Открыть `specs/core/project.spec.md` — проверить §1 Constitution (D-01..D-14), §2 DoD, §3 источники правды.
-4. Открыть `specs/core/design-system.spec.md` — сверить иерархию ДС с реальным файлом.
-5. Открыть `specs/domain/*` — подогнать шкалы, коллекции variables, брейкпоинты под реальный проект.
-6. (Опционально) Скопировать `.claude/settings.local.json.example` → `.claude/settings.local.json`.
-7. Открыть `README.md` — там пошаговая инструкция и таблица всех placeholder'ов.
+1. Run `./scripts/setup-tools.sh` (checks Claude Code and node, wires up Figma MCP).
+2. Run `/design.init` in Claude Code (or `./scripts/init.sh`).
+3. Open `specs/core/project.spec.md` — review §1 Constitution (D-01..D-14), §2 DoD, §3 sources of truth.
+4. Open `specs/core/design-system.spec.md` — reconcile the DS hierarchy with the real file.
+5. Open `specs/domain/*` — tune scales, variable collections, and breakpoints to the real project.
+6. Optionally copy `.claude/settings.local.json.example` → `.claude/settings.local.json`.
+7. Open the workspace `README.md` — it holds the step-by-step guide and the full placeholder table.

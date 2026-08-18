@@ -1,38 +1,38 @@
-# Сквозной пример
+# A worked example
 
-Мок-задача `ACM-142 · Каталог товаров` в проекте `AcmeShop`. Показывает, **как** выглядят заполненные артефакты — не что копировать, а какой глубины ждут от каждого документа.
+The mock task `ACM-142 · Product catalog` in the `AcmeShop` project. It shows **what** filled-in artifacts look like — not what to copy, but how much depth each document is expected to carry.
 
-## Цепочка
+## The chain
 
 ```
-epic-example.md          эпик раздела «Каталог»
+epic-example.md          the "Catalog" section epic
     ↓
-design-task-example.md   pre-spec задачи ACM-142
+design-task-example.md   pre-spec for task ACM-142
     ↓
-ddr-example.md           решение по фильтрам
+ddr-example.md           the decision about filters
     ↓
-worklog-example.md       лог работы, закрыт DONE
+worklog-example.md       the work log, closed with DONE
     ↓
-critique-example.md      findings трёх ревьюеров
+critique-example.md      findings from three reviewers
     ↓
-handoff-example.md       спека для разработки
+handoff-example.md       the spec for engineering
     ↓
-agent-log-example.md     финальный отчёт
+agent-log-example.md     the final report
 ```
 
-## Как читать
+## How to read it
 
-| Если непонятно | Смотреть |
+| If you are unsure about | Look at |
 |---|---|
-| какой глубины должна быть pre-spec | `design-task-example.md` § 4–6 |
-| как выглядит заполненная матрица состояний | `design-task-example.md` § 6 |
-| что считается настоящим finding, а что предпочтением | `critique-example.md` |
-| насколько подробен handoff | `handoff-example.md` § Поведение, § Данные |
-| как фиксируется решение, чтобы оно пережило полгода | `ddr-example.md` |
-| что писать в worklog по ходу | `worklog-example.md` |
+| how deep a pre-spec should go | `design-task-example.md` §4–6 |
+| what a filled state matrix looks like | `design-task-example.md` §6 |
+| what counts as a real finding versus a preference | `critique-example.md` |
+| how detailed a handoff should be | `handoff-example.md`, Behavior and Data |
+| how to record a decision so it survives six months | `ddr-example.md` |
+| what to write in a worklog as you go | `worklog-example.md` |
 
-## Чего в примере нет
+## What the example is not
 
-Реальных ссылок на Figma и реального продукта — это мок. `AcmeShop`, `ACM`, node-id вида `1234:5678` вымышлены.
+Real Figma links or a real product — this is a mock. `AcmeShop`, `ACM`, and node ids like `1234:5678` are invented.
 
-Примеры **не** обновляются под конкретный проект при `/design.init`: они остаются как есть, чтобы служить эталоном формы.
+The examples are **not** rewritten for your project by `/design.init`: they stay as they are, serving as a reference for form.

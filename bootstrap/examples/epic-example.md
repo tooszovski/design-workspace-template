@@ -1,78 +1,78 @@
-# EPIC-ACM-012 · Каталог и поиск
+# EPIC-ACM-012 · Catalog and search
 
 ```yaml
 epic_id: EPIC-ACM-012
 status: active
 figma_file: dEf456UvW
-figma_page: "✅ Каталог"
+figma_page: "✅ Catalog"
 ds_version: 2.3.0
 ```
 
-## Задача раздела
+## What the section is for
 
-Покупатель должен находить нужный товар в категории из 200+ позиций быстрее, чем за минуту. Сейчас каталог — плоский список без фильтров и поиска: 41% сессий заканчиваются уходом с него.
+A shopper should find the product they want inside a category of 200+ items in under a minute. Today the catalog is a flat list with no filters and no search: 41% of sessions end on it.
 
-## Карта потока
+## Flow map
 
 ```
-Главная → Категория → Каталог ──→ Карточка товара → Корзина
-                         │
-                         ├─→ Фильтры (sheet / панель)
-                         ├─→ Поиск по категории
-                         └─→ Пусто / Ошибка / Offline
+Home → Category → Catalog ──→ Product card → Cart
+                     │
+                     ├─→ Filters (sheet / panel)
+                     ├─→ Search within the category
+                     └─→ Empty / Error / Offline
 ```
 
-## Декомпозиция на задачи
+## Breakdown into tasks
 
-| Задача | Экран(ы) | Mode | Зависит от | Статус |
+| Task | Screen(s) | Mode | Depends on | Status |
 |---|---|---|---|---|
-| ACM-140 | Компонент `Chip/Filter` | standard | — | done |
-| ACM-141 | Компонент `Sheet/Bottom` — вариант 80% | quick | — | done |
-| ACM-142 | Каталог с фильтрами | standard | ACM-140, ACM-141 | done |
-| ACM-149 | Поиск внутри категории | standard | ACM-142 | in progress |
-| ACM-152 | Пустая категория и ошибки | quick | ACM-142 | todo |
-| ACM-158 | Привести Android к общему паттерну фильтров | standard | ACM-142 | todo |
+| ACM-140 | `Chip/Filter` component | standard | — | done |
+| ACM-141 | `Sheet/Bottom` — 80% variant | quick | — | done |
+| ACM-142 | Catalog with filters | standard | ACM-140, ACM-141 | done |
+| ACM-149 | Search within a category | standard | ACM-142 | in progress |
+| ACM-152 | Empty category and error states | quick | ACM-142 | todo |
+| ACM-158 | Align Android with the shared filter pattern | standard | ACM-142 | todo |
 
-Компоненты (ACM-140, ACM-141) идут **до** экранов, которые их используют.
+Components (ACM-140, ACM-141) come **before** the screens that use them.
 
-## Общие решения раздела
+## Shared decisions
 
-| Решение | DDR |
+| Decision | DDR |
 |---|---|
-| Фильтры на мобильных — bottom sheet, не отдельный экран | DDR-007 |
-| Фильтры применяются мгновенно, без кнопки подтверждения | DDR-008 |
-| Состояние фильтров живёт до конца календарного дня | DDR-008 |
-| Сетка: 4 / 3 / 2 колонки по брейкпоинтам | — (следует из шкалы) |
+| Filters on mobile are a bottom sheet, not a separate screen | DDR-007 |
+| Filters apply instantly, with no confirm button | DDR-008 |
+| Filter state lives until the end of the calendar day | DDR-008 |
+| Grid: 4 / 3 / 2 columns across breakpoints | — (follows from the scale) |
 
-## Общие компоненты
+## Shared components
 
-| Компонент | Есть в ДС | Задача на создание |
+| Component | In the DS | Task to create it |
 |---|---|---|
-| `Chip/Filter` | добавлен в 2.3.0 | ACM-140 |
-| `Sheet/Bottom` вариант 80% | добавлен в 2.3.0 | ACM-141 |
-| `Card/Product` | был | — |
-| `Skeleton/Card` | был | — |
+| `Chip/Filter` | added in 2.3.0 | ACM-140 |
+| `Sheet/Bottom` 80% variant | added in 2.3.0 | ACM-141 |
+| `Card/Product` | already existed | — |
+| `Skeleton/Card` | already existed | — |
 
-## Сквозные требования
+## Cross-cutting requirements
 
-Действуют на все задачи эпика и не дублируются в каждой:
+These apply to every task in the epic and are not repeated in each one:
 
-- Брейкпоинты Web / iOS / Android на краях диапазона
-- Все состояния по `domain/states.spec.md`; для списков обязательны `empty`, `empty-filtered`, `loading`, `error`, `offline`
+- Web / iOS / Android breakpoints at both ends of the range
+- Every state per `domain/states.spec.md`; lists require `empty`, `empty-filtered`, `loading`, `error`, `offline`
 - WCAG AA
-- Термины из словаря: «товар», «категория», «фильтр» — не «продукт», «раздел», «отбор»
-- Скелетон, а не спиннер, для любой загрузки списка
+- Glossary terms: "product", "category", "filter" — not "item", "section", "refinement"
+- A skeleton, never a spinner, for any list load
 
-## Не входит
+## Out of scope
 
-- Глобальный поиск по всему магазину — отдельный эпик EPIC-ACM-020
-- Персональные рекомендации в каталоге — не в этом квартале
-- Изменение карточки товара
+- Global search across the whole store — a separate epic, EPIC-ACM-020
+- Personalized recommendations in the catalog — not this quarter
+- Changes to the product card
 
-## Риски
+## Risks
 
-| Риск | Последствие | Что делаем |
+| Risk | Consequence | Mitigation |
 |---|---|---|
-| Число фильтров вырастет до 8+ | bottom sheet станет тесным, DDR-007 придётся пересматривать | зафиксировано в DDR-007 как условие пересмотра |
-| Категории с 1000+ товаров | не проверено поведение сетки и скролла | ACM-152 включает проверку на синтетических данных |
-| Android отстанет от веба по паттерну | разный опыт на платформах | ACM-158 в том же эпике, не откладывается |
+| Filter count grows past 8 | the bottom sheet gets cramped and DDR-007 needs revisiting | recorded in DDR-007 as the revisit condition |
+| Categories with 1000+ products | grid and scroll behavior unverified | ACM-152 includes a check against synthetic data |
+| Android falls behind web on the pattern | inconsistent experience across platforms | ACM-158 sits in the same epic and is not deferred |

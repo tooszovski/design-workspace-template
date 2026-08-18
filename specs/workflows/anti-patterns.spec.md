@@ -1,60 +1,60 @@
 ---
 name: anti-patterns
 layer: workflow
-purpose: Типичные ошибки процесса и дизайна, которые повторяются из задачи в задачу
+purpose: Recurring process and design mistakes that repeat from task to task
 applies_to:
-  task_keywords: ["анти-паттерн", "ошибка", "грабли", "как не надо"]
+  task_keywords: ["anti-pattern", "mistake", "pitfall", "how not to"]
   loaded_for_modes: ["quick", "standard", "full"]
 owner: design-lead
 ---
 
 # Anti-patterns
 
-Каждый пункт — ошибка, стоившая переделки. Список растёт из раздела «Что стоит поправить в спеках» в `agent-log.md`.
+Every entry is a mistake that once cost rework. The list grows from the "What the specs should fix" section of each task's `agent-log.md`.
 
-## Процесс
+## Process
 
-| Анти-паттерн | Чем плох | Как правильно |
+| Anti-pattern | Why it hurts | The right way |
 |---|---|---|
-| **Полировка до состояний** | `empty` и `error` не появляются никогда — время кончается на тенях | States-контракт 4a→4b→4c (`domain/states.spec.md`) |
-| **Вопросы по одному** | задача растягивается на неделю ожиданий | Один пакет clarify (`workflows/clarify.spec.md`) |
-| **Ответы в чате** | через неделю их нет | Всё в `spec.md` |
-| **Тихое расширение scope** | оценка перестаёт быть верной, никто не в курсе | `— DRIFT:` в worklog + пересчёт mode |
-| **Сдача «с оговорками»** | оговорки не читают, дефекты уходят в прод | Гейт не пройден = не сдано (`workflows/handoff-quality.spec.md`) |
-| **Устный handoff** | разработчик реализует по памяти | `handoff.md` самодостаточен (D-12) |
-| **Дизайн в вакууме** | решение не стыкуется с существующими экранами | Шаг 2 «Контекст» обязателен |
-| **Правка библиотеки походя** | ломает чужие экраны без предупреждения | DDR + версия + список потребителей (D-11) |
+| **Polishing before states** | `empty` and `error` never appear — the time goes into shadows | The states contract 4a→4b→4c (`domain/states.spec.md`) |
+| **Questions one at a time** | the task stretches across a week of waiting | One clarify batch (`workflows/clarify.spec.md`) |
+| **Answers left in chat** | in a week they are gone | Everything into `spec.md` |
+| **Quiet scope creep** | the estimate stops being true and nobody knows | `— DRIFT:` in the worklog plus a mode recount |
+| **Delivering "with caveats"** | nobody reads the caveats, the defects ship | A failed gate means not delivered (`workflows/handoff-quality.spec.md`) |
+| **Verbal handoff** | the engineer builds from memory | `handoff.md` is self-sufficient (D-12) |
+| **Designing in a vacuum** | the solution does not fit existing screens | Step 2, Context, is mandatory |
+| **Editing the library in passing** | it breaks other people's screens without warning | DDR plus version plus consumer list (D-11) |
 
-## Макет
+## Design
 
-| Анти-паттерн | Чем плох | Как правильно |
+| Anti-pattern | Why it hurts | The right way |
 |---|---|---|
-| **Detach вместо property** | инстанс перестаёт получать обновления ДС | Добавить property или композицию (`domain/components.spec.md`) |
-| **Идеальные данные** | на реальных данных экран разваливается | Крайние случаи в макете (D-09) |
-| **Один брейкпоинт** | адаптив придумает разработчик | Края диапазона обязательны (D-08) |
-| **Placeholder вместо метки** | метка исчезает при вводе, поле теряет смысл | Видимая метка (`domain/accessibility.spec.md`) |
-| **Цвет как единственный носитель смысла** | не работает при дальтонизме и в ч/б | Иконка или текст в дополнение |
-| **Спиннер вместо скелетона** | скачок раскладки при загрузке | Скелетон по форме контента |
-| **Хардкод «на минутку»** | остаётся навсегда и попадает в код | Токен или пометка `🚧` (D-03) |
-| **`Frame 427`** | ни найти, ни понять, ни передать | Нейминг по контракту (D-07) |
-| **Компонент на все случаи** | 60 вариантов, никто не понимает, какой брать | Композиция вместо конфигурации |
-| **«Как на макете» в спеке** | это отсылка, не спецификация | Значения и правила текстом |
+| **Detach instead of a property** | the instance stops receiving DS updates | Add a property or compose (`domain/components.spec.md`) |
+| **Perfect data** | the screen falls apart on real data | Edge cases in the design (D-09) |
+| **One breakpoint** | the engineer will invent the adaptivity | Both ends of the range are mandatory (D-08) |
+| **Placeholder instead of a label** | the label vanishes on input and the field loses meaning | A visible label (`domain/accessibility.spec.md`) |
+| **Color as the only carrier of meaning** | invisible to color-blind users and in grayscale | An icon or text alongside |
+| **Spinner instead of a skeleton** | the layout jumps while loading | A skeleton shaped like the content |
+| **Hardcoding "just for a minute"** | it stays forever and reaches the code | A token, or a `🚧` marker (D-03) |
+| **`Frame 427`** | cannot be found, understood, or handed over | Naming per contract (D-07) |
+| **A component for every occasion** | sixty variants and nobody knows which to pick | Composition over configuration |
+| **"As in the design" in a spec** | that is a pointer, not a specification | Values and rules in prose |
 
-## Работа с агентом
+## Working with the agent
 
-| Анти-паттерн | Чем плох | Как правильно |
+| Anti-pattern | Why it hurts | The right way |
 |---|---|---|
-| **Выгрузка всего файла через MCP** | контекст переполняется, ответ бесполезен | Запрос по node-id одного фрейма |
-| **Догадка вместо доступа** | агент описывает несуществующий макет | Нет доступа = `FAIL: figma access` |
-| **Пересказ работы в ответе** | дублирует checkpoint, раздувает контекст | Lean return (`workflows/team-dispatch.spec.md`) |
-| **Ревьюеры последовательно** | втрое дольше без выигрыша | Один вызов с несколькими `Agent` |
-| **Правка `core/` спек по ходу** | меняет правила для всех задач молча | Отдельная задача и отдельный коммит |
+| **Exporting a whole file over MCP** | context overflows, the answer is useless | Request one frame by node-id |
+| **Guessing instead of access** | the agent describes a design that does not exist | No access means `FAIL: figma access` |
+| **Retelling the work in the reply** | duplicates the checkpoint, inflates context | Lean return (`workflows/team-dispatch.spec.md`) |
+| **Reviewers in sequence** | three times slower with no gain | One message, several `Agent` calls |
+| **Editing `core/` specs in passing** | silently changes the rules for every task | A separate task and a separate commit |
 
-## Как пополнять
+## How to extend this list
 
-Анти-паттерн добавляется сюда, когда одна и та же ошибка повторилась **дважды**. Единичный случай — это случай, а не паттерн.
+An anti-pattern goes here once the same mistake has happened **twice**. A single occurrence is an occurrence, not a pattern.
 
 ## Cross-refs
 
-- workflows/agent-log.spec.md — источник новых пунктов
-- workflows/critique.spec.md — что ловится на ревью
+- workflows/agent-log.spec.md — the source of new entries
+- workflows/critique.spec.md — what review catches

@@ -1,72 +1,72 @@
 ---
 name: task-modes
 layer: workflow
-purpose: Классификация дизайн-задачи на Quick/Standard/Full, критерии, эскалация
+purpose: Classifying a design task as Quick/Standard/Full, criteria, escalation
 always_loaded: true
 applies_to:
-  task_keywords: ["mode", "режим", "quick", "standard", "full"]
+  task_keywords: ["mode", "quick", "standard", "full"]
   loaded_for_modes: ["quick", "standard", "full"]
 owner: design-lead
 ---
 
 # Task Modes
 
-Mode определяет глубину workflow: чем проще задача, тем меньше церемонии.
+The mode sets the depth of the workflow: the simpler the task, the less ceremony.
 
-## Приоритет определения
+## Order of determination
 
-1. Явное указание в `spec.md`: `**Mode:** quick`
-2. Явное указание человеком
-3. Автодетект по критериям ниже
+1. An explicit line in `spec.md`: `**Mode:** quick`
+2. An explicit instruction from a human
+3. Auto-detection by the criteria below
 
-## Режимы
+## The modes
 
-| Mode | Критерии | Workflow |
+| Mode | Criteria | Workflow |
 |---|---|---|
-| **Quick** | 1–2 фрейма, правка существующего экрана, нет новых компонентов и решений | Один агент: прочитать ТЗ → правка → аудит → сдать. Без критики, без DDR. |
-| **Standard** | 3–10 фреймов, новый экран или поток, используются существующие компоненты | Полный цикл: clarify → структура → состояния (states-контракт) → критика → handoff. |
-| **Full** | >10 фреймов, новый раздел, изменение ДС, новый паттерн, ребрендинг | Standard + эпик-чартер + DDR + параллельная критика + чекпойнты. |
+| **Quick** | 1–2 frames, editing an existing screen, no new components and no new decisions | One agent: read requirements → edit → audit → hand off. No critique, no DDR. |
+| **Standard** | 3–10 frames, a new screen or flow, built from existing components | Full cycle: clarify → structure → states (states contract) → critique → handoff. |
+| **Full** | 10+ frames, a new section, a DS change, a new pattern, a rebrand | Standard plus an epic charter, DDRs, parallel critique, and checkpoints. |
 
-## Авто-Full
+## Automatic Full
 
-Независимо от объёма, задача становится Full, если она:
+Regardless of size, a task becomes Full when it:
 
-- меняет **публичный компонент** дизайн-системы (D-11)
-- меняет **семантические variables** или добавляет режим (тему)
-- вводит **новый паттерн взаимодействия**, которого нет в продукте
-- затрагивает **онбординг, оплату, авторизацию** или другой критичный поток
-- влияет на все экраны продукта (навигация, шапка, типографика)
+- changes a **public component** of the design system (D-11)
+- changes **semantic variables** or adds a mode (theme)
+- introduces a **new interaction pattern** the product does not have
+- touches **onboarding, payment, authentication**, or another critical flow
+- affects every screen in the product (navigation, header, typography)
 
-## Эскалация
+## Escalation
 
-Если Quick оказался сложнее — **эскалировать до Standard**, не дотягивать в текущем режиме. Аналогично Standard → Full.
+If a Quick task turns out to be bigger, **escalate to Standard** rather than stretching the current mode. Same for Standard → Full.
 
-Триггеры эскалации: понадобился новый компонент; всплыл продуктовый вопрос; состояний оказалось больше, чем два; правка потянула соседние экраны.
+Escalation triggers: a new component turned out to be needed; a product question surfaced; more than two states appeared; the edit pulled in neighboring screens.
 
-Фиксируется в worklog: `### HH:MM — ESCALATE Quick→Standard, причина: ...`.
+Record it in the worklog: `### HH:MM — ESCALATE Quick→Standard, reason: ...`.
 
-Обратная эскалация запрещена: задача, начатая как Full, не понижается на середине.
+De-escalation is forbidden: a task that started as Full is not downgraded midway.
 
-## Тесты состояний по режимам
+## State requirements per mode
 
-| Mode | Требование к состояниям |
+| Mode | Requirement |
 |---|---|
-| Quick | не ломать существующие; новые не обязательны |
-| Standard | матрица покрытия обязательна, states-контракт 4a/4b/4c |
-| Full | то же + переходы между состояниями описаны |
+| Quick | do not break existing states; new ones are not required |
+| Standard | coverage matrix mandatory, states contract 4a/4b/4c |
+| Full | the same plus described transitions between states |
 
-## Загружаемые спеки по режимам
+## Specs loaded per mode
 
-См. `LOADER.md`.
+See `LOADER.md`.
 
 | Mode | Workflows |
 |---|---|
 | Quick | task-modes, design-workflow, review-pipeline, decision-gates, anti-patterns |
-| Standard | + clarify, critique, handoff-quality, drift-check, team-dispatch, agent-log (+ versioning, если затронута ДС) |
-| Full | + checkpoint, versioning |
+| Standard | plus clarify, critique, handoff-quality, drift-check, team-dispatch, agent-log (plus versioning if the DS is touched) |
+| Full | plus checkpoint, versioning |
 
 ## Cross-refs
 
-- workflows/design-workflow.spec.md — шаги
-- workflows/review-pipeline.spec.md — глубина ревью
-- workflows/checkpoint.spec.md — чекпойнты в Full
+- workflows/design-workflow.spec.md — the steps
+- workflows/review-pipeline.spec.md — review depth
+- workflows/checkpoint.spec.md — checkpoints in Full

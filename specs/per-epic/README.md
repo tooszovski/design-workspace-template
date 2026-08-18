@@ -1,18 +1,18 @@
 # `specs/per-epic/`
 
-Шаблон уровня эпика. Реальные эпики живут в `<PER_TASK_SPEC_LOCATION>/<epic-id>/epic.md`.
+The epic-level template. Real epics live in `<PER_TASK_SPEC_LOCATION>/<epic-id>/epic.md`.
 
-## Когда заводить эпик
+## When to open an epic
 
-| Заводить | Не заводить |
+| Open one | Do not |
 |---|---|
-| Раздел из ≥3 связанных экранов | Один экран, пусть и сложный |
-| Поток с ветвлениями | Набор несвязанных правок |
-| Работа, растянутая на несколько недель | Задача на день |
-| Нужны общие компоненты до экранов | Всё собирается из существующего |
+| A section of 3+ related screens | One screen, however complex |
+| A flow with branches | A set of unrelated edits |
+| Work spanning several weeks | A one-day task |
+| Shared components are needed before the screens | Everything assembles from what exists |
 
-## Зачем
+## Why
 
-Эпик отвечает на вопрос «почему эти задачи вместе» и выносит общие решения наверх, чтобы они не переизобретались в каждой задаче по-своему.
+An epic answers "why are these tasks together" and lifts shared decisions up a level so they are not reinvented differently in each task.
 
-Эпик **не** содержит детальных AC — они живут в задачах.
+An epic does **not** carry detailed acceptance criteria — those live in the tasks.

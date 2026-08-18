@@ -1,7 +1,7 @@
 ---
 name: component-template
 kind: template
-purpose: Спецификация компонента дизайн-системы — API, анатомия, состояния, правила применения
+purpose: Design-system component spec — API, anatomy, states, usage rules
 owner: reviewer-designsystem
 ---
 
@@ -11,94 +11,94 @@ owner: reviewer-designsystem
 component: <Category>/<Name>
 status: draft | review | published | deprecated
 version_added: <MAJOR.MINOR.PATCH>
-replaces: <компонент или ->
-figma_node: <node-id в FIGMA_DS_FILE_KEY>
+replaces: <component or ->
+figma_node: <node-id in FIGMA_DS_FILE_KEY>
 ```
 
-## Назначение
+## Purpose
 
-Одно предложение: какую задачу решает.
+One sentence: which problem it solves.
 
-## Когда применять
+## When to use it
 
-- <сценарий>
+- <scenario>
 
-## Когда НЕ применять
+## When NOT to use it
 
-- <сценарий> → использовать `<другой компонент>`
+- <scenario> → use `<other component>` instead
 
-Этот раздел важнее предыдущего: без него компонент начнут использовать везде.
+This section matters more than the previous one: without it, people start using the component everywhere.
 
-## Анатомия
+## Anatomy
 
-| Часть | Обязательна | Токен / компонент |
+| Part | Required | Token / component |
 |---|---|---|
-| контейнер | да | `surface/raised`, `radius/md`, `space/inset-md` |
-| иконка | нет | `Icon/24/*`, цвет наследует текст |
-| заголовок | да | `font/label/md`, `text/primary` |
+| container | yes | `surface/raised`, `radius/md`, `space/inset-md` |
+| icon | no | `Icon/24/*`, color inherits from text |
+| title | yes | `font/label/md`, `text/primary` |
 
 ## API
 
 ### Variants
 
-| Property | Значения | По умолчанию | Назначение |
+| Property | Values | Default | Purpose |
 |---|---|---|---|
-| `Variant` | primary / secondary / danger | primary | визуальный вес действия |
-| `Size` | sm / md / lg | md | плотность контекста |
+| `Variant` | primary / secondary / danger | primary | visual weight of the action |
+| `Size` | sm / md / lg | md | density of the context |
 | `State` | default / hover / pressed / focused / disabled | default | — |
 
 ### Boolean
 
-| Property | По умолчанию | Что показывает |
+| Property | Default | What it shows |
 |---|---|---|
 
-### Слоты
+### Slots
 
-| Property | Тип | Что подставляется |
+| Property | Type | What goes in |
 |---|---|---|
-| `label` | text | текст действия |
-| `icon` | instance swap | иконка из `Icon/24/*` |
+| `label` | text | the action text |
+| `icon` | instance swap | an icon from `Icon/24/*` |
 
-Общее число комбинаций: `<N>`. Больше 40 — разделить компонент (`domain/components.spec.md`).
+Total combinations: `<N>`. Past forty, split the component (`domain/components.spec.md`).
 
-## Состояния
+## States
 
-| State | Отличие | Токены |
+| State | Difference | Tokens |
 |---|---|---|
 | default | — | `action/primary` |
-| hover | фон темнее | `action/primary-hover` |
-| pressed | фон темнее + сжатие 98% | `action/primary-hover` |
-| focused | внешняя обводка 2pt | `border/focus`, контраст ≥3:1 |
-| disabled | пониженная насыщенность, курсор не меняется | `action/disabled`, `text/disabled` |
+| hover | darker fill | `action/primary-hover` |
+| pressed | darker fill plus 98% scale | `action/primary-hover` |
+| focused | 2pt outer ring | `border/focus`, contrast ≥3:1 |
+| disabled | reduced saturation, cursor unchanged | `action/disabled`, `text/disabled` |
 
-`focused` обязателен (`domain/accessibility.spec.md`).
+`focused` is mandatory (`domain/accessibility.spec.md`).
 
-## Поведение
+## Behavior
 
-- Минимальная ширина / максимальная ширина
-- Что при длинном тексте: перенос или усечение
-- Что при отсутствии слота
-- Тач-таргет ≥44×44pt даже при `Size: sm`
+- Minimum and maximum width
+- Long text: wrap or truncate
+- Behavior when a slot is empty
+- Touch target ≥44×44pt even at `Size: sm`
 
-## Адаптив
+## Adaptivity
 
-| Брейкпоинт | Поведение |
+| Breakpoint | Behavior |
 |---|---|
 
-## Доступность
+## Accessibility
 
-- Роль: `<button / link / ...>`
-- Доступное имя: из `label`; при отсутствии текста обязателен `spec:label`
-- Порядок фокуса: <правило>
-- Контраст: проверен во всех режимах
+- Role: `<button / link / ...>`
+- Accessible name: from `label`; when there is no text, `spec:label` is required
+- Focus order: <rule>
+- Contrast: verified in every mode
 
-## Чеклист промоушена в библиотеку
+## Promotion checklist
 
-- [ ] Используется на ≥2 экранах
-- [ ] Все значения на variables
-- [ ] Все состояния собраны, включая `focused` и `disabled`
-- [ ] Properties названы по `core/naming.spec.md`
-- [ ] Контраст проверен во всех режимах
-- [ ] Описание «когда применять / когда нет» заполнено
-- [ ] Число комбинаций ≤40
-- [ ] Внесён в changelog (`workflows/versioning.spec.md`)
+- [ ] Used on 2+ screens
+- [ ] Every value on variables
+- [ ] Every state built, including `focused` and `disabled`
+- [ ] Properties named per `core/naming.spec.md`
+- [ ] Contrast verified in every mode
+- [ ] "When to use / when not to" description written
+- [ ] Combination count ≤40
+- [ ] Entered in the changelog (`workflows/versioning.spec.md`)

@@ -1,65 +1,65 @@
 ---
 name: review-pipeline
 layer: workflow
-purpose: Кто ревьюит, в каком порядке, параллельность, критерий прохождения
+purpose: Who reviews, in what order, parallelism, the pass criterion
 applies_to:
-  task_keywords: ["review", "ревью", "пайплайн", "проверка", "приёмка"]
+  task_keywords: ["review", "pipeline", "acceptance", "check"]
   loaded_for_modes: ["quick", "standard", "full"]
 owner: design-lead
 ---
 
 # Review Pipeline
 
-## Порядок
+## Order
 
 ```
-/design.audit  →  ревьюеры  →  critique  →  handoff-quality  →  сдача
- (автоматика)     (параллельно)  (смысл)     (гейты G1-G6)
+/design.audit  →  reviewers   →  critique  →  handoff-quality  →  delivery
+ (automatic)      (parallel)     (meaning)    (gates G1-G6)
 ```
 
-Ревьюеры не запускаются, пока `/design.audit` не чист по CRITICAL: они не должны тратить проход на то, что ловится автоматически.
+Reviewers do not start until `/design.audit` is clean of CRITICALs: they should not spend a pass on what a machine catches.
 
-## Пайплайн по режимам
+## Pipeline per mode
 
-| Mode | Кто |
+| Mode | Who |
 |---|---|
-| **Quick** | только `/design.audit`; `reviewer-designsystem`, если задет компонент ДС |
-| **Standard** | параллельно: `reviewer-designsystem` + `reviewer-a11y` + `reviewer-ux-copy` |
-| **Full** | то же + `design-lead` делает critique по `workflows/critique.spec.md` + отдельный проход по изменениям ДС (`workflows/versioning.spec.md`) |
+| **Quick** | `/design.audit` only; `reviewer-designsystem` as well if a DS component was touched |
+| **Standard** | in parallel: `reviewer-designsystem` + `reviewer-a11y` + `reviewer-ux-copy` |
+| **Full** | the same plus `design-lead` critique per `workflows/critique.spec.md` plus a separate pass over DS changes (`workflows/versioning.spec.md`) |
 
-Ревьюеры Standard/Full запускаются **одним сообщением** с несколькими вызовами `Agent` — они независимы и не должны ждать друг друга.
+Standard and Full reviewers are launched in **one message** with several `Agent` calls — they are independent and must not wait on each other.
 
-## Зоны ответственности
+## Zones of responsibility
 
-| Ревьюер | Проверяет | Не проверяет |
+| Reviewer | Examines | Does not examine |
 |---|---|---|
-| `reviewer-designsystem` | компоненты, variables, spacing, нейминг, консистентность с ДС | тексты, контраст |
-| `reviewer-a11y` | контраст, фокус, тач-таргеты, семантика, аннотации `spec:` | соответствие ДС |
-| `reviewer-ux-copy` | тексты, термины, тон, тексты состояний | визуал |
-| `design-lead` (critique) | задачу, иерархию, полноту, реализуемость | то, что покрыто выше |
+| `reviewer-designsystem` | components, variables, spacing, naming, consistency with the DS | copy, contrast |
+| `reviewer-a11y` | contrast, focus, touch targets, semantics, `spec:` annotations | DS compliance |
+| `reviewer-ux-copy` | copy, terms, tone, state text | visuals |
+| `design-lead` (critique) | the problem, hierarchy, completeness, buildability | anything covered above |
 
-Пересечения зон намеренно минимальны: дублирующие findings от трёх ревьюеров — шум.
+Zone overlap is deliberately minimal: duplicate findings from three reviewers are noise.
 
-## Критерий прохождения
+## The pass criterion
 
-| Severity | Требование |
+| Severity | Requirement |
 |---|---|
-| CRITICAL | ноль. Каждый закрыт правкой или отменён человеком через Tier 2 |
-| IMPORTANT | закрыт или обоснован письменно в worklog |
-| MINOR | на усмотрение автора; незакрытые попадают в «долг» в agent-log |
+| CRITICAL | zero. Each is closed by a fix or waived by a human through Tier 2 |
+| IMPORTANT | closed, or justified in writing in the worklog |
+| MINOR | author's discretion; anything left open is recorded as debt in the agent log |
 
 ## Reroute
 
-Если ревьюер возвращает работу автору — это reroute. Лимиты:
+A reviewer sending work back is a reroute. The limits:
 
-| Счётчик | Лимит |
+| Counter | Limit |
 |---|---|
-| На пару автор↔ревьюер | 3 |
-| Всего на задачу | 5 |
+| Per author↔reviewer pair | 3 |
+| Total per task | 5 |
 
-При достижении лимита — Tier 2 hard stop: дальше решает человек. Бесконечный цикл правок означает, что проблема в спеке или в постановке, а не в макете.
+On reaching a limit, Tier 2 hard stop: a human decides from there. An endless edit loop means the problem is in the spec or the brief, not in the design.
 
-## Формат возврата ревьюера
+## Reviewer return format
 
 ```
 Signal: COMPLETE | FAIL | REROUTE
@@ -71,7 +71,7 @@ SpecsMissing: [...]
 
 ## Cross-refs
 
-- workflows/critique.spec.md — содержание критики
-- workflows/team-dispatch.spec.md — как запускать
+- workflows/critique.spec.md — what critique contains
+- workflows/team-dispatch.spec.md — how to launch
 - workflows/decision-gates.spec.md — Tier 2
-- workflows/handoff-quality.spec.md — гейты после ревью
+- workflows/handoff-quality.spec.md — gates after review

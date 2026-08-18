@@ -1,163 +1,163 @@
 # Design Workspace Template
 
-Шаблон workspace для дизайнера, работающего в Figma в паре с Claude Code.
+A workspace template for a designer working in Figma alongside Claude Code.
 
-Даёт агентную обвязку вокруг дизайн-процесса: правила дизайн-системы как исполняемые спеки, аудит макета по этим правилам, генерацию handoff-спек для разработки, экспорт токенов и сверку реализации с макетом.
+It wraps the design process in agent scaffolding: design-system rules as executable specs, audits of Figma files against those rules, generated handoff specs for engineering, token export, and drift checks against the implementation.
 
-**iOS-специфики нет.** Шаблон платформо-независим: платформы задаются при первом запуске.
+**No iOS specifics.** The template is platform-agnostic; platforms are chosen at first run.
 
-## Что внутри
+## What is inside
 
 ```
 .
-├── CLAUDE.md                       — bootstrap, entry point для Claude Code
-├── README.md                       — этот файл
-├── .gitignore                      — что не коммитить
-├── .mcp.json.example               — конфиг Figma MCP
+├── CLAUDE.md                       — bootstrap, entry point for Claude Code
+├── README.md                       — this file
+├── .gitignore                      — what not to commit
+├── .mcp.json.example               — Figma MCP config
 ├── scripts/
-│   ├── setup-tools.sh              — проверка окружения: Claude Code, node, Figma MCP
-│   ├── init.sh                     — shell-wizard настройки (альтернатива /design.init)
-│   └── validate-specs.sh           — валидация frontmatter, cross-refs, placeholder'ов
+│   ├── setup-tools.sh              — environment check: Claude Code, node, Figma MCP
+│   ├── init.sh                     — shell setup wizard (alternative to /design.init)
+│   └── validate-specs.sh           — validates frontmatter, cross-refs, placeholders
 ├── .claude/
 │   ├── commands/                   — /design.init · audit · handoff · tokens · drift · critique
-│   ├── agents/                     — design-lead · figma-analyst · handoff-author + 3 ревьюера
-│   ├── hooks/git-push-guard.sh     — запрет пуша в защищённые ветки
-│   ├── skills/                     — локальные скиллы (пусто по умолчанию)
-│   ├── settings.json               — хуки, коммитится
-│   └── settings.local.json.example — allow-list, снимает permission prompts
-├── specs/                          — SDD spec-структура (33 спеки + шаблоны)
-│   ├── INDEX.md                    — карта спек с триггерами
-│   ├── LOADER.md                   — контракт on-demand подгрузки, schema v2
+│   ├── agents/                     — design-lead · figma-analyst · handoff-author + 3 reviewers
+│   ├── hooks/git-push-guard.sh     — blocks pushes to protected branches
+│   ├── skills/                     — local skills (empty by default)
+│   ├── settings.json               — hooks, committed
+│   └── settings.local.json.example — allow-list, removes permission prompts
+├── specs/                          — SDD spec structure (33 specs plus templates)
+│   ├── INDEX.md                    — spec map with triggers
+│   ├── LOADER.md                   — on-demand loading contract, schema v2
 │   ├── core/       (7)             — always loaded
-│   ├── domain/     (13)            — on-demand по триггерам
-│   ├── workflows/  (13)            — по режиму задачи
-│   ├── per-epic/                   — шаблон эпика
-│   └── per-task/                   — шаблоны задачи, компонента, DDR
+│   ├── domain/     (13)            — on demand, by trigger
+│   ├── workflows/  (13)            — by task mode
+│   ├── per-epic/                   — epic template
+│   └── per-task/                   — task, component, and DDR templates
 └── bootstrap/
-    ├── REQUIREMENTS.md             — матрица зависимостей
-    └── examples/                   — сквозной пример заполнения артефактов
+    ├── REQUIREMENTS.md             — dependency matrix
+    └── examples/                   — a worked end-to-end example
 ```
 
-## Быстрый старт
+## Quick start
 
 ```bash
 cp -r design-workspace ~/git/my-product-design
 cd ~/git/my-product-design
 git init
 
-./scripts/setup-tools.sh     # окружение: Claude Code, node, Figma MCP
-claude                       # затем: /design.init
+./scripts/setup-tools.sh     # environment: Claude Code, node, Figma MCP
+claude                       # then: /design.init
 ```
 
-`/design.init` проведёт интервью, проставит значения во все файлы, удалит отключённые модули и вычистит `INDEX.md`. Без Claude Code — `./scripts/init.sh`.
+`/design.init` runs the interview, substitutes values across every file, removes the modules you turned off, and cleans up `INDEX.md`. Without Claude Code, use `./scripts/init.sh`.
 
-Проверка результата:
+Check the result:
 
 ```bash
 ./scripts/validate-specs.sh
 ```
 
-## Как это работает
+## How it works
 
-### Спеки вместо промптов
+### Specs instead of prompts
 
-Правила дизайна живут в `specs/` как машиночитаемые документы с frontmatter. Агент не получает их все сразу: лоадер собирает bundle под конкретную задачу по триггерам (`specs/LOADER.md`).
+Design rules live in `specs/` as machine-readable documents with frontmatter. An agent does not receive all of them at once: the loader assembles a bundle for the specific task from triggers (`specs/LOADER.md`).
 
-- `core/` — грузятся всегда: Constitution, дизайн-система, нейминг, git
-- `domain/` — по ключевым словам задачи: цвет, типографика, состояния, доступность…
-- `workflows/` — по режиму задачи: Quick / Standard / Full
+- `core/` — always loaded: Constitution, design system, naming, git
+- `domain/` — by task keywords: color, typography, states, accessibility, and so on
+- `workflows/` — by task mode: Quick / Standard / Full
 
-Это держит контекст агента маленьким и убирает расхождение трактовок между сессиями.
+This keeps agent context small and stops the same requirements from being read differently across sessions.
 
-### Три режима задачи
+### Three task modes
 
-| Mode | Когда | Что происходит |
+| Mode | When | What happens |
 |---|---|---|
-| Quick | 1–2 фрейма, правка без новых состояний | один проход, аудит, сдача |
-| Standard | новый экран или поток | clarify → структура → состояния → критика → handoff |
-| Full | раздел, изменение ДС, новый паттерн | + эпик, DDR, параллельные ревьюеры, чекпойнты |
+| Quick | 1–2 frames, an edit with no new states | one pass, audit, deliver |
+| Standard | a new screen or flow | clarify → structure → states → critique → handoff |
+| Full | a section, a DS change, a new pattern | plus an epic, DDRs, parallel reviewers, checkpoints |
 
-### States-контракт
+### The states contract
 
-Аналог TDD в дизайне. Состояния экрана собираются **до** полировки: сначала матрица покрытия, потом фреймы, потом сверка. Это единственный найденный способ не терять `empty` и `error` к дедлайну.
+The design equivalent of TDD. Screen states are built **before** polish: the coverage matrix first, then the frames, then reconciliation. It is the only reliable way found to stop losing `empty` and `error` to the deadline.
 
-### Claude read-only в Figma
+### Claude is read-only in Figma
 
-Агент читает макеты через MCP, но не пишет в них. Изменения оформляются как инструкция человеку. Причина: молчаливая правка чужого файла необратима и незаметна.
+The agent reads designs through MCP but never writes to them. Changes are delivered as instructions for a human. The reason: a silent edit to someone else's file is irreversible and invisible.
 
-## Команды
+## Commands
 
-| Команда | Что делает |
+| Command | What it does |
 |---|---|
-| `/design.init` | первичная настройка: интервью и проставление значений |
-| `/design.audit` | 15 проверок фрейма: detached, хардкод, spacing, состояния, контраст, нейминг |
-| `/design.handoff` | из фрейма → самодостаточная спека для разработки |
-| `/design.tokens` | Figma variables → DTCG JSON → платформенный экспорт |
-| `/design.drift` | сверка реализации с макетом, `DESIGN_DRIFT` findings |
-| `/design.critique` | дизайн-критика: задача, иерархия, полнота, реализуемость |
+| `/design.init` | first-run setup: interview and value substitution |
+| `/design.audit` | 15 checks on a frame: detached, hardcoded, spacing, states, contrast, naming |
+| `/design.handoff` | frame → a self-sufficient spec for engineering |
+| `/design.tokens` | Figma variables → DTCG JSON → platform export |
+| `/design.drift` | compare implementation against the design, file `DESIGN_DRIFT` findings |
+| `/design.critique` | design critique: problem, hierarchy, completeness, buildability |
 
 ## Placeholders
 
-Проставляются при `/design.init` или `./scripts/init.sh`.
+Filled in by `/design.init` or `./scripts/init.sh`.
 
-| Токен | Что это | Пример |
+| Token | What it is | Example |
 |---|---|---|
-| `<PROJECT_NAME>` | название проекта, CamelCase | `AcmeShop` |
-| `<ORG_NAME>` | организация или продукт | `Acme` |
-| `<PROJECT_PREFIX>` | префикс задач в трекере | `ACM` |
-| `<DEV_LANGUAGE>` | язык интерфейса продукта | `ru` |
-| `<FIGMA_DS_FILE_KEY>` | file key файла дизайн-системы | `aBc123XyZ` |
-| `<FIGMA_PRODUCT_FILE_KEY>` | file key продуктового файла | `dEf456UvW` |
-| `<DS_LIBRARY_NAME>` | название библиотеки | `Acme DS` |
-| `<PLATFORMS>` | платформы продукта | `Web, iOS, Android` |
-| `<SPACING_BASE>` | база spacing-шкалы | `4` |
-| `<SPACING_SCALE>` | сама шкала | `4, 8, 12, 16, 24, 32, 48, 64` |
-| `<WCAG_LEVEL>` | уровень доступности | `AA` |
-| `<CODE_REPO_PATH>` | репозиторий реализации, опционально | `~/git/acme-web` |
-| `<TOKENS_EXPORT_PATH>` | куда класть токены | `~/git/acme-web/tokens` |
-| `<TASK_SPEC_SOURCE_PATH>` | где живут ТЗ | vault `Projects/Acme/ТЗ` |
-| `<PER_TASK_SPEC_LOCATION>` | спеки задач, worklog | vault `Projects/Acme/Tasks` |
-| `<AGENT_LOGS_LOCATION>` | кросс-задачный журнал | vault `Projects/Acme/Agent Logs` |
-| `<TRACKER_NAME>` | трекер задач | `Jira` |
-| `<TRACKER_TESTING_STATUS>` | статус «на проверке» | `Testing` |
-| `<TRACKER_BLOCKED_STATUS>` | статус «заблокировано» | `Blocked` |
-| `<GIT_USER_NAME>` / `<GIT_USER_EMAIL>` | автор коммитов | — |
-| `<COMMIT_LANGUAGE>` | язык сообщений коммитов | `Russian` |
-| `<INTEGRATION_BRANCH>` / `<RELEASE_BRANCH>` | ветки | `develop` / `main` |
-| `<REFERENCE_PLATFORM>` | референс-платформа, опционально | `Android` |
+| `<PROJECT_NAME>` | project name, CamelCase | `AcmeShop` |
+| `<ORG_NAME>` | organization or product | `Acme` |
+| `<PROJECT_PREFIX>` | task prefix in the tracker | `ACM` |
+| `<DEV_LANGUAGE>` | product interface language | `en` |
+| `<FIGMA_DS_FILE_KEY>` | file key of the design-system file | `aBc123XyZ` |
+| `<FIGMA_PRODUCT_FILE_KEY>` | file key of the product file | `dEf456UvW` |
+| `<DS_LIBRARY_NAME>` | library name | `Acme DS` |
+| `<PLATFORMS>` | product platforms | `Web, iOS, Android` |
+| `<SPACING_BASE>` | spacing scale base | `4` |
+| `<SPACING_SCALE>` | the scale itself | `4, 8, 12, 16, 24, 32, 48, 64` |
+| `<WCAG_LEVEL>` | accessibility level | `AA` |
+| `<CODE_REPO_PATH>` | implementation repository, optional | `~/git/acme-web` |
+| `<TOKENS_EXPORT_PATH>` | where tokens go | `~/git/acme-web/tokens` |
+| `<TASK_SPEC_SOURCE_PATH>` | where requirements live | vault `Projects/Acme/Requirements` |
+| `<PER_TASK_SPEC_LOCATION>` | task specs and worklogs | vault `Projects/Acme/Tasks` |
+| `<AGENT_LOGS_LOCATION>` | cross-task journal | vault `Projects/Acme/Agent Logs` |
+| `<TRACKER_NAME>` | task tracker | `Jira` |
+| `<TRACKER_TESTING_STATUS>` | the "in review" status | `Testing` |
+| `<TRACKER_BLOCKED_STATUS>` | the "blocked" status | `Blocked` |
+| `<GIT_USER_NAME>` / `<GIT_USER_EMAIL>` | commit author | — |
+| `<COMMIT_LANGUAGE>` | commit message language | `English` |
+| `<INTEGRATION_BRANCH>` / `<RELEASE_BRANCH>` | branches | `develop` / `main` |
+| `<REFERENCE_PLATFORM>` | reference platform, optional | `Android` |
 
-## Хранилище артефактов
+## Artifact storage
 
-Два варианта, выбираются при init:
+Two options, chosen at init:
 
-**Obsidian vault + symlink** (по умолчанию, если vault найден). `specs/` переезжает в `Projects/<PROJECT_NAME>/Specs/`, в репозитории остаётся symlink. Спеки доступны из Obsidian и попадают в дистилляцию знаний; в git не дублируются. Задачи живут в `Projects/<PROJECT_NAME>/Tasks/<task-id>/`.
+**Obsidian vault plus symlink** (the default when a vault is found). `specs/` moves into `Projects/<PROJECT_NAME>/Specs/` and a symlink stays in the repository. Specs stay reachable from Obsidian and feed knowledge distillation, without being duplicated in git. Tasks live in `Projects/<PROJECT_NAME>/Tasks/<task-id>/`.
 
-**Только репозиторий.** `specs/` и `tasks/` лежат в workspace, Obsidian не используется. Раздел про onto-агента в `core/vault-contract.spec.md` при этом неактуален.
+**Repository only.** `specs/` and `tasks/` sit in the workspace and Obsidian is not used. The onto-agent section of `core/vault-contract.spec.md` does not apply in that case.
 
-## Что заполнить руками после init
+## What to fill in by hand after init
 
-Эти места требуют проектного знания, wizard их не угадает:
+These need project knowledge the wizard cannot guess:
 
-| Файл | Что |
+| File | What |
 |---|---|
-| `specs/domain/layout.spec.md` | таблица брейкпоинтов под выбранные платформы |
-| `specs/domain/ux-writing.spec.md` | словарь терминов продукта |
-| `specs/domain/color.spec.md` | реальные семантические роли, если они отличаются от базовых |
-| `specs/core/project.spec.md §1` | сверить Constitution D-01..D-14 под проект |
-| `specs/core/project.spec.md §1.1` | зафиксировать исключения, если они есть |
-| `.mcp.json` | токен Figma |
+| `specs/domain/layout.spec.md` | the breakpoint table for the chosen platforms |
+| `specs/domain/ux-writing.spec.md` | the product glossary |
+| `specs/domain/color.spec.md` | the real semantic roles, if they differ from the defaults |
+| `specs/core/project.spec.md §1` | review the Constitution D-01..D-14 against the project |
+| `specs/core/project.spec.md §1.1` | record exceptions, if there are any |
+| `.mcp.json` | the Figma token |
 
-## Зависимости
+## Dependencies
 
-Обязательные: Claude Code, node 18+, git. Опциональные: `npx style-dictionary` для трансформации токенов, `npx svgo` для оптимизации SVG.
+Required: Claude Code, node 18+, git. Optional: `npx style-dictionary` for token transforms, `npx svgo` for SVG optimization.
 
-Подробности и fallback'и — `bootstrap/REQUIREMENTS.md`.
+Details and fallbacks are in `bootstrap/REQUIREMENTS.md`.
 
-## Развитие шаблона
+## Evolving the template
 
-Раздел «Что стоит поправить в спеках» в `agent-log.md` каждой задачи — источник изменений. Ошибка, повторившаяся дважды, идёт в `specs/workflows/anti-patterns.spec.md`. Правило, которого не хватило, — в соответствующую domain-спеку.
+The "What the specs should fix" section of each task's `agent-log.md` is the source of changes. A mistake that has happened twice goes into `specs/workflows/anti-patterns.spec.md`. A rule that was missing goes into the relevant domain spec.
 
-После любой правки frontmatter:
+After any frontmatter change:
 
 ```bash
 ./scripts/validate-specs.sh

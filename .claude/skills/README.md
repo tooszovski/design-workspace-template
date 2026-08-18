@@ -1,25 +1,25 @@
 # `.claude/skills/`
 
-Локальные skill-бандлы этого workspace. Пусто по умолчанию — большинство задач покрывают спеки в `specs/` и команды в `.claude/commands/`.
+Local skill bundles for this workspace. Empty by default — most work is covered by the specs in `specs/` and the commands in `.claude/commands/`.
 
-## Когда заводить скилл, а не спеку
+## When to write a skill instead of a spec
 
-| Скилл | Спека |
+| Skill | Spec |
 |---|---|
-| Процедура с шагами, которую выполняет агент | Правило, которое агент обязан знать |
-| Нужны свои скрипты и ресурсы рядом | Достаточно текста |
-| Применяется вне контекста дизайн-задачи | Часть workflow задачи |
+| A step-by-step procedure the agent executes | A rule the agent must know |
+| Needs its own scripts and resources alongside | Text is enough |
+| Applies outside the context of a design task | Part of a task's workflow |
 
-Правило дизайн-системы — это спека. Процедура «сгенерировать иконочный шрифт из SVG-набора» — скилл.
+A design-system rule is a spec. A procedure like "generate an icon font from an SVG set" is a skill.
 
-## Что уже есть в командах
+## What the commands already cover
 
-`/design.init`, `/design.audit`, `/design.handoff`, `/design.tokens`, `/design.drift`, `/design.critique` — они живут в `.claude/commands/` и дублировать их скиллами не нужно.
+`/design.init`, `/design.audit`, `/design.handoff`, `/design.tokens`, `/design.drift`, `/design.critique` live in `.claude/commands/`; there is no need to duplicate them as skills.
 
-## Формат
+## Format
 
 ```
 .claude/skills/<name>/SKILL.md
 ```
 
-Frontmatter: `name`, `description` (когда применять — по этому тексту скилл выбирается). Тело — инструкция. Вспомогательные файлы рядом.
+Frontmatter: `name` and `description` (when to use it — that text is how the skill gets selected). The body is the instruction. Supporting files sit alongside.

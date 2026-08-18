@@ -1,79 +1,79 @@
 ---
 name: checkpoint
 layer: workflow
-purpose: Промежуточные чекпойнты в длинных задачах — когда, что фиксировать, как возобновлять
+purpose: Intermediate checkpoints in long tasks — when, what to record, how to resume
 applies_to:
-  task_keywords: ["checkpoint", "чекпойнт", "длинная задача", "возобновление", "прерывание"]
+  task_keywords: ["checkpoint", "long task", "resume", "interruption"]
   loaded_for_modes: ["full"]
 owner: design-lead
 ---
 
 # Checkpoints
 
-Чекпойнт — снимок состояния задачи, позволяющий продолжить работу в новой сессии без потери контекста.
+A checkpoint is a snapshot of task state that lets work resume in a new session without losing context.
 
-## Когда обязателен
+## When one is required
 
-- Mode = Full
-- Оценка задачи > 2 часов
-- Задача пересекает границу дня
-- Перед Tier 2 остановкой, если ответа придётся ждать
-- Перед передачей задачи другому исполнителю или агенту
+- Mode is Full
+- The task is estimated above 2 hours
+- The task crosses a day boundary
+- Before a Tier 2 stop, when the answer will take a while
+- Before handing the task to another person or agent
 
-## Точки
+## Points
 
-Чекпойнт ставится на завершении фазы, не по таймеру:
+Checkpoints mark the end of a phase, not intervals on a clock:
 
-| Точка | Что зафиксировано |
+| Point | What is captured |
 |---|---|
-| после Clarify | вопросы отправлены, умолчания приняты |
-| после Структуры | каркас согласован |
-| после 4b | все состояния собраны |
-| после Полировки | макет готов к ревью |
-| после Ревью | findings разобраны |
+| after Clarify | questions sent, defaults adopted |
+| after Structure | skeleton agreed |
+| after 4b | every state built |
+| after Polish | design ready for review |
+| after Review | findings resolved |
 
-## Формат
+## Format
 
 `<PER_TASK_SPEC_LOCATION>/<task-id>/checkpoint-<N>.md`:
 
 ```markdown
-# Checkpoint 2 · <PROJECT_PREFIX>-NNN · после 4b
+# Checkpoint 2 · <PROJECT_PREFIX>-NNN · after 4b
 
-## Состояние
-Собраны все состояния каталога. Полировка не начата.
+## State
+Every catalog state is built. Polish has not started.
 
-## Где что лежит
-| Артефакт | Ссылка |
+## Where things are
+| Artifact | Link |
 |---|---|
-| Фреймы | Figma <file-key> · node <id> |
-| Кэш выгрузки | .figma-cache/<file-key>/<node-id>.json |
-| Спека | spec.md (Clarify закрыт) |
+| Frames | Figma <file-key> · node <id> |
+| Cached export | .figma-cache/<file-key>/<node-id>.json |
+| Spec | spec.md (Clarify closed) |
 
-## Принятые решения
-- Q1 → A (ответ получен)
-- Q2 → умолчание B, ответа нет
-- Использован Card/Product, не Card/Basic
+## Decisions taken
+- Q1 → A (answer received)
+- Q2 → default B, no answer yet
+- Used Card/Product, not Card/Basic
 
-## Открытое
-- Ждём ответ на Q2; если придёт C — переделывать empty-filtered
-- Не решено: показывать ли счётчик при 1000+ элементов
+## Open
+- Waiting on Q2; if the answer is C, empty-filtered gets rebuilt
+- Undecided: whether to show a counter past 1000 items
 
-## Следующий шаг
-Полировка: токены, отступы, тексты. Начать с error-состояния.
+## Next step
+Polish: tokens, spacing, copy. Start with the error state.
 ```
 
-## Возобновление
+## Resuming
 
-Новая сессия начинается с чтения **последнего** чекпойнта, а не всего worklog. Порядок: `CLAUDE.md` → `specs/core/*` → последний checkpoint → `spec.md` → выгрузка из кэша.
+A new session starts by reading the **latest** checkpoint, not the whole worklog. The order: `CLAUDE.md` → `specs/core/*` → the latest checkpoint → `spec.md` → the cached export.
 
-Если кэш Figma протух (изменился `lastModified` файла) — перевыгрузить, не доверять снимку.
+If the Figma cache is stale (the file's `lastModified` changed), re-export; do not trust the snapshot.
 
-## Что чекпойнтом не является
+## What is not a checkpoint
 
-Сообщение в чате, комментарий в Figma, запись в трекере. Только файл в папке задачи. Всё остальное не переживёт смену сессии.
+A chat message, a Figma comment, a tracker note. Only a file in the task folder counts. Nothing else survives a session change.
 
 ## Cross-refs
 
-- workflows/agent-log.spec.md — worklog и финальный отчёт
-- workflows/decision-gates.spec.md — остановки
-- domain/figma-structure.spec.md — кэш выгрузок
+- workflows/agent-log.spec.md — worklog and the final report
+- workflows/decision-gates.spec.md — stops
+- domain/figma-structure.spec.md — export caching

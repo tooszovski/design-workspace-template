@@ -1,66 +1,66 @@
 ---
 name: workspace
 layer: core
-purpose: Layout design-workspace, границы зон, Figma как внешний source of truth
+purpose: Design-workspace layout, zone boundaries, Figma as an external source of truth
 always_loaded: true
 owner: design-lead
 ---
 
 # Workspace Layout
 
-## Структура
+## Structure
 
 ```
 <workspace-root>/
-├── CLAUDE.md              — bootstrap, не коммитится
+├── CLAUDE.md              — bootstrap, not committed in a derived workspace
 ├── README.md
-├── .mcp.json              — Figma MCP (gitignored, из .mcp.json.example)
-├── .claude/               — агенты, команды, настройки
+├── .mcp.json              — Figma MCP (gitignored, from .mcp.json.example)
+├── .claude/               — agents, commands, settings
 ├── scripts/
-├── specs/                 — symlink на vault Projects/<PROJECT_NAME>/Specs/ (или обычная папка)
-├── exports/               — сгенерированные токены и ассеты (gitignored)
+├── specs/                 — symlink to vault Projects/<PROJECT_NAME>/Specs/ (or a plain folder)
+├── exports/               — generated tokens and assets (gitignored)
 │   ├── tokens/
 │   └── assets/
-├── code/                  — опциональный symlink на <CODE_REPO_PATH> (только чтение)
-└── bootstrap/             — REQUIREMENTS + сквозные примеры
+├── code/                  — optional symlink to <CODE_REPO_PATH> (read-only)
+└── bootstrap/             — REQUIREMENTS plus worked examples
 ```
 
-## Границы
+## Boundaries
 
-| Зона | Право агента |
+| Zone | Agent's rights |
 |---|---|
-| `specs/`, `<PER_TASK_SPEC_LOCATION>/` | чтение + запись |
-| `exports/` | чтение + запись (перегенерируется, руками не правится) |
-| Figma через MCP | **только чтение** (D-02) |
-| `code/` | **только чтение** — для drift-check; правки делает разработка |
-| `<TASK_SPEC_SOURCE_PATH>` (ТЗ) | только чтение |
-| `.claude/`, `CLAUDE.md` | правка только по явной просьбе человека |
+| `specs/`, `<PER_TASK_SPEC_LOCATION>/` | read and write |
+| `exports/` | read and write (regenerated, never hand-edited) |
+| Figma via MCP | **read only** (D-02) |
+| `code/` | **read only** — for drift checks; engineering makes the edits |
+| `<TASK_SPEC_SOURCE_PATH>` (requirements) | read only |
+| `.claude/`, `CLAUDE.md` | edit only when a human explicitly asks |
 
-## Figma как внешний source of truth
+## Figma as an external source of truth
 
-Макеты не лежат в репозитории. Следствия:
+Designs do not live in the repository. That has consequences:
 
-1. **Нельзя «прочитать проект» с диска.** Состояние дизайна получается через Figma MCP (`mcp__figma__get_figma_data`) по file key + node id. Без node id тянуть весь файл дорого — сначала уточнить у человека фрейм.
-2. **Кэш обязателен для больших файлов.** Выгруженный JSON кладётся в `.figma-cache/<file-key>/<node-id>.json` (gitignored) и переиспользуется в рамках задачи. Кэш считается протухшим при смене `lastModified` файла.
-3. **Скриншоты — вспомогательный канал.** `mcp__figma__download_figma_images` в `.figma-cache/img/`. Изображение отвечает на «как выглядит», JSON — на «из чего собрано». Для аудита нужен JSON.
-4. **Нет доступа к MCP → нет аудита.** Не выдумывать содержимое макета по названию задачи. Отсутствие доступа — это FAIL с причиной, а не догадка.
+1. **You cannot "read the project" off disk.** Design state comes through Figma MCP (`mcp__figma__get_figma_data`) by file key plus node id. Pulling a whole file without a node id is expensive — ask the human which frame first.
+2. **Caching is mandatory for large files.** Store the exported JSON in `.figma-cache/<file-key>/<node-id>.json` (gitignored) and reuse it for the duration of the task. Treat the cache as stale when the file's `lastModified` changes.
+3. **Screenshots are a secondary channel.** `mcp__figma__download_figma_images` writes to `.figma-cache/img/`. An image answers "how does it look"; the JSON answers "what is it made of". An audit needs the JSON.
+4. **No MCP access means no audit.** Do not invent the contents of a design from the task title. Lack of access is a FAIL with a reason, not a prompt to guess.
 
-## Опциональный `code/`
+## The optional `code/`
 
-Появляется, только если при init указан `<CODE_REPO_PATH>`. Нужен для двух сценариев:
+Appears only when `<CODE_REPO_PATH>` was set during init. It serves two purposes:
 
-- `/design.drift` — сверка реализации с макетом (`workflows/drift-check.spec.md`)
-- `/design.tokens` — запись экспорта в `<TOKENS_EXPORT_PATH>` (`domain/tokens-export.spec.md`)
+- `/design.drift` — comparing implementation against the design (`workflows/drift-check.spec.md`)
+- `/design.tokens` — writing the export to `<TOKENS_EXPORT_PATH>` (`domain/tokens-export.spec.md`)
 
-Во всех остальных случаях `code/` не читается — он раздувает контекст и не относится к дизайн-задаче.
+In every other case `code/` is not read: it inflates context and has nothing to do with the design task.
 
-## Запуск
+## Running
 
-Claude Code запускается из workspace root. Пути в спеках — относительные от root (`specs/...`, `exports/...`).
+Claude Code starts from the workspace root. Paths in specs are relative to that root (`specs/...`, `exports/...`).
 
 ## Cross-refs
 
-- core/vault-contract.spec.md — что живёт в Obsidian
-- core/git-policy.spec.md — что не коммитить
-- domain/figma-structure.spec.md — как устроен файл в Figma
-- workflows/drift-check.spec.md — работа с `code/`
+- core/vault-contract.spec.md — what lives in Obsidian
+- core/git-policy.spec.md — what not to commit
+- domain/figma-structure.spec.md — how the Figma file is organized
+- workflows/drift-check.spec.md — working with `code/`

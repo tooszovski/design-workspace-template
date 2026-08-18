@@ -1,67 +1,67 @@
 ---
 name: clarify
 layer: workflow
-purpose: Формат уточняющих вопросов к ТЗ, drift-guard, что спрашивать нельзя
+purpose: Format for clarifying questions, the drift guard, what must not be asked
 applies_to:
-  task_keywords: ["clarify", "уточнение", "вопрос", "неясно", "ТЗ неполное"]
+  task_keywords: ["clarify", "question", "unclear", "incomplete requirements"]
   loaded_for_modes: ["standard", "full"]
 owner: design-lead
 ---
 
 # Clarify
 
-Цель — закрыть все неясности **одним пакетом** до начала работы. Вопросы по одному растягивают задачу и заставляют переделывать.
+The goal is to close every uncertainty in **one batch** before work starts. Asking one at a time stretches the task and forces rework.
 
-## Что спрашивать
+## What to ask
 
-Только то, что **меняет дизайн** и чего **нет в источниках правды** (`core/project.spec.md §3`).
+Only what **changes the design** and is **absent from the sources of truth** (`core/project.spec.md §3`).
 
-| Спрашивать | Не спрашивать |
+| Ask | Do not ask |
 |---|---|
-| Продуктовые правила: что происходит при отмене оплаты | То, что решает дизайнер: цвет кнопки, отступ |
-| Приоритет: что важнее на экране при конфликте | Разрешение на очевидное следование ДС |
-| Данные: какие поля обязательны, какие могут отсутствовать | То, что уже написано в ТЗ |
-| Границы: сколько элементов максимум, что при 0 и при 1000 | То, что выводится из существующих экранов |
-| Крайние случаи: что при отсутствии прав, при офлайне | Разрешение начать работу |
+| Product rules: what happens when payment is cancelled | What the designer decides: button color, spacing |
+| Priority: what matters more when the screen has a conflict | Permission to follow the DS as usual |
+| Data: which fields are required, which may be missing | What the requirements already state |
+| Limits: maximum item count, behavior at 0 and at 1000 | What follows from existing screens |
+| Edge cases: no permissions, offline | Permission to begin |
 
-**Вопрос, ответ на который дизайнер может принять сам, — это не вопрос, а перекладывание решения.** Такие решения принимаются и фиксируются в DDR.
+**A question the designer could answer themselves is not a question — it is handing the decision away.** Those decisions get made and recorded in a DDR.
 
-## Формат
+## Format
 
 ```markdown
 ## Clarify · <PROJECT_PREFIX>-NNN
 
-### Q1. <Вопрос одним предложением>
-**Почему важно:** что в дизайне зависит от ответа.
-**Варианты:**
-- A — <вариант> → следствие для дизайна
-- B — <вариант> → следствие для дизайна
-**Если ответа не будет:** приму A, потому что <причина>.
+### Q1. <The question in one sentence>
+**Why it matters:** what in the design depends on the answer.
+**Options:**
+- A — <option> → consequence for the design
+- B — <option> → consequence for the design
+**If no answer arrives:** I will take A, because <reason>.
 ```
 
-Раздел «Если ответа не будет» обязателен. Он превращает блокирующий вопрос в неблокирующий: работа продолжается по умолчанию, а ответ корректирует её.
+The "if no answer arrives" line is mandatory. It turns a blocking question into a non-blocking one: work continues on the default and the answer corrects it.
 
-Максимум 7 вопросов за пакет. Больше — признак того, что ТЗ не готово: это фиксируется отдельно, задача уходит в `<TRACKER_BLOCKED_STATUS>`.
+Seven questions maximum per batch. More than that means the requirements are not ready: record that separately and move the task to `<TRACKER_BLOCKED_STATUS>`.
 
-## Drift-guard
+## The drift guard
 
-Ответ на clarify может незаметно изменить задачу. После получения ответов проверить:
+An answer can quietly change the task. After answers arrive, check:
 
-| Проверка | Действие при срабатывании |
+| Check | Action when it fires |
 |---|---|
-| Ответ добавил новый экран или поток | пересчитать mode (`workflows/task-modes.spec.md`) |
-| Ответ противоречит ТЗ | Tier 2 stop: показать противоречие человеку |
-| Ответ противоречит существующему продукту | Tier 2 stop: это изменение продукта, не задачи |
-| Ответ требует нового компонента ДС | mode → Full |
+| The answer added a new screen or flow | recompute the mode (`workflows/task-modes.spec.md`) |
+| The answer contradicts the requirements | Tier 2 stop: show the contradiction to a human |
+| The answer contradicts the existing product | Tier 2 stop: this is a product change, not a task change |
+| The answer requires a new DS component | mode becomes Full |
 
-Расхождение фиксируется в worklog: `— DRIFT: ответ на Q2 расширяет scope, mode Standard→Full`.
+Record it in the worklog: `— DRIFT: answer to Q2 expands scope, mode Standard→Full`.
 
-## Куда записывается
+## Where it is written down
 
-Вопросы и ответы — в `<PER_TASK_SPEC_LOCATION>/<task-id>/spec.md`, раздел «Clarify». Ответы в чате, не перенесённые в spec.md, считаются несуществующими: через неделю их никто не найдёт.
+Questions and answers go into `<PER_TASK_SPEC_LOCATION>/<task-id>/spec.md`, in the Clarify section. Answers given in chat and never transferred into `spec.md` count as nonexistent: nobody will find them in a week.
 
 ## Cross-refs
 
-- per-task/DESIGN-TASK-TEMPLATE.spec.md — раздел Clarify
+- per-task/DESIGN-TASK-TEMPLATE.spec.md — the Clarify section
 - workflows/decision-gates.spec.md — Tier 2
-- per-task/DDR-TEMPLATE.md — фиксация решений, принятых самостоятельно
+- per-task/DDR-TEMPLATE.md — recording decisions made independently

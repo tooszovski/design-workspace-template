@@ -1,23 +1,23 @@
-# Инструкции агента — не артефакт проекта.
-# В САМОМ шаблоне CLAUDE.md коммитится принудительно (git add -f): он точка входа.
-# В развёрнутом из шаблона workspace правило работает как задумано.
+# Agent instructions — not a project artifact.
+# In the TEMPLATE itself, CLAUDE.md is force-added (git add -f): it is the entry point.
+# In a workspace unpacked from the template, this rule behaves as intended.
 CLAUDE.md
 AGENTS.md
 .cursorrules
 *-plan.md
 *-scratch.md
 
-# Доступы
+# Credentials
 .mcp.json
 
-# Кэш выгрузок Figma
+# Figma export cache
 .figma-cache/
 
-# Экспорт: ассеты — бинарники, токены — по решению init
+# Exports: assets are binaries; tokens are versioned or not, decided at init
 exports/assets/
-# exports/tokens/   ← раскомментировать, если токены не версионируются здесь
+# exports/tokens/   ← uncomment if tokens are not versioned here
 
-# Макеты и мокапы живут в Figma
+# Designs and mockups live in Figma
 *.fig
 *.sketch
 *.png
@@ -25,10 +25,10 @@ exports/assets/
 *.jpeg
 *.pdf
 
-# Кодовый репозиторий подключается симлинком
+# The code repository is attached as a symlink
 code/
 
-# Спеки в Obsidian (раскомментируется init'ом при выборе vault)
+# Specs in Obsidian (uncommented by init when a vault is chosen)
 # /specs
 
 .claude/*

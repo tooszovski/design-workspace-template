@@ -1,56 +1,56 @@
 # Requirements
 
-Матрица зависимостей design-workspace: что обязательно, что опционально, что делать без каждой.
+The design-workspace dependency matrix: what is required, what is optional, and what to do without each.
 
-## Обязательное
+## Required
 
-| Зависимость | Зачем | Проверка | Без неё |
+| Dependency | Why | Check | Without it |
 |---|---|---|---|
-| **Claude Code** | оркестрация, команды `/design.*`, агенты | `claude --version` | шаблон превращается в набор `.md`-документов; спеки остаются полезны как правила для людей |
-| **git** | версионирование спек | `git --version` | нет истории правил |
-| **Доступ к Figma** | источник правды по макетам | вход в аккаунт | без него не работает ни одна команда, кроме `/design.init` |
+| **Claude Code** | orchestration, the `/design.*` commands, agents | `claude --version` | the template degrades into a set of `.md` documents; the specs remain useful as rules for humans |
+| **git** | versioning the specs | `git --version` | no history of the rules |
+| **Figma access** | the source of truth for designs | signed-in account | without it no command works except `/design.init` |
 
-## Обязательное для команд
+## Required for the commands
 
-| Зависимость | Для чего | Проверка | Fallback |
+| Dependency | For what | Check | Fallback |
 |---|---|---|---|
-| **node 18+** | запуск Figma MCP через npx | `node -v` | нет: MCP не поднимется |
-| **Figma MCP** | `/design.audit`, `/design.handoff`, `/design.tokens`, `/design.critique` | `claude mcp list` | ручная выгрузка: человек присылает скриншоты и значения; проверки токенов и структуры недоступны |
-| **Figma personal token** | доступ MCP к файлам | в `.mcp.json` | — |
+| **node 18+** | running Figma MCP through npx | `node -v` | none: MCP will not start |
+| **Figma MCP** | `/design.audit`, `/design.handoff`, `/design.tokens`, `/design.critique` | `claude mcp list` | manual export: the human sends screenshots and values; token and structure checks are unavailable |
+| **Figma personal token** | MCP access to the files | in `.mcp.json` | — |
 
-Токен: figma.com → Settings → Security → Personal access tokens. Права: **File content (read)**. Больше не нужно — Claude в Figma не пишет (D-02).
+The token: figma.com → Settings → Security → Personal access tokens. Scope: **File content (read)**. Nothing more is needed — Claude never writes to Figma (D-02).
 
-## Опциональное
+## Optional
 
-| Зависимость | Для чего | Fallback |
+| Dependency | For what | Fallback |
 |---|---|---|
-| **Obsidian** | хранение спек и артефактов задач | режим «только репозиторий» при init |
-| **`npx style-dictionary`** | трансформация токенов под платформы | `/design.tokens` остановится на DTCG JSON в `exports/tokens/` |
-| **`npx svgo`** | оптимизация экспортированных SVG | экспорт без оптимизации, вес выше |
-| **Кодовый репозиторий** (`./code`) | `/design.drift`, запись токенов | drift-check только по скриншотам от разработки |
+| **Obsidian** | storing specs and task artifacts | the repository-only mode at init |
+| **`npx style-dictionary`** | transforming tokens per platform | `/design.tokens` stops at DTCG JSON in `exports/tokens/` |
+| **`npx svgo`** | optimizing exported SVG | export without optimization, larger files |
+| **A code repository** (`./code`) | `/design.drift`, writing tokens | drift checks limited to screenshots from engineering |
 
-## Что деградирует при отсутствии MCP
+## What degrades without MCP
 
-| Возможность | Работает без MCP |
+| Capability | Works without MCP |
 |---|---|
-| Правила и спеки как документ | да |
-| `/design.init` | да |
-| `/design.critique` по скриншотам | частично: иерархия и тексты — да, токены и структура — нет |
-| `/design.audit` | нет |
-| `/design.handoff` | частично: структуру спеки соберёт, содержимое придётся диктовать |
-| `/design.tokens` | нет |
-| `/design.drift` | частично: визуальная сверка да, токены нет |
+| Rules and specs as documents | yes |
+| `/design.init` | yes |
+| `/design.critique` from screenshots | partly: hierarchy and copy yes, tokens and structure no |
+| `/design.audit` | no |
+| `/design.handoff` | partly: it will assemble the spec structure, but the contents must be dictated |
+| `/design.tokens` | no |
+| `/design.drift` | partly: visual comparison yes, tokens no |
 
-Важное правило при отсутствии доступа: агент возвращает `FAIL: figma access`, а не достраивает содержимое макета по названию задачи. Выдуманный макет хуже отсутствующего.
+The governing rule when access is missing: the agent returns `FAIL: figma access` rather than reconstructing the design from the task title. An invented design is worse than a missing one.
 
-## Проверка окружения
+## Checking the environment
 
 ```bash
 ./scripts/setup-tools.sh
 ```
 
-Скрипт проверяет всё перечисленное, предлагает доустановить недостающее и создаёт `.mcp.json` и `settings.local.json` из примеров.
+The script checks everything listed here, offers to install what is missing, and creates `.mcp.json` and `settings.local.json` from the examples.
 
-## Версии
+## Versions
 
-Шаблон не привязан к версиям Figma API или конкретной реализации MCP-сервера: команды описаны на уровне «получить структуру узла», а не на уровне сигнатур. При смене MCP-сервера правится `.mcp.json.example` и, при необходимости, имена инструментов в `allowed-tools` команд.
+The template is not pinned to a Figma API version or a specific MCP server implementation: commands are written at the level of "fetch the structure of a node", not at the level of call signatures. When switching MCP servers, update `.mcp.json.example` and, if needed, the tool names in the commands' `allowed-tools`.

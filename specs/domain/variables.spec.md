@@ -1,28 +1,28 @@
 ---
 name: variables
 layer: domain
-purpose: Коллекции Figma variables, режимы (темы/платформы/плотность), алиасинг, запрет хардкода
+purpose: Figma variable collections, modes (themes, platforms, density), aliasing, no-hardcode rule
 applies_to:
-  task_keywords: ["variable", "переменная", "токен", "token", "тема", "theme", "dark mode", "режим", "mode", "алиас"]
-  triggers: ["задача затрагивает цветовую схему, темы или значения дизайн-токенов"]
+  task_keywords: ["variable", "token", "theme", "dark mode", "mode", "alias"]
+  triggers: ["task touches the color scheme, themes, or design-token values"]
 owner: reviewer-designsystem
 ---
 
 # Variables
 
-## Коллекции
+## Collections
 
-| Коллекция | Содержит | Режимы |
+| Collection | Contains | Modes |
 |---|---|---|
-| `Primitives` | сырые значения: палитра, числовая шкала | один режим |
-| `Semantic` | роли: `action/primary`, `text/secondary`, `surface/raised` | темы (light / dark / …) |
-| `Spacing` | шкала отступов `<SPACING_SCALE>` | плотность (comfortable / compact), если нужна |
-| `Radius` | радиусы скругления | один режим |
-| `Typography` | размеры, межстрочные, начертания | платформы `<PLATFORMS>`, если различаются |
+| `Primitives` | raw values: palette, numeric scale | single mode |
+| `Semantic` | roles: `action/primary`, `text/secondary`, `surface/raised` | themes (light / dark / …) |
+| `Spacing` | the `<SPACING_SCALE>` scale | density (comfortable / compact), if needed |
+| `Radius` | corner radii | single mode |
+| `Typography` | sizes, line heights, weights | platforms `<PLATFORMS>`, if they differ |
 
-## Алиасинг
+## Aliasing
 
-Правило одного шага: **semantic ссылается на primitive, компонент ссылается на semantic.**
+The one-hop rule: **semantic references a primitive, a component references semantic.**
 
 ```
 color/blue/500   (Primitives, hex)
@@ -32,54 +32,54 @@ action/primary   (Semantic, alias)
 Button/Primary → fill = action/primary
 ```
 
-Нарушения:
+Violations:
 
-| Нарушение | Severity |
+| Violation | Severity |
 |---|---|
-| Компонент ссылается на primitive напрямую | IMPORTANT |
-| Semantic содержит сырой hex вместо алиаса | IMPORTANT |
-| Цепочка алиасов длиннее двух шагов | MINOR |
-| Слой с сырым значением там, где есть подходящая variable | CRITICAL |
+| Component references a primitive directly | IMPORTANT |
+| Semantic holds a raw hex instead of an alias | IMPORTANT |
+| Alias chain longer than two hops | MINOR |
+| A layer with a raw value where a suitable variable exists | CRITICAL |
 
-## Режимы
+## Modes
 
-Режим — это **ось вариативности**, а не «ещё одна тема на всякий случай».
+A mode is an **axis of variation**, not "one more theme, just in case".
 
-Правила:
+Rules:
 
-1. Все переменные коллекции обязаны иметь значение во всех режимах. Пустое значение в режиме — CRITICAL: в этой теме экран сломается.
-2. Режимы не добавляются в `Primitives`. Палитра одна, роли меняются.
-3. При добавлении режима перепроверяется **контраст во всех парах** text/surface (`domain/accessibility.spec.md`). Тёмная тема — самая частая точка отказа контраста.
-4. Смена режима не должна менять размеры и раскладку. Если в тёмной теме поехала вёрстка — режим используют не по назначению.
+1. Every variable in a collection must have a value in every mode. An empty value in a mode is CRITICAL: the screen breaks in that theme.
+2. Modes are never added to `Primitives`. The palette is one; the roles are what change.
+3. Adding a mode means re-checking **every contrast pair** of text against surface (`domain/accessibility.spec.md`). Dark theme is the most common point of failure.
+4. Switching modes must not change sizes or layout. If dark theme reflows the page, the mode is being used for the wrong thing.
 
-## Именование значений
+## Naming values
 
-Semantic-имя описывает роль:
+A semantic name states its role:
 
-| ✅ | ❌ | Почему |
+| ✅ | ❌ | Why |
 |---|---|---|
-| `text/danger` | `text/red` | в тёмной теме он не красный |
-| `surface/raised` | `surface/white` | в тёмной теме он не белый |
-| `action/primary` | `action/blue-500` | привязка к палитре ломает ребрендинг |
-| `space/stack-md` | `space/16` | значение меняется, роль — нет |
+| `text/danger` | `text/red` | in dark theme it is not red |
+| `surface/raised` | `surface/white` | in dark theme it is not white |
+| `action/primary` | `action/blue-500` | binding to the palette breaks rebranding |
+| `space/stack-md` | `space/16` | the value changes, the role does not |
 
-## Хардкод
+## Hardcoded values
 
-Сырое значение допустимо ровно в двух случаях:
+A raw value is acceptable in exactly two cases:
 
-1. Слой помечен `🚧` — эксперимент, блокирующий сдачу (D-03).
-2. Значение физически не токенизируемо (координата в иллюстрации, точка градиента в декоративном фоне) — и это отмечено слоем `spec:` рядом.
+1. The layer is marked `🚧` — an experiment that blocks handoff (D-03).
+2. The value is genuinely not tokenizable (a coordinate inside an illustration, a gradient stop in a decorative background) — and a `spec:` layer next to it says so.
 
-Всё остальное — `DS_VIOLATION severity CRITICAL`.
+Everything else is a `DS_VIOLATION, severity CRITICAL`.
 
-## Экспорт
+## Export
 
-Variables — источник для `exports/tokens/` (`domain/tokens-export.spec.md`). Следствие: имя variable попадёт в код. Переименование = breaking change для потребителей токенов, оформляется по `workflows/versioning.spec.md`.
+Variables are the source for `exports/tokens/` (`domain/tokens-export.spec.md`). Consequence: a variable's name will end up in code. Renaming one is a breaking change for token consumers and goes through `workflows/versioning.spec.md`.
 
 ## Cross-refs
 
-- core/design-system.spec.md — уровни ДС
-- core/naming.spec.md — формат имён
-- domain/color.spec.md — палитра и контраст
-- domain/tokens-export.spec.md — выгрузка в код
-- domain/accessibility.spec.md — проверка контраста по режимам
+- core/design-system.spec.md — DS levels
+- core/naming.spec.md — name format
+- domain/color.spec.md — palette and contrast
+- domain/tokens-export.spec.md — export to code
+- domain/accessibility.spec.md — contrast per mode

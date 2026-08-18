@@ -1,60 +1,60 @@
 ---
-description: Аудит Figma-фрейма по правилам дизайн-системы — detached, хардкод, spacing, состояния, нейминг
+description: Audit a Figma frame against design-system rules — detached, hardcoded, spacing, states, naming
 allowed-tools: Read, Write, Grep, Glob, Bash, mcp__figma__get_figma_data, mcp__figma__download_figma_images
 ---
 
 # /design.audit
 
-Автоматическая проверка макета на нарушения правил. Идёт **до** ревьюеров: не тратить их проход на то, что ловится машинно.
+Automated rule checking on a design. It runs **before** the reviewers: do not spend their pass on what a machine catches.
 
-**Аргумент:** ссылка на фрейм Figma или `<file-key> <node-id>`. Без аргумента — спросить.
+**Argument:** a Figma frame link, or `<file-key> <node-id>`. Without one, ask.
 
-## Шаг 1 — Загрузка
+## Step 1 — Load
 
-1. Извлечь `file-key` и `node-id` из ссылки. В URL id через дефис (`1234-5678`), в API — через двоеточие (`1234:5678`).
-2. Проверить кэш `.figma-cache/<file-key>/<node-id>.json`. Использовать, если `lastModified` файла не изменился.
-3. `mcp__figma__get_figma_data` с `nodeId`. Сохранить в кэш.
-4. Нет доступа → остановиться с `FAIL: figma access`. Не достраивать содержимое макета по названию задачи.
+1. Extract `file-key` and `node-id` from the link. The URL uses a hyphen (`1234-5678`); the API uses a colon (`1234:5678`).
+2. Check the cache at `.figma-cache/<file-key>/<node-id>.json`. Use it if the file's `lastModified` has not changed.
+3. Call `mcp__figma__get_figma_data` with `nodeId`. Save to cache.
+4. No access → stop with `FAIL: figma access`. Do not reconstruct the design's contents from the task title.
 
-Читать спеки: `core/design-system`, `core/naming`, `domain/components`, `domain/variables`, `domain/layout`, `domain/states`, `domain/color`, `domain/typography`.
+Read these specs: `core/design-system`, `core/naming`, `domain/components`, `domain/variables`, `domain/layout`, `domain/states`, `domain/color`, `domain/typography`.
 
-## Шаг 2 — Проверки
+## Step 2 — Checks
 
-| # | Что | Как искать | Код | Severity |
+| # | What | How to spot it | Code | Severity |
 |---|---|---|---|---|
-| 1 | Detached-инстансы | узлы, визуально повторяющие библиотечный компонент, но без `componentId` | `DS_VIOLATION` | CRITICAL |
-| 2 | Хардкод цвета | `fills` с прямым значением вместо `boundVariables` | `DS_VIOLATION` | CRITICAL |
-| 3 | Хардкод отступа | `itemSpacing`/`padding*` вне `<SPACING_SCALE>` | `LAYOUT` | IMPORTANT |
-| 4 | Ручная типографика | текстовый узел без `textStyleId` | `TYPO` | IMPORTANT |
-| 5 | Прямая ссылка на primitive | компонент/экран ссылается на `color/*/NNN` вместо семантической роли | `DS_VIOLATION` | IMPORTANT |
-| 6 | Автоимена | `Frame N`, `Group N`, `Rectangle N`, `Copy of` | `NAMING` | IMPORTANT |
-| 7 | Слои `🚧` | префикс в имени | `NAMING` | CRITICAL, если фрейм на `✅`-странице |
-| 8 | Отсутствующие состояния | нет фреймов `empty` / `loading` / `error` в секции | `STATE_MISSING` | CRITICAL |
-| 9 | Нет `focused` | интерактивный компонент без варианта `State: focused` | `A11Y` | CRITICAL |
-| 10 | Малый тач-таргет | интерактивный узел <44×44 без `spec:hit-area` рядом | `A11Y` | IMPORTANT |
-| 11 | Контраст | пары текст/фон по всем режимам | `A11Y_CONTRAST` | CRITICAL для основного текста |
-| 12 | Fixed-ширина | `Fixed` в адаптивном контейнере | `LAYOUT` | IMPORTANT |
-| 13 | Deprecated-компонент | инстанс компонента с `[deprecated]` в описании | `DS_VIOLATION` | CRITICAL |
-| 14 | Вложенность инстансов | глубина >3 | `DS_VIOLATION` | MINOR |
-| 15 | Иконка без `spec:label` | инстанс из `Icon/*` внутри интерактивного узла без текста | `A11Y` | CRITICAL |
+| 1 | Detached instances | nodes that visually mirror a library component but carry no `componentId` | `DS_VIOLATION` | CRITICAL |
+| 2 | Hardcoded color | `fills` with a direct value instead of `boundVariables` | `DS_VIOLATION` | CRITICAL |
+| 3 | Hardcoded spacing | `itemSpacing`/`padding*` outside `<SPACING_SCALE>` | `LAYOUT` | IMPORTANT |
+| 4 | Manual typography | a text node with no `textStyleId` | `TYPO` | IMPORTANT |
+| 5 | Direct primitive reference | a component or screen referencing `color/*/NNN` instead of a semantic role | `DS_VIOLATION` | IMPORTANT |
+| 6 | Auto-generated names | `Frame N`, `Group N`, `Rectangle N`, `Copy of` | `NAMING` | IMPORTANT |
+| 7 | `🚧` layers | the prefix in a layer name | `NAMING` | CRITICAL when the frame is on a `✅` page |
+| 8 | Missing states | no `empty` / `loading` / `error` frames in the section | `STATE_MISSING` | CRITICAL |
+| 9 | No `focused` | an interactive component with no `State: focused` variant | `A11Y` | CRITICAL |
+| 10 | Small touch target | an interactive node under 44×44 with no adjacent `spec:hit-area` | `A11Y` | IMPORTANT |
+| 11 | Contrast | text-on-background pairs across every mode | `A11Y_CONTRAST` | CRITICAL for body text |
+| 12 | Fixed width | `Fixed` inside an adaptive container | `LAYOUT` | IMPORTANT |
+| 13 | Deprecated component | an instance whose component description contains `[deprecated]` | `DS_VIOLATION` | CRITICAL |
+| 14 | Instance nesting | depth above 3 | `DS_VIOLATION` | MINOR |
+| 15 | Icon without `spec:label` | an `Icon/*` instance inside an interactive node with no text | `A11Y` | CRITICAL |
 
-Контраст (11) считать по формуле WCAG для каждой реальной пары, включая placeholder, disabled-текст, текст на плашках и границы полей. Порог — `<WCAG_LEVEL>`.
+For check 11, compute the WCAG ratio for every real pair, including placeholders, disabled text, text on badges, and field borders. The threshold is `<WCAG_LEVEL>`.
 
-## Шаг 3 — Отчёт
+## Step 3 — Report
 
-Записать в `<PER_TASK_SPEC_LOCATION>/<task-id>/audit.md` (или в `audit-<node-id>.md`, если задача не указана):
+Write to `<PER_TASK_SPEC_LOCATION>/<task-id>/audit.md` (or `audit-<node-id>.md` when no task is given):
 
 ```markdown
-# Audit · <фрейм> · <дата>
+# Audit · <frame> · <date>
 
-Источник: Figma <file-key> · node <node-id>
-Проверок: 15 · Найдено: N critical, M important, K minor
+Source: Figma <file-key> · node <node-id>
+Checks: 15 · Found: N critical, M important, K minor
 
 ## CRITICAL
-### DS_VIOLATION: detached-инстанс кнопки
-Где: `Checkout / actions / Frame 12`
-Что: узел повторяет `Button/Primary`, но не связан с компонентом
-Действие: заменить на инстанс `Button/Primary`, variant `primary/md`
+### DS_VIOLATION: detached button instance
+Where: `Checkout / actions / Frame 12`
+What: the node mirrors `Button/Primary` but is not linked to the component
+Action: replace with a `Button/Primary` instance, variant `primary/md`
 
 ## IMPORTANT
 ...
@@ -62,26 +62,26 @@ allowed-tools: Read, Write, Grep, Glob, Bash, mcp__figma__get_figma_data, mcp__f
 ## MINOR
 ...
 
-## Чисто
-Проверки без нарушений: 3, 5, 7, 12, 14
+## Clean
+Checks with no violations: 3, 5, 7, 12, 14
 ```
 
-Раздел «Чисто» обязателен: без него непонятно, проверка не сработала или нарушений не было.
+The "Clean" section is mandatory: without it there is no way to tell whether a check found nothing or never ran.
 
-## Шаг 4 — Возврат
+## Step 4 — Return
 
 ```
 Signal: COMPLETE | FAIL
-Checkpoint: <путь к audit.md>
+Checkpoint: <path to audit.md>
 Findings: N critical, M important, K minor
 SpecsUsed: [...]
 SpecsMissing: [...]
 ```
 
-Любой CRITICAL блокирует переход к ревью (`workflows/review-pipeline.spec.md`).
+Any CRITICAL blocks the move to review (`workflows/review-pipeline.spec.md`).
 
-## Ограничения
+## Limits
 
-- Аудит не правит макет: Claude read-only в Figma (D-02).
-- Аудит не заменяет критику: он проверяет правила, а не решение задачи (`workflows/critique.spec.md`).
-- Проверки 1 и 5 эвристические — помечать такие findings как `вероятно` и не выдавать за факт.
+- The audit does not edit the design: Claude is read-only in Figma (D-02).
+- The audit does not replace critique: it checks rules, not whether the design solves the problem (`workflows/critique.spec.md`).
+- Checks 1 and 5 are heuristic — mark those findings "likely" and do not present them as fact.

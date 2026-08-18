@@ -1,71 +1,71 @@
 ---
 name: epic-template
 kind: template
-purpose: Дизайн-эпик — чартер раздела или потока, декомпозиция на задачи, общие решения
+purpose: Design epic — charter for a section or flow, breakdown into tasks, shared decisions
 owner: design-lead
 ---
 
-# EPIC-<PROJECT_PREFIX>-NNN · <Название раздела>
+# EPIC-<PROJECT_PREFIX>-NNN · <Section name>
 
 ```yaml
 epic_id: EPIC-<PROJECT_PREFIX>-NNN
 status: draft | active | done
 figma_file: <FIGMA_PRODUCT_FILE_KEY>
-figma_page: <✅ Раздел>
-ds_version: <версия на старте эпика>
+figma_page: <✅ Section>
+ds_version: <version at epic start>
 ```
 
-## Задача раздела
+## What the section is for
 
-Что раздел даёт пользователю. Абзац.
+What the section gives the user. One paragraph.
 
-## Карта потока
+## Flow map
 
-Экраны в порядке прохождения, с указанием ветвлений:
+Screens in the order they are traversed, with branches marked:
 
 ```
-Вход → Список → Деталь → Оформление → Подтверждение
-              ↘ Пусто
-              ↘ Ошибка загрузки
+Entry → List → Detail → Checkout → Confirmation
+             ↘ Empty
+             ↘ Load error
 ```
 
-## Декомпозиция на задачи
+## Breakdown into tasks
 
-| Задача | Экран(ы) | Mode | Зависит от | Статус |
+| Task | Screen(s) | Mode | Depends on | Status |
 |---|---|---|---|---|
 | `<PROJECT_PREFIX>-NNN` | | standard | — | |
 
-Гранулярность: одна задача = один экран со всеми состояниями, либо один компонент. Задача на «весь раздел» неуправляема.
+Granularity: one task is one screen with all its states, or one component. A task covering "the whole section" is unmanageable.
 
-## Общие решения раздела
+## Shared decisions
 
-Решения, действующие на все экраны эпика. Каждое — со ссылкой на DDR, если было спорным.
+Decisions that apply to every screen in the epic. Each links to a DDR when it was contested.
 
-| Решение | DDR |
+| Decision | DDR |
 |---|---|
-| Навигация внутри раздела — табами, не стеком | DDR-004 |
+| Navigation inside the section uses tabs, not a stack | DDR-004 |
 
-## Общие компоненты
+## Shared components
 
-| Компонент | Есть в ДС | Задача на создание |
+| Component | In the DS | Task to create it |
 |---|---|---|
 
-Компоненты создаются **до** экранов, которые их используют, иначе экраны придётся переделывать.
+Components are created **before** the screens that use them; otherwise the screens get rebuilt.
 
-## Сквозные требования
+## Cross-cutting requirements
 
-Применяются ко всем задачам эпика и не дублируются в каждой:
+These apply to every task in the epic and are not repeated in each one:
 
-- Все экраны поддерживают `<PLATFORMS>` на краях диапазона
-- Все состояния по `domain/states.spec.md`
+- Every screen supports `<PLATFORMS>` at both ends of the range
+- Every state per `domain/states.spec.md`
 - WCAG `<WCAG_LEVEL>`
-- Термины из словаря `domain/ux-writing.spec.md`
+- Terms from the `domain/ux-writing.spec.md` glossary
 
-## Не входит
+## Out of scope
 
-- <что за границей эпика и куда это уйдёт>
+- <what sits outside the epic and where it goes instead>
 
-## Риски
+## Risks
 
-| Риск | Последствие | Что делаем |
+| Risk | Consequence | Mitigation |
 |---|---|---|

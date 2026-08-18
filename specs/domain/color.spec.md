@@ -1,80 +1,80 @@
 ---
 name: color
 layer: domain
-purpose: Палитра, семантические роли цвета, контраст, тёмная тема, статусные цвета
+purpose: Palette, semantic color roles, contrast, dark theme, status colors
 applies_to:
-  task_keywords: ["цвет", "color", "палитра", "контраст", "contrast", "тёмная тема", "dark", "градиент", "прозрачность"]
-  triggers: ["задача меняет цветовое решение экрана или добавляет цвета в систему"]
+  task_keywords: ["color", "palette", "contrast", "dark theme", "gradient", "opacity"]
+  triggers: ["task changes a screen's color treatment or adds colors to the system"]
 owner: reviewer-designsystem
 ---
 
 # Color
 
-## Структура палитры
+## Palette structure
 
-Каждый цветовой ряд — шкала с шагом, достаточным для контрастных пар:
+Each color ramp is a scale with steps fine enough to build contrast pairs:
 
 ```
 color/<hue>/50 100 200 300 400 500 600 700 800 900
 ```
 
-`500` — базовый оттенок ряда. Ряд без покрытия светлых и тёмных концов не годится для тёмной темы.
+`500` is the ramp's base tone. A ramp that does not cover both the light and the dark end is unusable for dark theme.
 
-## Семантические роли
+## Semantic roles
 
-Минимальный набор ролей, который обязан существовать:
+The minimum set of roles that must exist:
 
-| Группа | Роли |
+| Group | Roles |
 |---|---|
 | `text/` | `primary`, `secondary`, `tertiary`, `disabled`, `inverse`, `danger`, `success` |
 | `surface/` | `base`, `raised`, `sunken`, `overlay`, `inverse` |
 | `border/` | `default`, `subtle`, `strong`, `focus` |
 | `action/` | `primary`, `primary-hover`, `secondary`, `danger`, `disabled` |
-| `status/` | `info`, `success`, `warning`, `danger` (+ `-surface` для фонов плашек) |
+| `status/` | `info`, `success`, `warning`, `danger` (plus `-surface` for badge backgrounds) |
 
-Роли без пары «текст на поверхности» бесполезны: для каждого `status/X` должен существовать `status/X-surface`, на котором `status/X` проходит по контрасту.
+Roles without a matching text-on-surface partner are useless: every `status/X` needs a `status/X-surface` on which `status/X` passes contrast.
 
-## Контраст
+## Contrast
 
-Минимум — WCAG `<WCAG_LEVEL>`:
+The floor is WCAG `<WCAG_LEVEL>`:
 
-| Что | AA | AAA |
+| What | AA | AAA |
 |---|---|---|
-| Обычный текст (<18pt / <14pt bold) | 4.5:1 | 7:1 |
-| Крупный текст (≥18pt / ≥14pt bold) | 3:1 | 4.5:1 |
-| Иконки и границы, несущие смысл | 3:1 | 3:1 |
-| Индикатор фокуса | 3:1 к соседнему цвету | 3:1 |
+| Body text (<18pt / <14pt bold) | 4.5:1 | 7:1 |
+| Large text (≥18pt / ≥14pt bold) | 3:1 | 4.5:1 |
+| Icons and borders that carry meaning | 3:1 | 3:1 |
+| Focus indicator | 3:1 against the adjacent color | 3:1 |
 
-Проверяется **каждая реальная пара** во **всех режимах**, а не только основной текст на основном фоне. Типичные пропуски: placeholder в поле, disabled-текст на кнопке, текст на изображении, иконка на цветной плашке, граница поля.
+**Every real pair** is checked, in **every mode** — not just body text on the main background. The usual misses: a field placeholder, disabled text on a button, text over an image, an icon on a colored badge, a field border.
 
-`disabled` не освобождён от контраста: пользователь должен видеть, что элемент существует.
+`disabled` is not exempt from contrast: the user still has to see that the element exists.
 
-## Цвет не единственный носитель смысла
+## Color is never the only carrier of meaning
 
-Статус, ошибка, выделение обязаны дублироваться иконкой, текстом или формой. Ошибка «поле красное» неразличима при дальтонизме — нужна иконка и текст ошибки (`domain/accessibility.spec.md`).
+Status, error, and selection must also be conveyed by an icon, text, or shape. "The field is red" is invisible to a color-blind user — it needs an icon and error text (`domain/accessibility.spec.md`).
 
-## Тёмная тема
+## Dark theme
 
-- Тёмная тема — не инверсия. Поверхности расходятся по светлоте (`surface/base` → `surface/raised` светлее, а не темнее), тени заменяются на подсветку границ.
-- Насыщенные цвета из светлой темы на тёмном фоне «звенят» — используются приглушённые варианты ряда (`400` вместо `600`).
-- Изображения и иллюстрации проверяются отдельно: белый фон PNG в тёмной теме — дефект.
+- Dark theme is not an inversion. Surfaces separate by lightness (`surface/base` → `surface/raised` gets lighter, not darker), and shadows give way to lit borders.
+- Saturated colors from light theme vibrate on dark backgrounds — use the muted step of the ramp (`400` instead of `600`).
+- Images and illustrations are checked separately: a PNG with a white background is a defect in dark theme.
 
-## Градиенты и прозрачность
+## Gradients and opacity
 
-- Градиент — токенизированный эффект или переменная, не ручная заливка.
-- Полупрозрачный цвет поверх неизвестного фона запрещён для текста: контраст непредсказуем. Прозрачность допустима для оверлеев и разделителей.
+- A gradient is a tokenized effect or a variable, not a hand-rolled fill.
+- Semi-transparent color over an unknown background is forbidden for text: contrast becomes unpredictable. Opacity is fine for overlays and dividers.
 
 ## Findings
 
-| Код | Severity | Когда |
+| Code | Severity | When |
 |---|---|---|
-| `A11Y_CONTRAST` | IMPORTANT | пара ниже нормы для крупного текста / границ |
-| `A11Y_CONTRAST` | CRITICAL | основной текст ниже нормы; пара ломается в одном из режимов |
-| `DS_VIOLATION` | CRITICAL | сырой hex вместо семантической роли |
-| `A11Y` | IMPORTANT | смысл передан только цветом |
+| `A11Y_CONTRAST` | IMPORTANT | a pair below the bar for large text or borders |
+| `A11Y_CONTRAST` | CRITICAL | body text below the bar; a pair that fails in one of the modes |
+| `DS_VIOLATION` | CRITICAL | raw hex instead of a semantic role |
+| `A11Y` | IMPORTANT | meaning conveyed by color alone |
 
 ## Cross-refs
 
-- domain/variables.spec.md — коллекции и режимы
-- domain/accessibility.spec.md — полный чеклист a11y
-- domain/states.spec.md — цвет состояний
+- domain/variables.spec.md — collections and modes
+- domain/accessibility.spec.md — the full a11y checklist
+- domain/states.spec.md — state colors

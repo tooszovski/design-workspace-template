@@ -1,97 +1,97 @@
 ---
 name: design-workflow
 layer: workflow
-purpose: Шаги дизайн-задачи от ТЗ до сдачи, включая states-контракт
+purpose: Steps of a design task from requirements to handoff, including the states contract
 applies_to:
-  task_keywords: ["workflow", "процесс", "шаги", "как делать задачу"]
+  task_keywords: ["workflow", "process", "steps", "how to run a task"]
   loaded_for_modes: ["quick", "standard", "full"]
 owner: design-lead
 ---
 
 # Design Workflow
 
-## Шаг 0 — Приём задачи
+## Step 0 — Intake
 
-1. Прочитать ТЗ из `<TASK_SPEC_SOURCE_PATH>`.
-2. Определить mode (`workflows/task-modes.spec.md`).
-3. Создать `<PER_TASK_SPEC_LOCATION>/<task-id>/` и `worklog.md` с первой записью.
-4. Проверить версию потребляемой библиотеки в `📐 Cover` продуктового файла.
+1. Read the requirements from `<TASK_SPEC_SOURCE_PATH>`.
+2. Determine the mode (`workflows/task-modes.spec.md`).
+3. Create `<PER_TASK_SPEC_LOCATION>/<task-id>/` and a `worklog.md` with its first entry.
+4. Check the consumed library version on the product file's `📐 Cover`.
 
-Выход: папка задачи, mode зафиксирован.
+Output: a task folder and a fixed mode.
 
-## Шаг 1 — Clarify
+## Step 1 — Clarify
 
-Только Standard/Full. Собрать все неясности **одним пакетом** и задать до начала работы (`workflows/clarify.spec.md`). Один вопрос в день растягивает задачу на неделю.
+Standard and Full only. Gather every uncertainty into **one batch** and ask before starting (`workflows/clarify.spec.md`). One question a day stretches a task across a week.
 
-Если ТЗ отвечает на всё — записать в worklog `— CLARIFY: не требуется` и идти дальше.
+If the requirements answer everything, write `— CLARIFY: not required` in the worklog and move on.
 
-Выход: `spec.md` по `per-task/DESIGN-TASK-TEMPLATE.spec.md` со статусом `approved`.
+Output: `spec.md` per `per-task/DESIGN-TASK-TEMPLATE.spec.md` with status `approved`.
 
-## Шаг 2 — Контекст
+## Step 2 — Context
 
-1. Найти существующие решения похожей задачи в продукте — переиспользовать, а не изобретать.
-2. Выгрузить нужные фреймы через Figma MCP (`domain/figma-structure.spec.md`).
-3. Проверить, каких компонентов не хватает в `<DS_LIBRARY_NAME>`.
-4. Для Full — посмотреть `<REFERENCE_PLATFORM>`, если она задана.
+1. Find existing solutions to similar problems in the product — reuse rather than reinvent.
+2. Export the needed frames through Figma MCP (`domain/figma-structure.spec.md`).
+3. Check which components `<DS_LIBRARY_NAME>` is missing.
+4. For Full, look at `<REFERENCE_PLATFORM>` if one is set.
 
-Выход: список переиспользуемых компонентов, список недостающих.
+Output: a list of components to reuse and a list of missing ones.
 
-## Шаг 3 — Структура
+## Step 3 — Structure
 
-Сначала скелет: иерархия, порядок блоков, что главное на экране (D-10). На этом шаге не выбираются цвета и не полируются отступы.
+The skeleton first: hierarchy, block order, what is primary on the screen (D-10). Colors are not chosen and spacing is not polished at this step.
 
-Для Full — 2–3 варианта структуры с явным сравнением, выбор фиксируется в DDR (`per-task/DDR-TEMPLATE.md`).
+For Full, produce 2–3 structural options with an explicit comparison; record the choice in a DDR (`per-task/DDR-TEMPLATE.md`).
 
-Выход: каркас экрана, согласованный с человеком, если вариантов было несколько.
+Output: a screen skeleton, agreed with a human when there were multiple options.
 
-## Шаг 4 — States-контракт
+## Step 4 — The states contract
 
-Порядок обязателен, полировка `data`-состояния до сборки остальных запрещена (`domain/states.spec.md`).
+The order is mandatory; polishing the `data` state before the rest exist is forbidden (`domain/states.spec.md`).
 
-| Шаг | Действие | Проверка |
+| Step | Action | Check |
 |---|---|---|
-| **4a** | Заполнить матрицу покрытия в `spec.md` | ни одной пустой клетки |
-| **4b** | Собрать каждое `✅`-состояние отдельным фреймом | имена по `core/naming.spec.md` |
-| **4c** | Сверить матрицу с Figma | каждая `✅` = реальный фрейм; расхождение — FAIL |
+| **4a** | Fill the coverage matrix in `spec.md` | no empty cells |
+| **4b** | Build each `✅` state as its own frame | names per `core/naming.spec.md` |
+| **4c** | Reconcile the matrix against Figma | every `✅` is a real frame; a mismatch is a FAIL |
 
-## Шаг 5 — Полировка
+## Step 5 — Polish
 
-Токены, отступы по шкале, типографика, тексты, адаптив, ассеты. Здесь применяются `domain/layout`, `color`, `typography`, `ux-writing`, `assets`.
+Tokens, spacing from the scale, typography, copy, adaptivity, assets. This is where `domain/layout`, `color`, `typography`, `ux-writing`, and `assets` apply.
 
-## Шаг 6 — Самопроверка
+## Step 6 — Self-check
 
-Запустить `/design.audit` по фреймам задачи. Все CRITICAL закрыть до критики — не отдавать ревьюерам то, что ловится автоматически.
+Run `/design.audit` across the task's frames. Close every CRITICAL before critique — do not hand reviewers what a machine catches.
 
-## Шаг 7 — Критика и ревью
+## Step 7 — Critique and review
 
-По `workflows/review-pipeline.spec.md`. Standard/Full — параллельный запуск ревьюеров ДС / a11y / текстов.
+Per `workflows/review-pipeline.spec.md`. Standard and Full run the DS, a11y, and copy reviewers in parallel.
 
-Findings классифицируются, CRITICAL закрываются, IMPORTANT — закрываются или обосновываются в worklog.
+Findings are classified; CRITICALs are closed; IMPORTANTs are closed or justified in the worklog.
 
-## Шаг 8 — Handoff
+## Step 8 — Handoff
 
-Написать `handoff.md` по `domain/handoff.spec.md`. Пройти гейты G1–G6 (`workflows/handoff-quality.spec.md`).
+Write `handoff.md` per `domain/handoff.spec.md`. Pass gates G1–G6 (`workflows/handoff-quality.spec.md`).
 
-## Шаг 9 — Сдача
+## Step 9 — Delivery
 
-1. Перевести фреймы на `✅`-страницу.
-2. Проверить DoD (`core/project.spec.md §2`).
-3. Закрыть `worklog.md` строкой `— DONE: <итог>`.
-4. Перевести задачу в `<TRACKER_TESTING_STATUS>`.
-5. Написать `agent-log.md` (`workflows/agent-log.spec.md`).
+1. Move the frames to a `✅` page.
+2. Verify the DoD (`core/project.spec.md §2`).
+3. Close `worklog.md` with `— DONE: <outcome>`.
+4. Move the task to `<TRACKER_TESTING_STATUS>`.
+5. Write `agent-log.md` (`workflows/agent-log.spec.md`).
 
-## Шаг 10 — Приёмка реализации
+## Step 10 — Accepting the implementation
 
-После реализации — `/design.drift` (`workflows/drift-check.spec.md`). Это отдельная задача в трекере, не хвост текущей.
+Once engineering ships it, run `/design.drift` (`workflows/drift-check.spec.md`). That is a separate tracker task, not a tail on the current one.
 
-## Сокращённый путь для Quick
+## The short path for Quick
 
-Шаги 0 → 5 → 6 → 9. Clarify, структура, states-контракт, критика и handoff пропускаются, если правка не создаёт новых состояний и не трогает ДС.
+Steps 0 → 5 → 6 → 9. Clarify, structure, the states contract, critique, and handoff are skipped when the edit creates no new states and does not touch the DS.
 
 ## Cross-refs
 
-- workflows/task-modes.spec.md — выбор режима
-- workflows/clarify.spec.md — формат вопросов
-- workflows/review-pipeline.spec.md — ревью
-- workflows/handoff-quality.spec.md — гейты сдачи
-- workflows/decision-gates.spec.md — где останавливаться
+- workflows/task-modes.spec.md — choosing the mode
+- workflows/clarify.spec.md — question format
+- workflows/review-pipeline.spec.md — review
+- workflows/handoff-quality.spec.md — handoff gates
+- workflows/decision-gates.spec.md — where to stop

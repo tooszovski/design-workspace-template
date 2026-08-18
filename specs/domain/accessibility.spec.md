@@ -1,87 +1,87 @@
 ---
 name: accessibility
 layer: domain
-purpose: WCAG-чеклист для макета — контраст, фокус, тач-таргеты, семантика, screen reader, движение
+purpose: WCAG checklist for a design — contrast, focus, touch targets, semantics, screen readers, motion
 applies_to:
-  task_keywords: ["доступность", "accessibility", "a11y", "wcag", "контраст", "фокус", "screen reader", "voiceover", "клавиатура"]
-  triggers: ["любая задача с интерактивными элементами или текстом"]
+  task_keywords: ["accessibility", "a11y", "wcag", "contrast", "focus", "screen reader", "voiceover", "keyboard"]
+  triggers: ["any task with interactive elements or text"]
 owner: reviewer-a11y
 ---
 
 # Accessibility
 
-Базовый уровень — WCAG `<WCAG_LEVEL>` (D-06). Проверяется в макете, до разработки: половина a11y-дефектов рождается в Figma, а не в коде.
+The baseline is WCAG `<WCAG_LEVEL>` (D-06). It is verified in the design, before engineering: half of all accessibility defects are born in Figma, not in code.
 
-## Чеклист макета
+## Design checklist
 
-### Восприятие
+### Perceivable
 
-- [ ] Контраст всех текстовых пар проходит норму во **всех** режимах (`domain/color.spec.md`)
-- [ ] Контраст иконок и границ, несущих смысл, ≥3:1
-- [ ] Смысл не передаётся **только** цветом — есть иконка, текст или форма
-- [ ] Изображения, несущие информацию, имеют текстовую альтернативу в слое `spec:alt`
-- [ ] Декоративные изображения помечены `spec:decorative` — их не читает screen reader
-- [ ] Текст на изображении читаем при любом варианте изображения (или есть подложка)
+- [ ] Contrast of every text pair passes in **every** mode (`domain/color.spec.md`)
+- [ ] Contrast of icons and borders that carry meaning is at least 3:1
+- [ ] Meaning is **not** conveyed by color alone — an icon, text, or shape backs it up
+- [ ] Informative images carry a text alternative in a `spec:alt` layer
+- [ ] Decorative images are marked `spec:decorative` — screen readers skip them
+- [ ] Text over an image stays readable for any variant of that image (or has a scrim)
 
-### Управление
+### Operable
 
-- [ ] Тач-таргет ≥44×44pt; при визуально меньшем элементе увеличенная область указана слоем `spec:hit-area`
-- [ ] Соседние тач-таргеты разделены ≥8pt
-- [ ] Каждый интерактивный элемент имеет видимое состояние `focused` с контрастом ≥3:1
-- [ ] Порядок фокуса задан в макете слоем `spec:focus-order` для нетривиальных раскладок
-- [ ] Есть путь клавиатурой ко всему функционалу; нет ловушек фокуса в модальных окнах
-- [ ] Жесты (свайп, долгое нажатие, drag) продублированы обычной кнопкой
+- [ ] Touch targets are at least 44×44pt; where the element looks smaller, the enlarged region is marked `spec:hit-area`
+- [ ] Adjacent touch targets are separated by at least 8pt
+- [ ] Every interactive element has a visible `focused` state with contrast of at least 3:1
+- [ ] Focus order is set in the design via `spec:focus-order` for non-trivial layouts
+- [ ] Everything is reachable by keyboard; modals contain no focus traps
+- [ ] Gestures (swipe, long press, drag) have a plain button equivalent
 
-### Понимание
+### Understandable
 
-- [ ] Каждое поле формы имеет **видимую** метку; placeholder меткой не является
-- [ ] Ошибка описана текстом рядом с полем, а не только цветом рамки
-- [ ] Обязательность полей помечена текстом, не только звёздочкой
-- [ ] Формат ввода объяснён **до** ошибки, а не после
-- [ ] Язык интерфейса консистентен; аббревиатуры расшифрованы при первом появлении
+- [ ] Every form field has a **visible** label; a placeholder is not a label
+- [ ] Errors are described in text next to the field, not by border color alone
+- [ ] Required fields are marked with text, not only an asterisk
+- [ ] Input format is explained **before** the error, not after
+- [ ] Interface language is consistent; abbreviations are expanded on first use
 
-### Устойчивость
+### Robust
 
-- [ ] Раскладка выдерживает увеличение шрифта до 200% (`domain/typography.spec.md`)
-- [ ] Раскладка выдерживает масштабирование страницы до 200% без горизонтального скролла
-- [ ] Анимации имеют вариант для `prefers-reduced-motion`; нет мигания чаще 3 раз в секунду
-- [ ] Таймауты продлеваемы или отсутствуют
+- [ ] The layout survives font scaling to 200% (`domain/typography.spec.md`)
+- [ ] The layout survives page zoom to 200% without horizontal scrolling
+- [ ] Animations have a `prefers-reduced-motion` variant; nothing flashes more than three times per second
+- [ ] Timeouts are extendable or absent
 
-## Аннотации для разработки
+## Annotations for engineering
 
-Дизайн отвечает за то, чтобы разработчик знал, что реализовывать. В макет добавляются слои `spec:`:
+Design is responsible for making sure the engineer knows what to build. Add `spec:` layers:
 
-| Слой | Содержит |
+| Layer | Contains |
 |---|---|
-| `spec:alt` | текстовая альтернатива изображения |
-| `spec:label` | доступное имя, если оно отличается от видимого текста (иконка-кнопка) |
-| `spec:role` | роль элемента, если она неочевидна (`tab`, `dialog`, `alert`) |
-| `spec:focus-order` | порядок обхода, если он не совпадает с визуальным |
-| `spec:live` | область, об изменении которой объявляет screen reader (счётчик корзины, статус загрузки) |
-| `spec:hit-area` | увеличенная область нажатия |
+| `spec:alt` | text alternative for an image |
+| `spec:label` | accessible name when it differs from the visible text (icon button) |
+| `spec:role` | element role when it is not obvious (`tab`, `dialog`, `alert`) |
+| `spec:focus-order` | traversal order when it differs from the visual one |
+| `spec:live` | a region whose changes a screen reader announces (cart counter, upload status) |
+| `spec:hit-area` | the enlarged tap region |
 
-Иконка-кнопка без `spec:label` — CRITICAL: для screen reader это безымянная кнопка.
+An icon button without `spec:label` is CRITICAL: to a screen reader it is an unnamed button.
 
-## Модальные окна и оверлеи
+## Modals and overlays
 
-- Фокус переходит внутрь при открытии и возвращается на инициатора при закрытии
-- Есть явная кнопка закрытия — не только клик по подложке и Esc
-- Фон под оверлеем недоступен для взаимодействия и это видно визуально
+- Focus moves inside on open and returns to the trigger on close
+- There is an explicit close button — not only a backdrop click and Esc
+- Content behind the overlay is non-interactive, and that reads visually
 
 ## Findings
 
-| Код | Severity | Когда |
+| Code | Severity | When |
 |---|---|---|
-| `A11Y` | MINOR | не расшифрована аббревиатура; нет `spec:role` для очевидного элемента |
-| `A11Y` | IMPORTANT | тач-таргет 32–44pt; нет `spec:focus-order` в сложной раскладке; жест без альтернативы |
-| `A11Y` | CRITICAL | нет видимого `focused`; иконка-кнопка без `spec:label`; поле без видимой метки; контраст основного текста ниже нормы; ловушка фокуса |
+| `A11Y` | MINOR | unexpanded abbreviation; missing `spec:role` on an obvious element |
+| `A11Y` | IMPORTANT | touch target between 32 and 44pt; missing `spec:focus-order` in a complex layout; a gesture with no alternative |
+| `A11Y` | CRITICAL | no visible `focused`; icon button without `spec:label`; field without a visible label; body-text contrast below the bar; a focus trap |
 
-Любой CRITICAL `A11Y` — Tier 2 hard stop (`workflows/decision-gates.spec.md`).
+Any CRITICAL `A11Y` is a Tier 2 hard stop (`workflows/decision-gates.spec.md`).
 
 ## Cross-refs
 
-- domain/color.spec.md — контраст
-- domain/states.spec.md — состояние focused
-- domain/typography.spec.md — динамический шрифт
-- domain/layout.spec.md — тач-таргеты, безопасные зоны
-- domain/handoff.spec.md — передача аннотаций в разработку
+- domain/color.spec.md — contrast
+- domain/states.spec.md — the focused state
+- domain/typography.spec.md — dynamic type
+- domain/layout.spec.md — touch targets, safe areas
+- domain/handoff.spec.md — carrying annotations into engineering

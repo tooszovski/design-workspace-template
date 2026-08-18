@@ -1,45 +1,45 @@
 # Worklog · ACM-142
 
-### 11.02 10:05 — START
-Mode: standard. ТЗ: Projects/AcmeShop/ТЗ/каталог-фильтры.md. Версия ДС на `📐 Cover`: 2.3.0.
+### Feb 11, 10:05 — START
+Mode: standard. Requirements: Projects/AcmeShop/Requirements/catalog-filters.md. DS version on `📐 Cover`: 2.3.0.
 
-### 11.02 10:40 — CLARIFY
-Отправлено 3 вопроса (Q1–Q3). Работаю по умолчаниям, не блокируюсь.
+### Feb 11, 10:40 — CLARIFY
+Sent three questions (Q1–Q3). Proceeding on defaults, not blocking.
 
-### 11.02 14:20 — CLARIFY ответы получены
-Q1 → сразу (как и предполагали). Q2 → **да, до конца дня** — расходится с умолчанием. Q3 → без ограничения.
+### Feb 11, 14:20 — CLARIFY answers received
+Q1 → instantly (as expected). Q2 → **yes, until end of day** — diverges from the default. Q3 → unlimited.
 
-### 11.02 14:25 — DRIFT: ответ на Q2 добавил требование R5 (сохранение фильтров между сессиями). Scope расширен на восстановление состояния при возврате. Mode остаётся standard: новых экранов не появилось.
+### Feb 11, 14:25 — DRIFT: the answer to Q2 added requirement R5 (filters persist between sessions). Scope now includes state restoration on return. Mode stays standard: no new screens appeared.
 
-### 11.02 15:10 — AUTO: панель фильтров собираю из Sheet/Bottom + Chip/Filter, новых компонентов не завожу — есть всё нужное
+### Feb 11, 15:10 — AUTO: building the filter panel from Sheet/Bottom plus Chip/Filter, no new components — everything needed exists
 
-### 12.02 09:30 — Структура
-Каркас каталога на трёх брейкпоинтах. Вопрос: куда девать фильтры на мобильном — три варианта, ухожу в DDR.
+### Feb 12, 09:30 — Structure
+Catalog skeleton across three breakpoints. Open question: where filters go on mobile — three options, moving to a DDR.
 
-### 12.02 11:00 — DDR-007 accepted: bottom sheet, не отдельный экран. Причина — сохранение контекста списка.
+### Feb 12, 11:00 — DDR-007 accepted: bottom sheet, not a separate screen. Reason: keeping the list in context.
 
-### 12.02 11:45 — STATES 4a
-Матрица заполнена. empty, empty-filtered, loading, error, offline, data — собираем. partial — н/п (список грузится одной страницей). success — не требуется.
+### Feb 12, 11:45 — STATES 4a
+Matrix filled. empty, empty-filtered, loading, error, offline, data — all to be built. partial — n/a (the list arrives as one page). success — not required.
 
-### 12.02 16:30 — STATES 4b
-Собраны все шесть состояний × 3 брейкпоинта = 18 фреймов. Скелетон повторяет сетку карточек, чтобы не было скачка.
+### Feb 12, 16:30 — STATES 4b
+Built all six states × 3 breakpoints = 18 frames. The skeleton mirrors the card grid so nothing jumps.
 
-### 12.02 16:50 — STATES 4c
-Сверил матрицу с Figma: все ✅ имеют фреймы. Расхождений нет.
+### Feb 12, 16:50 — STATES 4c
+Reconciled the matrix against Figma: every ✅ has a frame. No mismatches.
 
-### 13.02 10:15 — Полировка закончена. Тексты состояний написаны, термины сверены со словарём.
+### Feb 13, 10:15 — Polish complete. State copy written, terms checked against the glossary.
 
-### 13.02 11:00 — /design.audit
-2 critical, 3 important, 1 minor. Critical: чипсы фильтра без focused; контраст вторичного текста на карточке 4.1:1 в тёмной теме. Закрываю до ревью.
+### Feb 13, 11:00 — /design.audit
+2 critical, 3 important, 1 minor. Criticals: filter chips lack focused; secondary card text sits at 4.1:1 in dark theme. Closing both before review.
 
-### 13.02 12:30 — audit чист по critical
+### Feb 13, 12:30 — audit clean of criticals
 
-### 13.02 14:00 — REVIEW
-Три ревьюера параллельно. Итог: 1 critical (текст empty-filtered ведёт в тупик), 4 important, 2 minor.
+### Feb 13, 14:00 — REVIEW
+Three reviewers in parallel. Result: 1 critical (empty-filtered copy dead-ends), 4 important, 2 minor.
 
-### 13.02 15:20 — Critical закрыт: «Ничего не найдено» → «Под фильтры ничего не подошло. Сбросить фильтры». 3 important закрыты, 1 обоснован: плотность сетки на 768–1279 оставляю 3 колонки, 4 не влезают без обрезки названия.
+### Feb 13, 15:20 — Critical closed: "Nothing found" → "Nothing matched your filters. Clear filters". Three importants closed, one justified: keeping 3 columns at 768–1279 because 4 clip product names.
 
-### 13.02 16:40 — HANDOFF
-handoff.md написан. Гейты G1–G6 пройдены. Открытых вопросов ноль.
+### Feb 13, 16:40 — HANDOFF
+handoff.md written. Gates G1–G6 passed. Zero open questions.
 
-### 13.02 17:00 — DONE: каталог с фильтрами, 6 состояний × 3 брейкпоинта, DDR-007 по bottom sheet, handoff передан
+### Feb 13, 17:00 — DONE: catalog with filters, 6 states × 3 breakpoints, DDR-007 on the bottom sheet, handoff delivered

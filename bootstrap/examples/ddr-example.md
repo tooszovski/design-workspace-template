@@ -1,4 +1,4 @@
-# DDR-007 · Фильтры в bottom sheet на мобильных, а не отдельным экраном
+# DDR-007 · Filters in a bottom sheet on mobile, not a separate screen
 
 ```yaml
 ddr_id: DDR-007
@@ -8,56 +8,56 @@ supersedes: -
 date: 2026-02-12
 ```
 
-## Контекст
+## Context
 
-На мобильном брейкпоинте панель фильтров не помещается рядом со списком. Нужно решить, куда её деть.
+At the mobile breakpoint the filter panel does not fit alongside the list. We need to decide where it goes.
 
-Ограничения на момент решения:
+Constraints in force at the time:
 
-- В Acme DS есть `Sheet/Bottom`, отдельного полноэкранного контейнера с шапкой нет — его пришлось бы заводить.
-- Разработка просила не добавлять новых экранов в навигацию: это тянет за собой роутинг и восстановление состояния.
-- В Android-приложении Acme 4.2 фильтры сделаны отдельным экраном, и пользователи в поддержку жалуются, что теряют список.
+- Acme DS has `Sheet/Bottom`; there is no full-screen container with a header, so we would have to build one.
+- Engineering asked us not to add screens to the navigation: that pulls in routing and state restoration.
+- In the Acme 4.2 Android app filters are a separate screen, and support tickets say users lose track of the list.
 
-## Варианты
+## Options
 
-### A — Bottom sheet поверх списка
-Панель выезжает снизу на 80% высоты, список виден за подложкой.
-**Плюсы:** список остаётся в поле зрения, есть готовый компонент, не трогаем навигацию, результат виден сразу при применении.
-**Минусы:** при большом числе фильтров внутри sheet появляется свой скролл; на маленьких экранах места мало.
+### A — Bottom sheet over the list
+The panel slides up to 80% height; the list stays visible behind the scrim.
+**Pros:** the list stays in view, the component already exists, navigation is untouched, and the result is visible the moment a filter is applied.
+**Cons:** with many filters the sheet gains its own scroll; on short screens there is little room.
 
-### B — Отдельный экран фильтров
-Переход на полноэкранную страницу, применение по кнопке, возврат к списку.
-**Плюсы:** много места, привычно по Android-приложению.
-**Минусы:** нужен новый компонент контейнера, новый маршрут, восстановление состояния при возврате; повторяет то, на что уже жалуются в поддержке.
+### B — A separate filters screen
+Navigate to a full-screen page, apply with a button, return to the list.
+**Pros:** plenty of room, familiar from the Android app.
+**Cons:** needs a new container component, a new route, and state restoration on return; it repeats exactly what support tickets complain about.
 
-### C — Оставить как есть, фильтры только на десктопе
-**Плюсы:** нулевая стоимость.
-**Минусы:** 70% трафика мобильный — задача не решается.
+### C — Leave it, filters on desktop only
+**Pros:** zero cost.
+**Cons:** 70% of traffic is mobile — the problem goes unsolved.
 
-## Решение
+## Decision
 
-Выбран **A — bottom sheet**.
+**A — the bottom sheet** was chosen.
 
-Перевесила связь между действием и результатом: пользователь видит, как список меняется под фильтром, и не теряет контекст. Именно потеря контекста — то, на что жалуются в Android-приложении, где сделан вариант B. Экономия на новом компоненте и маршруте — приятный, но не решающий аргумент.
+What tipped it was the link between action and result: the user watches the list change under the filter and never loses context. Losing context is precisely what people complain about in the Android app, which implements option B. Saving a new component and a new route is a welcome bonus, but not the deciding argument.
 
-## Последствия
+## Consequences
 
-**Хорошие:**
-- Не заводим новый компонент и новый маршрут
-- Результат фильтрации виден мгновенно, что закрывает жалобы из поддержки
-- Одинаковый паттерн с уже существующей сортировкой, которая тоже в sheet
+**Good:**
+- No new component and no new route
+- Filtering results are visible instantly, which closes the support complaints
+- The pattern matches the existing sorting control, which is also a sheet
 
-**Плохие:**
-- При росте числа фильтров до 8+ внутри sheet станет тесно; понадобится группировка или переход к варианту B
-- На экранах ниже 640pt высотой sheet занимает почти всё — список за ним почти не виден, преимущество частично теряется
+**Bad:**
+- Once filters grow past eight, the sheet gets cramped; we will need grouping or a move to option B
+- On screens shorter than 640pt the sheet covers almost everything — the list behind it is barely visible and the advantage partly evaporates
 
-**Затронутые потребители:**
+**Affected consumers:**
 
-| Экран / компонент | Что нужно сделать | Задача |
+| Screen / component | What needs doing | Task |
 |---|---|---|
-| `Sheet/Bottom` | ничего, используется как есть | — |
-| Каталог Android-приложения | привести к общему паттерну | ACM-158 |
+| `Sheet/Bottom` | nothing, used as-is | — |
+| Android app catalog | align with the shared pattern | ACM-158 |
 
-## Когда пересмотреть
+## When to revisit
 
-Если число фильтров в категории превысит 8 либо появится вложенная фильтрация (фильтр внутри фильтра) — вариант A перестанет работать, возвращаемся к B с новым компонентом.
+If a category exceeds eight filters, or nested filtering appears (a filter inside a filter), option A stops working and we return to B with a new component.

@@ -1,63 +1,63 @@
 ---
 name: commits
 layer: core
-purpose: Conventional Commits для дизайн-репозитория, scopes, автор, язык
+purpose: Conventional Commits for a design repository — scopes, author, language
 always_loaded: true
 owner: design-lead
 ---
 
 # Commits
 
-## Формат
+## Format
 
 ```
-<type>(<scope>): <краткое описание>
+<type>(<scope>): <short description>
 ```
 
-Одна строка. **Без body**, без списков, без «why» — контекст живёт в `worklog.md` задачи, не в git.
+One line. **No body**, no bullet lists, no "why" — context lives in the task's `worklog.md`, not in git.
 
-Язык описания — `<COMMIT_LANGUAGE>`. Автор — `<GIT_USER_NAME> <<GIT_USER_EMAIL>>`.
+Description language is `<COMMIT_LANGUAGE>`. Author is `<GIT_USER_NAME> <<GIT_USER_EMAIL>>`.
 
 ## Types
 
-| Type | Когда |
+| Type | When |
 |---|---|
-| `feat` | новая спека, новый компонент, новое правило |
-| `fix` | исправление ошибки в спеке или токенах |
-| `docs` | README, комментарии, примеры |
-| `refactor` | переструктурирование спек без изменения смысла |
-| `chore` | скрипты, конфиги, зависимости |
-| `tokens` | обновление экспортированных токенов |
+| `feat` | a new spec, a new component, a new rule |
+| `fix` | correcting an error in a spec or in tokens |
+| `docs` | README, comments, examples |
+| `refactor` | restructuring specs without changing meaning |
+| `chore` | scripts, configs, dependencies |
+| `tokens` | updating exported tokens |
 
 ## Scopes
 
-| Scope | Область |
+| Scope | Area |
 |---|---|
 | `core` | `specs/core/*` |
 | `domain` | `specs/domain/*` |
 | `workflow` | `specs/workflows/*` |
-| `ds` | правила дизайн-системы |
-| `a11y` | доступность |
-| `handoff` | спеки для разработки |
-| `tokens` | экспорт токенов |
-| `tooling` | скрипты, `.claude/`, MCP |
+| `ds` | design-system rules |
+| `a11y` | accessibility |
+| `handoff` | specs for engineering |
+| `tokens` | token export |
+| `tooling` | scripts, `.claude/`, MCP |
 
-## Примеры
+## Examples
 
 ```
-feat(domain): добавить спеку состояний для форм
-fix(a11y): поправить минимальный контраст для disabled
-tokens(ds): обновить semantic-палитру до v2.3
-docs(handoff): пример заполнения спеки экрана
+feat(domain): add form state spec
+fix(a11y): correct minimum contrast for disabled
+tokens(ds): update semantic palette to v2.3
+docs(handoff): worked example of a screen spec
 ```
 
-## Запрещено
+## Forbidden
 
-- **Упоминания AI, агентов, Claude, Codex** в сообщениях и в авторе коммита.
-- Соавторство-трейлеры вида `Co-Authored-By: <бот>`.
-- Мусорные сообщения: `update`, `wip`, `fixes`, `.`.
-- Многострочные сообщения с перечислением всего сделанного — это признак того, что коммит надо разбить.
+- **Mentions of AI, agents, Claude, Codex** in messages or in the commit author.
+- Co-authorship trailers naming a bot.
+- Junk messages: `update`, `wip`, `fixes`, `.`.
+- Multi-line messages enumerating everything done — that is a sign the commit should be split.
 
 ## Cross-refs
 
-- core/git-policy.spec.md — что не коммитить, ветки
+- core/git-policy.spec.md — what not to commit, branches

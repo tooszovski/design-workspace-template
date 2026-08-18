@@ -1,11 +1,11 @@
 ---
 name: quick-template
 kind: template
-purpose: Тонкая спека для Quick-режима — правка 1-2 фреймов без новых компонентов и состояний
+purpose: Thin spec for Quick mode — editing 1-2 frames with no new components or states
 owner: design-lead
 ---
 
-# <PROJECT_PREFIX>-NNN · <Название>
+# <PROJECT_PREFIX>-NNN · <Title>
 
 ```yaml
 task_id: <PROJECT_PREFIX>-NNN
@@ -14,25 +14,25 @@ figma_file: <FIGMA_PRODUCT_FILE_KEY>
 figma_nodes: [<node-id>]
 ```
 
-## Что меняем
+## What changes
 
-Одно-два предложения.
+One or two sentences.
 
-## Почему
+## Why
 
-Одно предложение.
+One sentence.
 
-## Границы
+## Boundaries
 
-Только фреймы: `<перечислить>`. Всё остальное не трогаем.
+Only these frames: `<list>`. Nothing else is touched.
 
-## Проверка
+## Checks
 
-- [ ] `/design.audit` без CRITICAL
-- [ ] Существующие состояния не сломаны
-- [ ] Ничего не отцепилось от ДС
-- [ ] `worklog.md` закрыт `— DONE: ...`
+- [ ] `/design.audit` reports no CRITICALs
+- [ ] Existing states are not broken
+- [ ] Nothing came detached from the DS
+- [ ] `worklog.md` closed with `— DONE: ...`
 
-## Эскалация
+## Escalation
 
-Если по ходу выяснилось, что нужен новый компонент, появилось новое состояние, всплыл продуктовый вопрос или правка потянула соседние экраны — **остановиться** и перейти на `DESIGN-TASK-TEMPLATE.spec.md` с mode `standard`. Запись в worklog: `— ESCALATE Quick→Standard, причина: ...`.
+If it turns out that a new component is needed, a new state appeared, a product question surfaced, or the edit pulled in neighboring screens — **stop** and switch to `DESIGN-TASK-TEMPLATE.spec.md` with mode `standard`. Worklog entry: `— ESCALATE Quick→Standard, reason: ...`.

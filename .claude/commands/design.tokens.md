@@ -1,37 +1,37 @@
 ---
-description: Выгрузить Figma variables в design tokens и трансформировать под платформы
+description: Export Figma variables to design tokens and transform them per platform
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash, mcp__figma__get_figma_data
 ---
 
 # /design.tokens
 
-Экспорт `<FIGMA_DS_FILE_KEY>` → `exports/tokens/` → `<TOKENS_EXPORT_PATH>`.
+Export `<FIGMA_DS_FILE_KEY>` → `exports/tokens/` → `<TOKENS_EXPORT_PATH>`.
 
-## Предусловия
+## Preconditions
 
-- Библиотека опубликована. Экспорт до публикации выгрузит неопубликованные значения.
-- Есть доступ к файлу ДС через MCP.
+- The library is published. Exporting before publication ships unpublished values.
+- MCP can reach the DS file.
 
-## Шаг 1 — Выгрузка
+## Step 1 — Export
 
-`mcp__figma__get_figma_data` по файлу `<FIGMA_DS_FILE_KEY>`. Собрать коллекции: `Primitives`, `Semantic`, `Spacing`, `Radius`, `Typography` (`domain/variables.spec.md`).
+Call `mcp__figma__get_figma_data` on file `<FIGMA_DS_FILE_KEY>`. Collect the collections: `Primitives`, `Semantic`, `Spacing`, `Radius`, `Typography` (`domain/variables.spec.md`).
 
-Для каждой переменной зафиксировать: имя, тип, значение в каждом режиме, алиас (если ссылается на другую), описание.
+For each variable, record the name, the type, the value in every mode, the alias (if it references another), and the description.
 
-## Шаг 2 — Проверка перед записью
+## Step 2 — Pre-write checks
 
-| Проверка | Действие при провале |
+| Check | Action on failure |
 |---|---|
-| Переменная без значения в одном из режимов | CRITICAL, остановиться: в этой теме экраны сломаются |
-| Semantic содержит сырой hex вместо алиаса | IMPORTANT, вынести в отчёт |
-| Цепочка алиасов длиннее двух шагов | MINOR |
-| Имя вне контракта `core/naming.spec.md` | IMPORTANT |
+| A variable with no value in one of the modes | CRITICAL, stop: screens break in that theme |
+| Semantic holding a raw hex instead of an alias | IMPORTANT, put it in the report |
+| Alias chain longer than two hops | MINOR |
+| A name off the `core/naming.spec.md` contract | IMPORTANT |
 
-Экспортировать при CRITICAL нельзя — сломанное значение уедет в код.
+Exporting with a CRITICAL outstanding is forbidden — the broken value would reach the code.
 
-## Шаг 3 — Запись в DTCG
+## Step 3 — Write DTCG
 
-`exports/tokens/<collection>.json`, формат `$value` / `$type` / `$description`:
+`exports/tokens/<collection>.json`, in `$value` / `$type` / `$description` form:
 
 ```json
 {
@@ -39,50 +39,50 @@ allowed-tools: Read, Write, Edit, Grep, Glob, Bash, mcp__figma__get_figma_data
     "primary": {
       "$type": "color",
       "$value": "{color.blue.500}",
-      "$description": "Основное действие на экране"
+      "$description": "Primary action on a screen"
     }
   }
 }
 ```
 
-Обязательно:
+Mandatory:
 
-- Алиасы остаются ссылками `{path.to.token}` — **не разворачивать** в значения.
-- Ключи `kebab-case`, порядок алфавитный.
-- Никаких таймстемпов и случайного порядка внутри файла: повторный запуск на неизменённом файле обязан дать побайтово тот же результат.
-- Режимы — по схеме, зафиксированной в `domain/tokens-export.spec.md` при init.
+- Aliases stay as `{path.to.token}` references — **never resolve** them into values.
+- Keys in `kebab-case`, alphabetical order.
+- No timestamps and no random ordering inside the file: rerunning on an unchanged file must produce a byte-identical result.
+- Modes follow the scheme fixed in `domain/tokens-export.spec.md` at init.
 
-## Шаг 4 — Трансформация
+## Step 4 — Transform
 
-Только если задан `<TOKENS_EXPORT_PATH>`. Для каждой платформы из `<PLATFORMS>`:
+Only when `<TOKENS_EXPORT_PATH>` is set. For each platform in `<PLATFORMS>`:
 
-| Платформа | Выход |
+| Platform | Output |
 |---|---|
-| Web | CSS custom properties + JS-объект; темы через `[data-theme]` |
-| iOS | Swift-константы или Asset Catalog с light/dark |
-| Android | `colors.xml`, `dimens.xml` или Compose |
+| Web | CSS custom properties plus a JS object; themes via `[data-theme]` |
+| iOS | Swift constants or an Asset Catalog with light and dark |
+| Android | `colors.xml`, `dimens.xml`, or Compose |
 
-Трансформация меняет **только синтаксис**. Не добавлять значений, которых нет в Figma, и не переименовывать.
+A transform changes **syntax only**. It adds no values Figma does not have and renames nothing.
 
-## Шаг 5 — Дифф
+## Step 5 — Diff
 
-Сравнить с предыдущей версией в `<TOKENS_EXPORT_PATH>` и классифицировать (`workflows/versioning.spec.md`):
+Compare against the previous version in `<TOKENS_EXPORT_PATH>` and classify (`workflows/versioning.spec.md`):
 
-| Изменение | Категория |
+| Change | Category |
 |---|---|
-| новый токен | additive |
-| изменено значение | modifying |
-| удалён или переименован токен | **breaking** |
+| new token | additive |
+| changed value | modifying |
+| removed or renamed token | **breaking** |
 
-Breaking → не записывать молча. Показать список, потребовать подтверждения, напомнить про DDR и changelog.
+Breaking → do not write silently. Show the list, require confirmation, and remind about the DDR and the changelog.
 
-## Шаг 6 — Отчёт
+## Step 6 — Report
 
 ```
 Signal: COMPLETE | FAIL
 Checkpoint: exports/tokens/REPORT.md
-Токенов: N · Добавлено: A · Изменено: M · Удалено: D
-Категория изменения: additive | modifying | breaking
+Tokens: N · Added: A · Changed: M · Removed: D
+Change category: additive | modifying | breaking
 ```
 
-Запись в `<TOKENS_EXPORT_PATH>` идёт через pull request, не прямым коммитом: разработка должна увидеть дифф.
+Writing to `<TOKENS_EXPORT_PATH>` goes through a pull request, not a direct commit: engineering has to see the diff.

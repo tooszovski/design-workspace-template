@@ -2,16 +2,16 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # design-workspace — validate-specs.sh
 #
-# Проверяет целостность spec-структуры по контракту specs/LOADER.md:
-#   • обязательные поля frontmatter
-#   • layer соответствует директории
-#   • нет forbidden fields
-#   • loaded_for_modes только quick/standard/full
-#   • шаблоны имеют kind: template
-#   • cross-refs резолвятся в существующие файлы
-#   • не осталось placeholder'ов <UPPER_CASE>
+# Checks spec-structure integrity against the specs/LOADER.md contract:
+#   • required frontmatter fields
+#   • layer matches the directory
+#   • no forbidden fields
+#   • loaded_for_modes limited to quick/standard/full
+#   • templates carry kind: template
+#   • cross-refs resolve to existing files
+#   • no <UPPER_CASE> placeholders remain
 #
-# Запускать после любого изменения frontmatter или переименования спек.
+# Run after any frontmatter change or spec rename.
 # ─────────────────────────────────────────────────────────────────────────────
 
 set -uo pipefail
@@ -30,9 +30,9 @@ warn() { printf "${C_YELLOW}!${C_OFF} %s\n" "$1"; WARNINGS=$((WARNINGS+1)); }
 ok()   { printf "${C_GREEN}✓${C_OFF} %s\n" "$1"; }
 sect() { printf "\n${C_BOLD}${C_BLUE}==> %s${C_OFF}\n" "$1"; }
 
-[[ -d "$SPECS_DIR" ]] || { printf "${C_RED}specs/ не найден в %s${C_OFF}\n" "$WORKSPACE_DIR"; exit 1; }
+[[ -d "$SPECS_DIR" ]] || { printf "${C_RED}specs/ not found in %s${C_OFF}\n" "$WORKSPACE_DIR"; exit 1; }
 
-# Извлекает значение поля из frontmatter (первый блок между --- ... ---)
+# Extracts a field value from frontmatter (the first --- ... --- block)
 fm_get() {
     awk -v key="$2" '
         NR==1 && $0=="---" { inside=1; next }
@@ -45,7 +45,7 @@ fm_get() {
 
 has_frontmatter() { [[ "$(head -1 "$1")" == "---" ]]; }
 
-# ─── 1. Frontmatter спек ─────────────────────────────────────────────────────
+# ─── Spec frontmatter ────────────────────────────────────────────────────────
 sect "Frontmatter: core / domain / workflows"
 
 FORBIDDEN_FIELDS="symbols always_for_orchestrator triggers_on_task_attachments"
@@ -59,18 +59,18 @@ for layer_dir in core domain workflows; do
         [[ -e "$f" ]] || continue
         rel="${f#$WORKSPACE_DIR/}"
 
-        has_frontmatter "$f" || { err "$rel — нет frontmatter"; continue; }
+        has_frontmatter "$f" || { err "$rel — no frontmatter"; continue; }
 
         for field in name layer purpose owner; do
-            [[ -n "$(fm_get "$f" "$field")" ]] || err "$rel — нет обязательного поля '$field'"
+            [[ -n "$(fm_get "$f" "$field")" ]] || err "$rel — missing required field '$field'"
         done
 
         actual_layer=$(fm_get "$f" layer)
         [[ "$actual_layer" == "$expected_layer" ]] || \
-            err "$rel — layer '$actual_layer', ожидался '$expected_layer'"
+            err "$rel — layer '$actual_layer', expected '$expected_layer'"
 
         for bad in $FORBIDDEN_FIELDS; do
-            grep -qE "^\s{0,4}${bad}:" "$f" && err "$rel — forbidden field '$bad' (см. LOADER.md)"
+            grep -qE "^\s{0,4}${bad}:" "$f" && err "$rel — forbidden field '$bad' (see LOADER.md)"
         done
 
         if grep -q "loaded_for_modes:" "$f"; then
@@ -78,42 +78,42 @@ for layer_dir in core domain workflows; do
             for m in $(printf '%s' "$modes" | tr -d '[]",' ); do
                 case "$m" in
                     quick|standard|full|"") ;;
-                    *) err "$rel — недопустимый mode '$m' (только quick/standard/full)" ;;
+                    *) err "$rel — invalid mode '$m' (only quick/standard/full)" ;;
                 esac
             done
         fi
 
         if [[ "$layer_dir" == "core" ]]; then
             [[ "$(fm_get "$f" always_loaded)" == "true" ]] || \
-                warn "$rel — core-спека без 'always_loaded: true'"
+                warn "$rel — core spec without 'always_loaded: true'"
         fi
     done
 done
 
 SPEC_COUNT=$(find "$SPECS_DIR"/{core,domain,workflows} -name '*.spec.md' 2>/dev/null | wc -l | tr -d ' ')
-ok "проверено спек: $SPEC_COUNT"
+ok "specs checked: $SPEC_COUNT"
 
-# ─── 2. Шаблоны ──────────────────────────────────────────────────────────────
-sect "Шаблоны: per-task / per-epic"
+# ─── Templates ───────────────────────────────────────────────────────────────
+sect "Templates: per-task / per-epic"
 
 for f in "$SPECS_DIR"/per-task/*.md "$SPECS_DIR"/per-epic/*.md; do
     [[ -e "$f" ]] || continue
     base=$(basename "$f")
     [[ "$base" == "README.md" ]] && continue
     rel="${f#$WORKSPACE_DIR/}"
-    has_frontmatter "$f" || { err "$rel — нет frontmatter"; continue; }
-    [[ "$(fm_get "$f" kind)" == "template" ]] || err "$rel — нет 'kind: template'"
+    has_frontmatter "$f" || { err "$rel — no frontmatter"; continue; }
+    [[ "$(fm_get "$f" kind)" == "template" ]] || err "$rel — missing 'kind: template'"
 done
-ok "шаблоны проверены"
+ok "templates checked"
 
-# ─── 3. Cross-refs ───────────────────────────────────────────────────────────
+# ─── Cross-refs ──────────────────────────────────────────────────────────────
 sect "Cross-refs"
 
 BROKEN=0
 while IFS= read -r line; do
     src="${line%%:*}"
     ref="${line#*:}"
-    [[ -f "$SPECS_DIR/$ref" ]] || { err "${src#$WORKSPACE_DIR/} → отсутствует specs/$ref"; BROKEN=$((BROKEN+1)); }
+    [[ -f "$SPECS_DIR/$ref" ]] || { err "${src#$WORKSPACE_DIR/} → missing specs/$ref"; BROKEN=$((BROKEN+1)); }
 done < <(
     grep -rhoE '^.*$' /dev/null 2>/dev/null
     for f in $(find "$SPECS_DIR" -name '*.md'); do
@@ -121,15 +121,15 @@ done < <(
             | sort -u | sed "s|^|$f:|"
     done
 )
-(( BROKEN == 0 )) && ok "все ссылки резолвятся"
+(( BROKEN == 0 )) && ok "every reference resolves"
 
-# ─── 4. Placeholders ─────────────────────────────────────────────────────────
+# ─── Placeholders ────────────────────────────────────────────────────────────
 sect "Placeholders"
 
-# Токены-примеры в документации — не настоящие placeholder'ы
-DOC_TOKENS='<FILE_KEY>|<NODE_ID>|<UPPER_CASE>|<VAULT>|<KEY>|<MAJOR>|<MINOR>|<PATCH>'
+# Documentation example tokens — not real placeholders
+DOC_TOKENS='<FILE_KEY>|<NODE_ID>|<UPPER_CASE>|<VAULT>|<KEY>|<MAJOR>|<MINOR>|<PATCH>|<CODE>|<N>'
 
-# Опциональные: остаются незаполненными, если соответствующий модуль выключен
+# Optional: left unfilled when the corresponding module is off
 OPT_TOKENS='<CODE_REPO_PATH>|<TOKENS_EXPORT_PATH>|<REFERENCE_PLATFORM>|<FIGMA_DS_FILE_KEY>|<FIGMA_PRODUCT_FILE_KEY>'
 
 ALL=$(grep -rhoE '<[A-Z][A-Z_]{2,}>' "$SPECS_DIR" "$WORKSPACE_DIR/CLAUDE.md" "$WORKSPACE_DIR/README.md" 2>/dev/null \
@@ -138,33 +138,33 @@ REQUIRED=$(printf '%s' "$ALL" | grep -vE "^($OPT_TOKENS)$" || true)
 OPTIONAL=$(printf '%s' "$ALL" | grep -E "^($OPT_TOKENS)$" || true)
 
 if [[ -n "$REQUIRED" ]]; then
-    warn "workspace не настроен — не заполнены обязательные placeholder'ы:"
+    warn "workspace not configured — required placeholders are unfilled:"
     printf "${C_DIM}%s${C_OFF}\n" "$(printf '%s' "$REQUIRED" | sed 's/^/    /')"
-    printf "${C_DIM}    запустите /design.init или ./scripts/init.sh${C_OFF}\n"
+    printf "${C_DIM}    run /design.init or ./scripts/init.sh${C_OFF}\n"
 else
-    ok "обязательные placeholder'ы заполнены"
+    ok "required placeholders are filled in"
 fi
 
 if [[ -n "$OPTIONAL" ]]; then
-    printf "${C_DIM}    не заполнены опциональные (соответствующие модули выключены):${C_OFF}\n"
+    printf "${C_DIM}    unfilled optional placeholders (those modules are off):${C_OFF}\n"
     printf "${C_DIM}%s${C_OFF}\n" "$(printf '%s' "$OPTIONAL" | sed 's/^/      /')"
 fi
 
-# ─── 5. INDEX ────────────────────────────────────────────────────────────────
+# ─── INDEX ───────────────────────────────────────────────────────────────────
 sect "INDEX.md"
 
 if [[ -f "$SPECS_DIR/INDEX.md" ]]; then
     MISSING_IN_INDEX=0
     for f in $(find "$SPECS_DIR"/{core,domain,workflows} -name '*.spec.md' 2>/dev/null); do
         rel="${f#$SPECS_DIR/}"
-        grep -qF "$rel" "$SPECS_DIR/INDEX.md" || { warn "$rel не упомянут в INDEX.md"; MISSING_IN_INDEX=$((MISSING_IN_INDEX+1)); }
+        grep -qF "$rel" "$SPECS_DIR/INDEX.md" || { warn "$rel is not listed in INDEX.md"; MISSING_IN_INDEX=$((MISSING_IN_INDEX+1)); }
     done
-    (( MISSING_IN_INDEX == 0 )) && ok "все спеки перечислены в INDEX.md"
+    (( MISSING_IN_INDEX == 0 )) && ok "every spec is listed in INDEX.md"
 else
-    err "specs/INDEX.md отсутствует"
+    err "specs/INDEX.md is missing"
 fi
 
-# ─── Итог ────────────────────────────────────────────────────────────────────
-printf "\n${C_BOLD}Итог:${C_OFF} ошибок ${C_RED}%d${C_OFF}, предупреждений ${C_YELLOW}%d${C_OFF}\n" "$ERRORS" "$WARNINGS"
+# ─── Summary ─────────────────────────────────────────────────────────────────
+printf "\n${C_BOLD}Summary:${C_OFF} errors ${C_RED}%d${C_OFF}, warnings ${C_YELLOW}%d${C_OFF}\n" "$ERRORS" "$WARNINGS"
 (( ERRORS > 0 )) && exit 1
 exit 0

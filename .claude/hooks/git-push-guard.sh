@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Блокирует пуш в интеграционную и релизную ветки и любой force-push.
-# Их пушит человек — см. specs/core/git-policy.spec.md.
+# Blocks pushes to the integration and release branches, and any force-push.
+# A human pushes those — see specs/core/git-policy.spec.md.
 
 set -uo pipefail
 
@@ -21,14 +21,14 @@ deny() {
 
 case "$CMD" in
     *--force*|*" -f "*|*--force-with-lease*)
-        deny "Force-push запрещён политикой workspace (specs/core/git-policy.spec.md). Если ветка личная и вы уверены — выполните команду вручную." ;;
+        deny "Force-push is blocked by workspace policy (specs/core/git-policy.spec.md). If the branch is yours alone and you are sure, run the command manually." ;;
 esac
 
 for branch in $PROTECTED; do
     case "$branch" in "<"*">") continue ;; esac
     case "$CMD" in
         *" $branch"*|*":$branch"*)
-            deny "Пуш в защищённую ветку '$branch' запрещён — её пушит человек (specs/core/git-policy.spec.md). Работайте в ветке design/<task-id>-<slug>." ;;
+            deny "Pushing to protected branch '$branch' is blocked — a human pushes it (specs/core/git-policy.spec.md). Work in a design/<task-id>-<slug> branch." ;;
     esac
 done
 

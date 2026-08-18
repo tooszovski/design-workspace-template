@@ -1,113 +1,113 @@
 ---
 name: design-task-template
 kind: template
-purpose: Pre-spec дизайн-задачи для Standard/Full — задача, AC, матрица состояний, guardrails, DoR
+purpose: Pre-spec for a Standard/Full design task — problem, AC, state matrix, guardrails, DoR
 owner: design-lead
 ---
 
-# <PROJECT_PREFIX>-NNN · <Название задачи>
+# <PROJECT_PREFIX>-NNN · <Task title>
 
-> Заполняется до начала работы. Статус `approved` — условие старта шага 2.
+> Filled in before work starts. Status `approved` is the precondition for step 2.
 
 ```yaml
 task_id: <PROJECT_PREFIX>-NNN
-epic_ref: <epic-id или ->
+epic_ref: <epic-id or ->
 mode: standard | full
 status: draft | clarify | approved
 figma_file: <FIGMA_PRODUCT_FILE_KEY>
 figma_nodes: [<node-id>, ...]
-ds_version: <версия библиотеки на старте>
-surfaces: [<экраны>]
-platforms: [<из PLATFORMS>]
+ds_version: <library version at start>
+surfaces: [<screens>]
+platforms: [<from PLATFORMS>]
 attachments: [figma_link | screenshot | reference]
 ```
 
-## 1. Задача пользователя
+## 1. The user problem
 
-Что человек пытается сделать и что ему сейчас мешает. Два-три предложения, без описания решения.
+What the person is trying to do and what currently stops them. Two or three sentences, no solution described.
 
-## 2. Зачем бизнесу
+## 2. Why the business cares
 
-Одно предложение. Если его невозможно написать — задача не приоритизирована.
+One sentence. If it cannot be written, the task has not been prioritized.
 
 ## 3. Scope
 
-**Входит:**
-- <экран / состояние / компонент>
+**In:**
+- <screen / state / component>
 
-**Не входит:**
-- <что явно за границей — этот список защищает от тихого расширения>
+**Out:**
+- <what is explicitly outside — this list is what protects against quiet expansion>
 
-## 4. Требования
+## 4. Requirements
 
-Формат: `Когда <условие>, система <поведение>`.
+Format: `When <condition>, the system <behavior>`.
 
-| # | Требование |
+| # | Requirement |
 |---|---|
-| R1 | Когда список пуст, экран показывает объяснение и действие для добавления первого элемента |
+| R1 | When the list is empty, the screen explains what goes here and offers a way to add the first item |
 | R2 | |
 
-## 5. Критерии приёмки
+## 5. Acceptance criteria
 
-Формат Given / When / Then. Каждый критерий проверяем взглядом на макет.
+Given / When / Then. Every criterion is verifiable by looking at the design.
 
 | # | Given | When | Then |
 |---|---|---|---|
 | AC1 | | | |
 
-## 6. Матрица состояний
+## 6. State coverage matrix
 
-Заполняется на шаге 4a. Значения: `✅` собрано · `н/п` неприменимо (с обоснованием) · `—` не требуется.
+Filled in at step 4a. Values: `✅` built · `n/a` not applicable, with a reason · `—` not required.
 
-| Экран | empty | empty-filtered | loading | partial | error | offline | success | data |
+| Screen | empty | empty-filtered | loading | partial | error | offline | success | data |
 |---|---|---|---|---|---|---|---|---|
 | | | | | | | | | |
 
-**Обоснования `н/п`:**
-- <состояние> — <почему>
+**Reasons for `n/a`:**
+- <state> — <why>
 
 ## 7. Guardrails
 
-Ограничения, которые нельзя нарушить:
+Constraints that must not be broken:
 
-- Не менять публичные компоненты `<DS_LIBRARY_NAME>` (иначе mode → Full)
-- Не вводить новые семантические роли цвета
-- Уложиться в существующую spacing-шкалу
-- <проектные ограничения>
+- Do not change public `<DS_LIBRARY_NAME>` components (that would force mode → Full)
+- Do not introduce new semantic color roles
+- Stay within the existing spacing scale
+- <project-specific constraints>
 
 ## 8. Clarify
 
-| # | Вопрос | Умолчание | Ответ | Дата |
+| # | Question | Default | Answer | Date |
 |---|---|---|---|---|
 | Q1 | | | | |
 
-## 9. Адаптив
+## 9. Adaptivity
 
-| Брейкпоинт | Что меняется |
+| Breakpoint | What changes |
 |---|---|
 
-## 10. Референсы
+## 10. References
 
-| Что | Ссылка |
+| What | Link |
 |---|---|
-| ТЗ | |
-| Похожий экран в продукте | |
+| Requirements | |
+| A comparable screen in the product | |
 | `<REFERENCE_PLATFORM>` | |
 
 ## 11. Definition of Ready
 
-Старт работы возможен, когда:
+Work can start when:
 
-- [ ] Задача пользователя сформулирована
-- [ ] Scope с разделом «не входит» заполнен
-- [ ] Все AC написаны и проверяемы
-- [ ] Clarify закрыт или умолчания приняты
-- [ ] Матрица состояний размечена (шаг 4a)
-- [ ] Версия ДС зафиксирована
-- [ ] Guardrails перечислены
+- [ ] The user problem is stated
+- [ ] Scope, including the "out" list, is filled in
+- [ ] Every AC is written and verifiable
+- [ ] Clarify is closed, or defaults are adopted
+- [ ] The state matrix is marked up (step 4a)
+- [ ] The DS version is recorded
+- [ ] Guardrails are listed
 
 ## 12. Definition of Done
 
-См. `core/project.spec.md §2` — общий DoD. Дополнения по этой задаче:
+See `core/project.spec.md §2` for the shared DoD. Additions for this task:
 
-- [ ] <проектное дополнение, если есть>
+- [ ] <project-specific addition, if any>

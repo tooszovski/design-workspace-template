@@ -1,20 +1,20 @@
 # `specs/per-task/`
 
-Шаблоны артефактов уровня задачи. Это **формы**, не заполненные документы — реальные лежат в `<PER_TASK_SPEC_LOCATION>/<task-id>/`.
+Templates for task-level artifacts. These are **forms**, not filled-in documents — the real ones live in `<PER_TASK_SPEC_LOCATION>/<task-id>/`.
 
-## Что когда брать
+## Which one to take
 
-| Шаблон | Когда |
+| Template | When |
 |---|---|
-| `DESIGN-TASK-TEMPLATE.spec.md` | Standard / Full: новый экран, поток, заметная переработка |
-| `QUICK-TEMPLATE.spec.md` | Quick: правка 1–2 фреймов без новых состояний и компонентов |
-| `COMPONENT-TEMPLATE.md` | создаётся или меняется компонент `<DS_LIBRARY_NAME>` |
-| `DDR-TEMPLATE.md` | выбран один из нескольких валидных вариантов, и выбор надо пережить полгода |
+| `DESIGN-TASK-TEMPLATE.spec.md` | Standard / Full: a new screen, a flow, a substantial rework |
+| `QUICK-TEMPLATE.spec.md` | Quick: editing 1–2 frames with no new states or components |
+| `COMPONENT-TEMPLATE.md` | a `<DS_LIBRARY_NAME>` component is created or changed |
+| `DDR-TEMPLATE.md` | one of several valid options was chosen, and the choice has to survive six months |
 
-## Правило выбора
+## The selection rule
 
-Не уверены между Quick и Standard — берите Standard. Понижение режима на середине запрещено, повышение стоит переделки уже сделанного (`workflows/task-modes.spec.md`).
+When torn between Quick and Standard, take Standard. Downgrading mid-task is forbidden, and upgrading costs you the work already done (`workflows/task-modes.spec.md`).
 
-## Заполненные примеры
+## Worked examples
 
-`bootstrap/examples/` — сквозной пример на мок-задаче.
+`bootstrap/examples/` holds an end-to-end example on a mock task.

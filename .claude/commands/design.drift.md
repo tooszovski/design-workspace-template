@@ -1,93 +1,93 @@
 ---
-description: Сверить реализацию в ./code с макетом и оформить DESIGN_DRIFT findings
+description: Compare the implementation in ./code against the design and file DESIGN_DRIFT findings
 allowed-tools: Read, Grep, Glob, Bash, Write, mcp__figma__get_figma_data, mcp__figma__download_figma_images
 ---
 
 # /design.drift
 
-Приёмка реализации. Запускается **после** того, как разработка сдала экран.
+Accepting the implementation. Runs **after** engineering has shipped the screen.
 
-**Аргументы:** id задачи и, опционально, путь к файлам реализации внутри `./code`.
+**Arguments:** a task id and, optionally, a path to the implementation files inside `./code`.
 
-## Предусловия
+## Preconditions
 
-- Есть `handoff.md` задачи — без него сверять не с чем
-- Есть `./code` или скриншоты реализации от разработки
+- The task has a `handoff.md` — without it there is nothing to compare against
+- `./code` exists, or engineering supplied screenshots
 
-Без `./code` доступна только визуальная сверка по скриншотам: она ловит раскладку и тексты, но не токены и не доступность. Сказать об этом прямо, а не выдавать частичную проверку за полную.
+Without `./code`, only a visual comparison is possible: it catches layout and copy but not tokens and not accessibility. Say that plainly rather than passing a partial check off as a complete one.
 
-## Порядок сверки
+## Order of comparison
 
-Порядок обязателен: сверять пиксели отступов, пока хардкожены цвета, бессмысленно.
+The order is mandatory: comparing spacing pixels while colors are still hardcoded is pointless.
 
-### 1. Токены
+### 1. Tokens
 
-Сравнить значения в коде с `exports/tokens/` и с variables. Хардкод в коде там, где есть токен, — `DESIGN_DRIFT`, причина «дефект реализации».
+Compare values in code against `exports/tokens/` and against the variables. A hardcoded value in code where a token exists is a `DESIGN_DRIFT` with cause "implementation defect".
 
-Отдельно: расхождение `<TOKENS_EXPORT_PATH>` с Figma — это `TOKEN_DRIFT`, чинится перезапуском `/design.tokens`, а не правкой экранов.
+Separately: divergence between `<TOKENS_EXPORT_PATH>` and Figma is `TOKEN_DRIFT`, fixed by rerunning `/design.tokens`, not by editing screens.
 
-### 2. Компоненты
+### 2. Components
 
-Использован компонент дизайн-системы или собран заново? Собранный заново — CRITICAL: он не получит обновлений ДС.
+Was a design-system component used, or was one rebuilt? Rebuilt is CRITICAL: it will not receive DS updates.
 
-### 3. Состояния
+### 3. States
 
-По матрице покрытия из `spec.md`: каждое `✅` должно быть реализовано. Отсутствующее состояние — CRITICAL.
+Against the coverage matrix in `spec.md`: every `✅` must be implemented. A missing state is CRITICAL.
 
-### 4. Раскладка
+### 4. Layout
 
-Отступы из шкалы, поведение на краях брейкпоинтов, переполнение, длинный текст.
+Spacing from the scale, behavior at the ends of the breakpoint range, overflow, long text.
 
-### 5. Тексты
+### 5. Copy
 
-Строка в строку с таблицей текстов из `handoff.md`.
+String for string against the copy table in `handoff.md`.
 
-### 6. Доступность
+### 6. Accessibility
 
-Реализованы ли аннотации `spec:*`: доступные имена, порядок фокуса, роли, live-области, увеличенные области нажатия.
+Were the `spec:*` annotations implemented: accessible names, focus order, roles, live regions, enlarged hit areas.
 
-### 7. Моушен
+### 7. Motion
 
-Тайминги и кривые из таблицы. Низший приоритет.
+Timings and curves from the table. Lowest priority.
 
-## Классификация причины
+## Classifying the cause
 
-Каждый finding обязан иметь причину — она определяет адресата:
+Every finding needs a cause — it determines the recipient:
 
-| Причина | Кому уходит |
+| Cause | Goes to |
 |---|---|
-| дефект реализации | разработке |
-| дефект спеки — в `handoff.md` этого не было | дизайну: дописать спеку, не заводить баг |
-| осознанный компромисс | зафиксировать DDR, закрыть |
+| implementation defect | engineering |
+| spec defect — it was never in `handoff.md` | design: extend the spec, do not file a bug |
+| deliberate trade-off | record a DDR and close it |
 
-Половина «дрифта» — это третий и второй случай. Не отправлять их в разработку как баги.
+Half of all "drift" is the second and third case. Do not send those to engineering as bugs.
 
-## Что дрифтом не является
+## What is not drift
 
-- Отличие 1–2px из-за округления рендера
-- Системные отличия платформы: инерция скролла, системный шрифт, нативные переходы
-- Уже зафиксированный в DDR компромисс
+- A 1–2px difference from render rounding
+- Platform-native differences: scroll inertia, system font, native transitions
+- A trade-off already recorded in a DDR
 
-## Формат finding
+## Finding format
 
 ```
-DESIGN_DRIFT: <что расходится>
+DESIGN_DRIFT: <what diverges>
 Severity: MINOR | IMPORTANT | CRITICAL
-Макет:      <что в Figma> · node <id>
-Реализация: <что в коде> · <path:line>
-Причина:    дефект реализации | дефект спеки | осознанный компромисс
-Действие:   <править код | дописать спеку | зафиксировать DDR>
+Design:         <what Figma shows> · node <id>
+Implementation: <what the code does> · <path:line>
+Cause:          implementation defect | spec defect | deliberate trade-off
+Action:         <fix the code | extend the spec | record a DDR>
 ```
 
-## Возврат
+## Return
 
-Записать в `<PER_TASK_SPEC_LOCATION>/<task-id>/drift.md`, завести задачи в `<TRACKER_NAME>`.
+Write to `<PER_TASK_SPEC_LOCATION>/<task-id>/drift.md` and file tasks in `<TRACKER_NAME>`.
 
 ```
 Signal: COMPLETE | FAIL
-Checkpoint: <путь к drift.md>
+Checkpoint: <path to drift.md>
 Findings: N critical, M important, K minor
-Из них дефектов спеки: X
+Of which spec defects: X
 ```
 
-Приёмка пройдена при нуле CRITICAL и письменно закрытых IMPORTANT. Любой CRITICAL — Tier 2 stop.
+Acceptance passes with zero CRITICALs and every IMPORTANT closed in writing. Any CRITICAL is a Tier 2 stop.

@@ -1,81 +1,81 @@
 ---
 name: critique
 layer: workflow
-purpose: Дизайн-критика — что проверять, формат findings, отличие от вкусовщины
+purpose: Design critique — what to examine, finding format, distinguishing critique from taste
 applies_to:
-  task_keywords: ["критика", "critique", "ревью макета", "design review", "разбор"]
+  task_keywords: ["critique", "design review", "walkthrough"]
   loaded_for_modes: ["standard", "full"]
 owner: design-lead
 ---
 
 # Design Critique
 
-Критика проверяет, **решает ли макет задачу**, а не нравится ли он. Проверка на соответствие правилам — это `/design.audit`, она автоматическая и идёт раньше.
+Critique asks whether the **design solves the problem**, not whether it is likeable. Checking compliance with rules is `/design.audit`, which is automatic and runs first.
 
-## Что проверяется
+## What gets examined
 
-### 1. Задача
+### 1. The problem
 
-- Экран решает ту задачу пользователя, что заявлена в `spec.md`?
-- Главное действие видно за секунду (D-10)?
-- Что пользователь должен понять первым — он поймёт первым?
+- Does the screen solve the user problem stated in `spec.md`?
+- Is the primary action visible within a second (D-10)?
+- Does the user understand first what they are meant to understand first?
 
-### 2. Иерархия
+### 2. Hierarchy
 
-- Порядок восприятия совпадает с порядком важности?
-- Второстепенное не конкурирует с главным по контрасту и размеру?
-- Группировка отражает смысл, а не удобство сборки (`domain/layout.spec.md`)?
+- Does the order of perception match the order of importance?
+- Does secondary content compete with primary content on contrast and size?
+- Does the grouping reflect meaning rather than build convenience (`domain/layout.spec.md`)?
 
-### 3. Полнота
+### 3. Completeness
 
-- Все состояния собраны и осмысленны (`domain/states.spec.md`)?
-- Крайние случаи показаны на реальных данных (D-09)?
-- Адаптив покрывает края диапазона (D-08)?
+- Are the states built and meaningful (`domain/states.spec.md`)?
+- Are edge cases shown on realistic data (D-09)?
+- Does adaptivity cover the ends of the range (D-08)?
 
-### 4. Консистентность
+### 4. Consistency
 
-- Паттерн совпадает с тем, как это решено на других экранах продукта?
-- Если отличается — есть причина, зафиксированная в DDR?
-- Термины совпадают со словарём (`domain/ux-writing.spec.md`)?
+- Does the pattern match how this is solved on other screens of the product?
+- If it differs, is there a recorded reason in a DDR?
+- Do the terms match the glossary (`domain/ux-writing.spec.md`)?
 
-### 5. Реализуемость
+### 5. Buildability
 
-- Разработчик сможет собрать это из существующих компонентов?
-- Что здесь дорого и есть ли дешёвая альтернатива с тем же результатом?
+- Can an engineer assemble this from existing components?
+- What here is expensive, and is there a cheaper alternative with the same result?
 
-## Формат finding
+## Finding format
 
 ```
-<КОД>: <что не так одним предложением>
+<CODE>: <what is wrong, in one sentence>
 Severity: MINOR | IMPORTANT | CRITICAL
-Где: <фрейм> · <слой или зона>
-Почему: <какое последствие для пользователя или разработки>
-Предложение: <конкретное действие, не «подумать»>
+Where: <frame> · <layer or region>
+Why: <the consequence for the user or for engineering>
+Proposal: <a concrete action, not "think about it">
 ```
 
-Коды findings определены в domain-спеках: `DS_VIOLATION`, `A11Y`, `A11Y_CONTRAST`, `LAYOUT`, `TYPO`, `COPY`, `STATE_MISSING`, `MOTION`, `ASSET`, `NAMING`, `STRUCTURE`, `HANDOFF`, `DESIGN_DRIFT`, `TOKEN_DRIFT`.
+Finding codes are defined in the domain specs: `DS_VIOLATION`, `A11Y`, `A11Y_CONTRAST`, `LAYOUT`, `TYPO`, `COPY`, `STATE_MISSING`, `MOTION`, `ASSET`, `NAMING`, `STRUCTURE`, `HANDOFF`, `DESIGN_DRIFT`, `TOKEN_DRIFT`.
 
-Для критики без формального кода — `CRITIQUE`.
+For critique without a formal code, use `CRITIQUE`.
 
-## Что критикой не является
+## What critique is not
 
-| Не finding | Почему |
+| Not a finding | Why |
 |---|---|
-| «Мне кажется, тут лучше синий» | нет обоснования последствием |
-| «Как-то пусто» | не описывает проблему и решение |
-| «Сделай красивее» | не проверяемо |
-| «На дриббле делают иначе» | чужой контекст не аргумент |
+| "I think blue would be better here" | no consequence stated |
+| "Feels empty" | describes neither the problem nor a fix |
+| "Make it prettier" | not verifiable |
+| "Dribbble does it differently" | someone else's context is not an argument |
 
-Каждый finding обязан отвечать на «что сломается для пользователя или разработки, если не исправить». Если ответа нет — это предпочтение, оно идёт в отдельный список «Идеи», не в findings.
+Every finding must answer "what breaks for the user or for engineering if this is not fixed". If it cannot, it is a preference; preferences go into a separate "Ideas" list, not into findings.
 
-## Разрешение разногласий
+## Resolving disagreement
 
-1. Автор макета отвечает на каждый finding: принято / отклонено с обоснованием.
-2. Отклонённый CRITICAL — Tier 2 stop, решает человек (`workflows/decision-gates.spec.md`).
-3. Спор о принципе, а не о конкретном экране, → DDR и правка спеки. Один и тот же спор дважды означает дыру в правилах.
+1. The author answers every finding: accepted, or rejected with a reason.
+2. A rejected CRITICAL is a Tier 2 stop; a human decides (`workflows/decision-gates.spec.md`).
+3. A dispute about a principle rather than a specific screen becomes a DDR and a spec edit. The same argument happening twice means there is a hole in the rules.
 
 ## Cross-refs
 
-- workflows/review-pipeline.spec.md — кто и когда критикует
-- workflows/decision-gates.spec.md — эскалация
-- per-task/DDR-TEMPLATE.md — фиксация решения
+- workflows/review-pipeline.spec.md — who critiques and when
+- workflows/decision-gates.spec.md — escalation
+- per-task/DDR-TEMPLATE.md — recording the decision

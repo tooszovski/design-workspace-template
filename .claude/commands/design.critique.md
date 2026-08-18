@@ -1,62 +1,62 @@
 ---
-description: Дизайн-критика макета — задача, иерархия, полнота, консистентность, реализуемость
+description: Design critique — problem, hierarchy, completeness, consistency, buildability
 allowed-tools: Read, Write, Grep, Glob, Bash, Agent, AskUserQuestion, mcp__figma__get_figma_data, mcp__figma__download_figma_images
 ---
 
 # /design.critique
 
-Проверка того, **решает ли макет задачу**. Соответствие правилам проверяет `/design.audit` — он идёт раньше и должен быть чист по CRITICAL.
+Checking whether the **design solves the problem**. Rule compliance is `/design.audit`, which runs first and must be clean of CRITICALs.
 
-**Аргумент:** id задачи или ссылка на фрейм.
+**Argument:** a task id or a frame link.
 
-## Шаг 1 — Контекст
+## Step 1 — Context
 
-1. Прочитать `spec.md`: задача пользователя, AC, guardrails.
-2. Выгрузить фреймы через MCP + скачать изображения: JSON отвечает «из чего собрано», картинка — «как воспринимается». Для критики нужны оба.
-3. Найти 1–2 существующих экрана продукта с похожей задачей — для проверки консистентности.
+1. Read `spec.md`: the user problem, the AC, the guardrails.
+2. Export the frames through MCP and download the images: the JSON answers "what is it made of", the picture answers "how is it perceived". Critique needs both.
+3. Find one or two existing product screens with a similar problem, to check consistency.
 
-## Шаг 2 — Ревьюеры
+## Step 2 — Reviewers
 
-Для Standard/Full запустить параллельно **одним сообщением**:
+For Standard and Full, launch in parallel, **in one message**:
 
-- `reviewer-designsystem` — компоненты, токены, spacing, нейминг
-- `reviewer-a11y` — контраст, фокус, тач-таргеты, семантика
-- `reviewer-ux-copy` — тексты, термины, тон
+- `reviewer-designsystem` — components, tokens, spacing, naming
+- `reviewer-a11y` — contrast, focus, touch targets, semantics
+- `reviewer-ux-copy` — copy, terms, tone
 
-Для Quick — только `reviewer-designsystem`, и только если задет компонент ДС.
+For Quick, only `reviewer-designsystem`, and only if a DS component was touched.
 
-## Шаг 3 — Собственная критика
+## Step 3 — Your own critique
 
-То, что не покрыто ревьюерами (`workflows/critique.spec.md`):
+What the reviewers do not cover (`workflows/critique.spec.md`):
 
-| Ось | Вопрос |
+| Axis | Question |
 |---|---|
-| Задача | Экран решает заявленную задачу? Главное действие видно за секунду? |
-| Иерархия | Порядок восприятия совпадает с порядком важности? |
-| Полнота | Состояния осмысленны? Крайние случаи на реальных данных? Края адаптива? |
-| Консистентность | Совпадает с тем, как это решено рядом? Если нет — есть DDR? |
-| Реализуемость | Собирается из существующих компонентов? Что здесь дорого? |
+| Problem | Does the screen solve the stated problem? Is the primary action visible within a second? |
+| Hierarchy | Does the order of perception match the order of importance? |
+| Completeness | Are the states meaningful? Are edge cases on realistic data? Both ends of the adaptive range? |
+| Consistency | Does it match how this is solved nearby? If not, is there a DDR? |
+| Buildability | Does it assemble from existing components? What here is expensive? |
 
-## Шаг 4 — Фильтр
+## Step 4 — The filter
 
-Каждый finding обязан отвечать на вопрос: **что сломается для пользователя или разработки, если не исправить.**
+Every finding must answer: **what breaks for the user or for engineering if this is not fixed.**
 
-Нет ответа — это не finding, а предпочтение. Предпочтения уходят в отдельный раздел «Идеи» и не блокируют сдачу.
+No answer means it is a preference, not a finding. Preferences go into a separate "Ideas" section and do not block handoff.
 
-Отбросить: «мне кажется», «как-то пусто», «сделай красивее», «на дриббле иначе».
+Discard: "I think", "feels empty", "make it prettier", "Dribbble does it differently".
 
-## Шаг 5 — Сведение
+## Step 5 — Consolidate
 
-Собрать findings всех ревьюеров и свои, снять дубли (три агента часто ловят одно и то же с разных сторон), отсортировать по severity.
+Collect findings from every reviewer plus your own, remove duplicates (three agents often catch the same thing from different angles), and sort by severity.
 
 ```markdown
-# Critique · <PROJECT_PREFIX>-NNN · <дата>
+# Critique · <PROJECT_PREFIX>-NNN · <date>
 
 ## CRITICAL
-### A11Y: у чипсов фильтра нет состояния focused
-Где: `Каталог / filters`
-Почему: фильтр непроходим с клавиатуры
-Предложение: добавить `State: focused` в `Chip/Filter`, обводка `border/focus` 2pt
+### A11Y: filter chips have no focused state
+Where: `Catalog / filters`
+Why: the filter cannot be traversed by keyboard
+Proposal: add `State: focused` to `Chip/Filter`, 2pt `border/focus` ring
 
 ## IMPORTANT
 ...
@@ -64,14 +64,14 @@ allowed-tools: Read, Write, Grep, Glob, Bash, Agent, AskUserQuestion, mcp__figma
 ## MINOR
 ...
 
-## Идеи (не блокируют)
+## Ideas (non-blocking)
 ...
 
-## Итог
-N critical, M important, K minor. Блокирует сдачу: <да/нет>
+## Summary
+N critical, M important, K minor. Blocks handoff: <yes/no>
 ```
 
-## Шаг 6 — Возврат
+## Step 6 — Return
 
 ```
 Signal: COMPLETE | REROUTE
@@ -79,6 +79,6 @@ Checkpoint: <PER_TASK_SPEC_LOCATION>/<task-id>/critique.md
 Findings: N critical, M important, K minor
 ```
 
-Автор макета отвечает на каждый finding: принято или отклонено с обоснованием. Отклонённый CRITICAL — Tier 2 stop.
+The design's author answers every finding: accepted, or rejected with a reason. A rejected CRITICAL is a Tier 2 stop.
 
-Reroute-лимиты: 3 на пару, 5 на задачу (`workflows/review-pipeline.spec.md`).
+Reroute limits: 3 per pair, 5 per task (`workflows/review-pipeline.spec.md`).

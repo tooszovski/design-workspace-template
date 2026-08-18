@@ -1,104 +1,104 @@
 ---
 name: handoff
 layer: domain
-purpose: Структура handoff-спеки для разработки, требования самодостаточности, аннотации в макете
+purpose: Structure of the engineering handoff spec, self-sufficiency requirements, in-design annotations
 applies_to:
-  task_keywords: ["handoff", "передача", "спека для разработки", "разработчик", "реализация", "аннотация"]
-  triggers: ["задача доходит до передачи макета в разработку"]
+  task_keywords: ["handoff", "engineering spec", "developer", "implementation", "annotation"]
+  triggers: ["task reaches the point of handing the design to engineering"]
 owner: handoff-author
 ---
 
 # Handoff
 
-D-12: разработчик обязан реализовать экран, не задавая вопросов. Каждый заданный вопрос — дефект спеки, который дописывается в неё, а не отвечается устно.
+D-12: an engineer must be able to build the screen without asking anything. Every question they ask is a defect in the spec — one you write into it rather than answer verbally.
 
-## Где живёт
+## Where it lives
 
-`<PER_TASK_SPEC_LOCATION>/<task-id>/handoff.md`. Ссылка на него уходит в `<TRACKER_NAME>`.
+`<PER_TASK_SPEC_LOCATION>/<task-id>/handoff.md`. A link to it goes into `<TRACKER_NAME>`.
 
-## Структура
+## Structure
 
 ```markdown
-# Handoff · <PROJECT_PREFIX>-NNN · <Экран>
+# Handoff · <PROJECT_PREFIX>-NNN · <Screen>
 
-## Ссылки
-- Figma: <ссылка на секцию с node-id>
-- ТЗ: <ссылка>
-- DDR: <ссылки, если были>
-- Версия ДС: <версия библиотеки на момент сдачи>
+## Links
+- Figma: <link to the section with node-id>
+- Requirements: <link>
+- DDR: <links, if any>
+- DS version: <library version at handoff>
 
-## Что делаем
-Одно-два предложения: какую задачу пользователя решает экран.
+## What we are building
+One or two sentences: which user problem the screen solves.
 
-## Компоненты
-| Элемент на макете | Компонент ДС | Properties | Новый? |
+## Components
+| Element in the design | DS component | Properties | New? |
 |---|---|---|---|
 
-## Состояния
-Матрица покрытия из spec.md + ссылка на фрейм каждого состояния.
+## States
+The coverage matrix from spec.md plus a link to each state's frame.
 
-## Адаптив
-| Брейкпоинт | Что меняется |
+## Adaptivity
+| Breakpoint | What changes |
 |---|---|
 
-## Поведение
-Список правил: что происходит по нажатию, что валидируется, когда включается кнопка,
-что происходит при повторном нажатии, что при потере сети.
+## Behavior
+A list of rules: what happens on tap, what is validated, when the button enables,
+what happens on a second tap, what happens when the network drops.
 
-## Данные
-| Поле на экране | Источник | Формат | Что при отсутствии |
+## Data
+| Field on screen | Source | Format | Behavior when absent |
 |---|---|---|---|
 
-## Тексты
-Все строки экрана таблицей, включая тексты состояний и ошибок.
-| Ключ | Текст | Комментарий для перевода |
+## Copy
+Every string on the screen as a table, including state and error copy.
+| Key | Text | Translation note |
 |---|---|---|
 
-## Моушен
-Таблица по domain/prototyping.spec.md. Пусто = стандартные переходы платформы.
+## Motion
+Table per domain/prototyping.spec.md. Empty means platform-standard transitions.
 
-## Доступность
-Аннотации spec:* из макета + порядок фокуса + доступные имена.
+## Accessibility
+The spec:* annotations from the design plus focus order and accessible names.
 
-## Ассеты
-Что экспортировано, в каком формате, где лежит.
+## Assets
+What was exported, in what format, where it lives.
 
-## Открытые вопросы
-Пусто на момент сдачи. Непустой раздел = спека не готова.
+## Open questions
+Empty at handoff. A non-empty section means the spec is not ready.
 ```
 
-## Требования к содержанию
+## Content requirements
 
-| Требование | Проверка |
+| Requirement | The check |
 |---|---|
-| Ни одного «как на макете» | это отсылка, а не спецификация: значения берутся из ДС, поведение — из текста |
-| Ни одного «по аналогии с …» без ссылки | аналогия без ссылки — догадка |
-| Все числа — из токенов | сырое значение в спеке = хардкод в коде |
-| Каждое состояние имеет ссылку на фрейм | иначе разработчик его не найдёт |
-| Каждый текст — в таблице текстов | тексты со скриншотов не переносятся точно |
-| Раздел «Открытые вопросы» пуст | иначе это черновик |
+| Not a single "as in the design" | that is a pointer, not a specification: values come from the DS, behavior from prose |
+| Not a single "same as …" without a link | an analogy without a link is a guess |
+| Every number comes from a token | a raw value in the spec becomes a hardcoded value in code |
+| Every state links to its frame | otherwise the engineer cannot find it |
+| Every string is in the copy table | text does not transfer accurately off a screenshot |
+| The "Open questions" section is empty | otherwise it is a draft |
 
-## Аннотации в макете
+## Annotations in the design
 
-Handoff и макет дополняют друг друга. В макете живут слои `spec:` (`domain/accessibility.spec.md`), в `handoff.md` — то, что не выражается графически: поведение, данные, крайние случаи, тайминги.
+The handoff and the design complement each other. `spec:` layers live in the design (`domain/accessibility.spec.md`); `handoff.md` carries what cannot be expressed graphically: behavior, data, edge cases, timings.
 
-Дублировать в спеку то, что и так читается из Figma инспектором (отступы, цвета, размеры), не нужно — это устареет первым.
+Do not duplicate what the Figma inspector already reports (spacing, colors, sizes) — that is the first thing to go stale.
 
-## Приёмка
+## Acceptance
 
-Дизайнер проверяет реализацию по `workflows/drift-check.spec.md`. Расхождение оформляется как `DESIGN_DRIFT` finding, не как сообщение в чате.
+The designer verifies the implementation per `workflows/drift-check.spec.md`. Divergence is filed as a `DESIGN_DRIFT` finding, not as a chat message.
 
 ## Findings
 
-| Код | Severity | Когда |
+| Code | Severity | When |
 |---|---|---|
-| `HANDOFF` | IMPORTANT | нет таблицы текстов; адаптив описан одним брейкпоинтом; ссылка на фрейм без node-id |
-| `HANDOFF` | CRITICAL | непустые «Открытые вопросы»; нет матрицы состояний; ссылка ведёт на страницу `🚧 WIP` |
+| `HANDOFF` | IMPORTANT | no copy table; adaptivity described for one breakpoint; a frame link without a node-id |
+| `HANDOFF` | CRITICAL | non-empty "Open questions"; no state matrix; a link pointing at a `🚧 WIP` page |
 
 ## Cross-refs
 
-- domain/states.spec.md — матрица покрытия
-- domain/prototyping.spec.md — таблица моушена
-- domain/accessibility.spec.md — аннотации
-- workflows/handoff-quality.spec.md — гейты сдачи G1-G6
-- workflows/drift-check.spec.md — приёмка реализации
+- domain/states.spec.md — the coverage matrix
+- domain/prototyping.spec.md — the motion table
+- domain/accessibility.spec.md — annotations
+- workflows/handoff-quality.spec.md — gates G1-G6
+- workflows/drift-check.spec.md — accepting the implementation

@@ -1,75 +1,75 @@
 ---
 name: handoff-quality
 layer: workflow
-purpose: Гейты сдачи G1-G6 — что проверяется перед передачей в разработку
+purpose: Handoff gates G1-G6 — what is verified before design reaches engineering
 applies_to:
-  task_keywords: ["сдача", "гейт", "gate", "готовность", "передача в разработку", "definition of done"]
+  task_keywords: ["handoff", "gate", "readiness", "definition of done", "delivery"]
   loaded_for_modes: ["standard", "full"]
 owner: handoff-author
 ---
 
 # Handoff Quality Gates
 
-Шесть гейтов. Задача не сдана, пока не пройдены все. Гейт не пройден — задача возвращается, а не сдаётся «с оговорками».
+Six gates. A task is not delivered until all of them pass. A failed gate sends the task back; it is not delivered "with caveats".
 
-## G1 — Полнота состояний
+## G1 — State completeness
 
-- [ ] Матрица покрытия в `spec.md` заполнена без пустых клеток
-- [ ] Каждая `✅` имеет реальный фрейм в Figma (states-контракт 4c)
-- [ ] Каждое `н/п` имеет письменное обоснование
-- [ ] Переходы между состояниями описаны (Full)
+- [ ] The coverage matrix in `spec.md` has no empty cells
+- [ ] Every `✅` has a real frame in Figma (states contract 4c)
+- [ ] Every `n/a` carries a written reason
+- [ ] Transitions between states are described (Full)
 
-Провал G1 — самый частый и самый дорогой: недостающее состояние всплывает на проде.
+Failing G1 is the most common and the most expensive: a missing state surfaces in production.
 
-## G2 — Чистота макета
+## G2 — A clean design
 
-- [ ] `/design.audit` без CRITICAL
-- [ ] Ноль detached-инстансов
-- [ ] Ноль хардкод-значений вне помеченных `🚧` и `spec:`
-- [ ] Ноль слоёв `🚧` в сдаваемых фреймах
-- [ ] Нейминг по контракту
-- [ ] Фреймы переведены на `✅`-страницу
+- [ ] `/design.audit` reports no CRITICALs
+- [ ] Zero detached instances
+- [ ] Zero hardcoded values outside those marked `🚧` and `spec:`
+- [ ] Zero `🚧` layers in the delivered frames
+- [ ] Naming follows the contract
+- [ ] Frames have moved to a `✅` page
 
-## G3 — Доступность
+## G3 — Accessibility
 
-- [ ] Чеклист `domain/accessibility.spec.md` пройден
-- [ ] Ноль CRITICAL `A11Y`
-- [ ] Аннотации `spec:alt`, `spec:label`, `spec:focus-order` проставлены там, где нужны
-- [ ] Контраст проверен во всех режимах
+- [ ] The `domain/accessibility.spec.md` checklist is complete
+- [ ] Zero CRITICAL `A11Y` findings
+- [ ] `spec:alt`, `spec:label`, `spec:focus-order` annotations are present where needed
+- [ ] Contrast verified in every mode
 
-## G4 — Тексты
+## G4 — Copy
 
-- [ ] Все строки экрана в таблице текстов `handoff.md`
-- [ ] Термины из словаря (`domain/ux-writing.spec.md`)
-- [ ] Тексты состояний написаны, а не «Ничего не найдено»
-- [ ] Проверен рост длины при локализации
+- [ ] Every string on the screen is in the `handoff.md` copy table
+- [ ] Terms come from the glossary (`domain/ux-writing.spec.md`)
+- [ ] State copy is written, not left as "Nothing found"
+- [ ] Text growth under localization has been checked
 
-## G5 — Самодостаточность спеки
+## G5 — A self-sufficient spec
 
-- [ ] `handoff.md` заполнен по структуре `domain/handoff.spec.md`
-- [ ] Раздел «Открытые вопросы» пуст
-- [ ] Ни одного «как на макете» и «по аналогии» без ссылки
-- [ ] Адаптив описан для всех брейкпоинтов
-- [ ] Поведение и данные описаны, включая крайние случаи
-- [ ] Ассеты экспортированы и лежат по адресу
+- [ ] `handoff.md` follows the structure in `domain/handoff.spec.md`
+- [ ] The "Open questions" section is empty
+- [ ] Not a single "as in the design" or unlinked "same as"
+- [ ] Adaptivity is described for every breakpoint
+- [ ] Behavior and data are described, edge cases included
+- [ ] Assets are exported and in place
 
-Проверка гейта: **прочитать спеку глазами разработчика, который не видел задачу.** Если возникает вопрос — гейт не пройден.
+How to check this gate: **read the spec as an engineer who has not seen the task.** If a question comes up, the gate has failed.
 
-## G6 — Следы
+## G6 — Traces
 
-- [ ] `worklog.md` закрыт строкой `— DONE: ...`
-- [ ] DDR созданы для всех неочевидных решений
-- [ ] `agent-log.md` написан
-- [ ] Задача переведена в `<TRACKER_TESTING_STATUS>`
-- [ ] Ссылка на `handoff.md` есть в трекере
+- [ ] `worklog.md` is closed with `— DONE: ...`
+- [ ] DDRs exist for every non-obvious decision
+- [ ] `agent-log.md` is written
+- [ ] The task is in `<TRACKER_TESTING_STATUS>`
+- [ ] A link to `handoff.md` is in the tracker
 
-## Порядок
+## Order
 
-Гейты проверяются по порядку. Провал на G2 не позволяет проверять G5: нет смысла вычитывать спеку к макету, который ещё изменится.
+Gates run in sequence. Failing G2 means G5 is not checked yet: there is no point proofreading a spec for a design that will still change.
 
 ## Cross-refs
 
-- domain/handoff.spec.md — структура спеки
-- domain/states.spec.md — states-контракт
-- domain/accessibility.spec.md — чеклист a11y
-- core/project.spec.md §2 — DoD
+- domain/handoff.spec.md — spec structure
+- domain/states.spec.md — the states contract
+- domain/accessibility.spec.md — the a11y checklist
+- core/project.spec.md §2 — the DoD

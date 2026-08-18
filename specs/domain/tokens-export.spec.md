@@ -1,29 +1,29 @@
 ---
 name: tokens-export
 layer: domain
-purpose: Экспорт Figma variables в токены, формат, платформенная трансформация, синхронизация с кодом
+purpose: Exporting Figma variables to tokens, format, platform transforms, syncing with code
 applies_to:
   paths: ["exports/tokens/**", "<TOKENS_EXPORT_PATH>"]
-  task_keywords: ["токены", "tokens", "экспорт", "export", "style dictionary", "синхронизация", "выгрузка переменных"]
-  triggers: ["задача про перенос значений дизайна в код"]
+  task_keywords: ["tokens", "export", "style dictionary", "sync", "variable export"]
+  triggers: ["task moves design values into code"]
 owner: figma-analyst
 ---
 
 # Tokens Export
 
-Токены — машиночитаемая проекция Figma variables. Источник один: `<FIGMA_DS_FILE_KEY>`. Правка токенов руками запрещена — она будет затёрта следующей выгрузкой.
+Tokens are a machine-readable projection of Figma variables. There is one source: `<FIGMA_DS_FILE_KEY>`. Hand-editing tokens is forbidden — the next export overwrites them.
 
-## Поток
+## The pipeline
 
 ```
-Figma variables → /design.tokens → exports/tokens/*.json → трансформация → <TOKENS_EXPORT_PATH>
+Figma variables → /design.tokens → exports/tokens/*.json → transform → <TOKENS_EXPORT_PATH>
 ```
 
-Каждый шаг воспроизводим: повторный запуск на неизменённом файле даёт идентичный результат. Недетерминированный экспорт (случайный порядок ключей, таймстемпы внутри файла) ломает диффы и делает ревью невозможным.
+Every step is reproducible: rerunning on an unchanged file produces an identical result. A non-deterministic export (random key order, timestamps inside the file) destroys diffs and makes review impossible.
 
-## Формат
+## Format
 
-Базовый формат — [DTCG](https://tr.designtokens.org/) (`$value` / `$type` / `$description`):
+The base format is [DTCG](https://tr.designtokens.org/) (`$value` / `$type` / `$description`):
 
 ```json
 {
@@ -31,49 +31,49 @@ Figma variables → /design.tokens → exports/tokens/*.json → трансфо�
     "primary": {
       "$type": "color",
       "$value": "{color.blue.500}",
-      "$description": "Основное действие на экране"
+      "$description": "Primary action on a screen"
     }
   }
 }
 ```
 
-Правила:
+Rules:
 
-- Алиасы сохраняются как ссылки `{path.to.token}`, не разворачиваются в значения. Развёртка убивает связь и делает ребрендинг ручным.
-- Один файл на коллекцию: `primitives.json`, `semantic.json`, `spacing.json`, `radius.json`, `typography.json`.
-- Режимы (темы) — отдельные файлы или отдельная секция `$extensions.modes`, выбор фиксируется здесь при init и дальше не меняется.
-- Ключи в `kebab-case`, порядок — алфавитный.
+- Aliases stay as `{path.to.token}` references and are never resolved into values. Resolving them kills the link and makes rebranding a manual job.
+- One file per collection: `primitives.json`, `semantic.json`, `spacing.json`, `radius.json`, `typography.json`.
+- Modes (themes) live as separate files or as a `$extensions.modes` section; the choice is fixed here at init and does not change afterwards.
+- Keys in `kebab-case`, order alphabetical.
 
-## Платформенная трансформация
+## Platform transforms
 
-| Платформа | Выход | Особенности |
+| Platform | Output | Notes |
 |---|---|---|
-| Web | CSS custom properties / JS-объект | `--action-primary`; темы через `[data-theme]` |
-| iOS | Swift-константы / Asset Catalog | цвета в Asset Catalog с light/dark |
+| Web | CSS custom properties / JS object | `--action-primary`; themes via `[data-theme]` |
+| iOS | Swift constants / Asset Catalog | colors in an Asset Catalog with light and dark |
 | Android | XML resources / Compose | `colors.xml`, `dimens.xml` |
 
-Трансформация не добавляет значений, которых нет в Figma, и не переименовывает — только меняет синтаксис. Если платформе нужно значение, которого нет в ДС, это задача на ДС, а не на скрипт экспорта.
+A transform adds no values that Figma does not have and renames nothing — it only changes syntax. If a platform needs a value the DS lacks, that is a DS task, not an export-script task.
 
-## Синхронизация
+## Syncing
 
-1. Экспорт запускается **после** публикации библиотеки, не до.
-2. Результат попадает в `<TOKENS_EXPORT_PATH>` через pull request, не прямым коммитом: разработка должна увидеть дифф.
-3. Дифф токенов читается как API-дифф. Удаление или переименование токена — breaking change (`workflows/versioning.spec.md`).
-4. Расхождение между Figma и `<TOKENS_EXPORT_PATH>` — `TOKEN_DRIFT`:
+1. Export runs **after** the library is published, never before.
+2. The result reaches `<TOKENS_EXPORT_PATH>` through a pull request, not a direct commit: engineering has to see the diff.
+3. A token diff reads like an API diff. Removing or renaming a token is a breaking change (`workflows/versioning.spec.md`).
+4. Divergence between Figma and `<TOKENS_EXPORT_PATH>` is `TOKEN_DRIFT`:
 
-| Severity | Когда |
+| Severity | When |
 |---|---|
-| MINOR | отличается `$description` |
-| IMPORTANT | отличается значение токена |
-| CRITICAL | токен есть в коде, но удалён из Figma (или наоборот) |
+| MINOR | `$description` differs |
+| IMPORTANT | a token value differs |
+| CRITICAL | a token exists in code but was removed from Figma, or the reverse |
 
-## Что не токенизируется
+## What is not tokenized
 
-Уникальные значения одного экрана, координаты внутри иллюстраций, значения экспериментов `🚧`. Токен, у которого одно применение, — не токен, а константа не на своём месте.
+Values unique to a single screen, coordinates inside illustrations, values of `🚧` experiments. A token with exactly one use is not a token — it is a constant in the wrong place.
 
 ## Cross-refs
 
-- domain/variables.spec.md — источник токенов
-- workflows/versioning.spec.md — версии и breaking changes
-- workflows/drift-check.spec.md — сверка с реализацией
-- core/workspace.spec.md — где лежат экспорты
+- domain/variables.spec.md — the source of tokens
+- workflows/versioning.spec.md — versions and breaking changes
+- workflows/drift-check.spec.md — comparing against implementation
+- core/workspace.spec.md — where exports live

@@ -1,82 +1,82 @@
 ---
 name: design-system
 layer: core
-purpose: Иерархия дизайн-системы, что считается каноном, правила потребления и изменения библиотеки
+purpose: Design-system hierarchy, what counts as canonical, rules for consuming and changing the library
 always_loaded: true
 owner: design-lead
 ---
 
 # Design System
 
-`<DS_LIBRARY_NAME>` — библиотека в Figma-файле `<FIGMA_DS_FILE_KEY>`. Продуктовые файлы её **потребляют**, не форкают.
+`<DS_LIBRARY_NAME>` is the library in Figma file `<FIGMA_DS_FILE_KEY>`. Product files **consume** it; they never fork it.
 
-## Иерархия уровней
+## Hierarchy of levels
 
 ```
 Primitives    →  Semantic       →  Component        →  Pattern         →  Screen
-raw значения     роль в UI          переиспользуемый    композиция        конкретный
-color/gray/900   text/secondary     Button, Field       FormRow, Card     экран продукта
+raw values       role in the UI     reusable            composition       concrete
+color/gray/900   text/secondary     Button, Field       FormRow, Card     product screen
 space/4          space/inline-sm
 ```
 
-Правило потока: **уровень ссылается только вниз, никогда наружу вбок и никогда вверх.**
+The flow rule: **a level references downward only — never sideways out of its lane, never upward.**
 
-| Уровень | Кто использует | Кто НЕ использует |
+| Level | Who uses it | Who must not |
 |---|---|---|
-| Primitives | только Semantic | компоненты и экраны — никогда напрямую |
-| Semantic | компоненты, экраны | — |
-| Component | паттерны, экраны | — |
-| Pattern | экраны | — |
+| Primitives | Semantic only | components and screens — never directly |
+| Semantic | components, screens | — |
+| Component | patterns, screens | — |
+| Pattern | screens | — |
 
-Прямая ссылка экрана на primitive (`color/blue/500` вместо `action/primary`) — **DS_VIOLATION severity IMPORTANT**.
+A screen referencing a primitive directly (`color/blue/500` instead of `action/primary`) is a **DS_VIOLATION, severity IMPORTANT**.
 
-## Что считается каноном
+## What counts as canonical
 
-| Артефакт | Канон | Не канон |
+| Artifact | Canonical | Not canonical |
 |---|---|---|
-| Цвет | variable в коллекции `Color` | заливка hex в слое |
-| Отступ | значение из spacing-шкалы `<SPACING_SCALE>` | произвольное число в auto-layout |
-| Текст | text style из библиотеки | ручной размер/начертание |
-| Компонент | published-компонент библиотеки | detached-инстанс, локальная копия |
-| Иконка | компонент из icon-set библиотеки | вставленный SVG |
-| Эффект | effect style | ручная тень |
+| Color | a variable in the `Color` collection | a hex fill on a layer |
+| Spacing | a value from the `<SPACING_SCALE>` scale | an arbitrary number in auto-layout |
+| Text | a library text style | a manual size or weight |
+| Component | a published library component | a detached instance, a local copy |
+| Icon | a component from the library icon set | a pasted SVG |
+| Effect | an effect style | a hand-rolled shadow |
 
-## Потребление библиотеки
+## Consuming the library
 
-1. Продуктовый файл подключает `<DS_LIBRARY_NAME>` как внешнюю библиотеку и обновляется до актуальной опубликованной версии перед началом задачи.
-2. Работа на устаревшей версии допустима, только если это осознанно зафиксировано в `spec.md` задачи с указанием версии.
-3. Инстанс кастомизируется **только через опубликованные properties** (variants, boolean/text/instance props). Правка внутренностей инстанса = detach по смыслу, даже если Figma формально не отцепила слой.
+1. The product file links `<DS_LIBRARY_NAME>` as an external library and updates to the current published version before the task starts.
+2. Working against an outdated version is acceptable only when that is a deliberate, recorded choice in the task's `spec.md`, with the version named.
+3. An instance is customized **only through published properties** (variants, boolean/text/instance props). Editing an instance's internals amounts to a detach in spirit, even when Figma does not formally detach the layer.
 
-## Изменение библиотеки
+## Changing the library
 
-Изменение публичного компонента — breaking change (D-11). Порядок:
+Changing a public component is a breaking change (D-11). The order is:
 
-1. **DDR** — зафиксировать проблему, варианты, выбор (`per-task/DDR-TEMPLATE.md`).
-2. **Оценка радиуса** — найти всех потребителей компонента в продуктовых файлах, перечислить в DDR.
-3. **Классификация:**
-   | Тип | Пример | Требование |
+1. **DDR** — record the problem, the options, the choice (`per-task/DDR-TEMPLATE.md`).
+2. **Blast radius** — find every consumer of the component across product files and list them in the DDR.
+3. **Classification:**
+   | Type | Example | Requirement |
    |---|---|---|
-   | additive | новый вариант, новое опциональное property | changelog |
-   | modifying | изменение дефолта, размеров, поведения | changelog + уведомление потребителей |
-   | breaking | удаление варианта, переименование property, удаление компонента | DDR + deprecation-период + миграционная заметка |
-4. **Версия и changelog** — `workflows/versioning.spec.md`.
-5. **Публикация делается человеком.** Агент готовит DDR, changelog и список потребителей; кнопку Publish нажимает человек (D-02).
+   | additive | a new variant, a new optional property | changelog |
+   | modifying | changed default, sizes, behavior | changelog plus notice to consumers |
+   | breaking | removed variant, renamed property, removed component | DDR plus deprecation period plus migration note |
+4. **Version and changelog** — `workflows/versioning.spec.md`.
+5. **A human publishes.** The agent prepares the DDR, the changelog, and the consumer list; a human presses Publish (D-02).
 
 ## Deprecation
 
-Компонент не удаляется сразу. Порядок: пометить `[deprecated] <Name>` в описании → указать замену → дождаться миграции потребителей → удалить в следующей мажорной версии. Deprecated-компонент нельзя использовать в новых макетах — это DS_VIOLATION.
+A component is never deleted outright. The order: mark it `[deprecated] <Name>` in the description → name the replacement → wait for consumers to migrate → delete in the next major version. A deprecated component must not appear in new designs; doing so is a DS_VIOLATION.
 
-## Когда компонента ещё нет
+## When the component does not exist yet
 
-Если задача требует паттерна, которого нет в `<DS_LIBRARY_NAME>`:
+If a task needs a pattern that `<DS_LIBRARY_NAME>` does not have:
 
-1. Проверить, не решается ли композицией существующих (в 80% случаев решается).
-2. Если нет — собрать **локальный** компонент в продуктовом файле, пометить `🚧 <Name>` и завести задачу на промоушен в библиотеку.
-3. Локальный компонент, встретившийся на ≥2 экранах, обязан быть промоутнут (D-04).
+1. Check whether composing existing components solves it (it does about eighty percent of the time).
+2. If not, build a **local** component in the product file, mark it `🚧 <Name>`, and file a task to promote it to the library.
+3. A local component that shows up on 2+ screens must be promoted (D-04).
 
 ## Cross-refs
 
-- domain/components.spec.md — анатомия и правила самого компонента
-- domain/variables.spec.md — коллекции, режимы, алиасы
-- workflows/versioning.spec.md — версии и changelog
-- per-task/COMPONENT-TEMPLATE.md — спецификация нового компонента
+- domain/components.spec.md — anatomy and rules of the component itself
+- domain/variables.spec.md — collections, modes, aliases
+- workflows/versioning.spec.md — versions and changelog
+- per-task/COMPONENT-TEMPLATE.md — spec for a new component

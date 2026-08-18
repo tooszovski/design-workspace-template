@@ -1,166 +1,166 @@
 ---
-description: Первичная настройка design-workspace — интервью и проставление значений во все спеки
+description: First-run setup of the design workspace — interview and value substitution
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash, AskUserQuestion
 ---
 
 # /design.init
 
-Разворачивание workspace из шаблона. Выполняется **один раз** после клонирования. Идемпотентна: повторный запуск перезапишет значения, не сломав уже настроенные файлы.
+Unpacking the workspace from the template. Run **once** after cloning. Idempotent: a second run overwrites the values without breaking already-configured files.
 
-## Шаг 0 — Проверка состояния
+## Step 0 — Check the current state
 
 ```bash
 grep -rEo '<[A-Z_]+>' specs/ CLAUDE.md README.md 2>/dev/null | sed 's/.*://' | sort -u
 ```
 
-- Список пуст → workspace уже настроен. Сообщить об этом и спросить, нужно ли перенастроить. Без подтверждения — выйти.
-- Список непуст → продолжать.
+- Empty list → the workspace is already configured. Say so and ask whether to reconfigure. Without confirmation, exit.
+- Non-empty list → continue.
 
-Заодно прочитать `README.md` § «Placeholders» — там таблица всех токенов с описанием.
+Also read `README.md` § Placeholders — it holds the full token table with descriptions.
 
-## Шаг 1 — Интервью
+## Step 1 — The interview
 
-Задавать через `AskUserQuestion`, **пакетами по 2–4 вопроса**, в порядке ниже. Не задавать всё одним списком — человек не удержит контекст. Не задавать по одному — это долго.
+Ask through `AskUserQuestion`, in **batches of 2–4 questions**, in the order below. Do not dump everything as one list — the person will not hold it. Do not ask one at a time either; that is slow.
 
-Везде, где есть разумное умолчание, оно ставится первым вариантом с пометкой «(рекомендую)».
+Wherever a sensible default exists, put it first and mark it "(recommended)".
 
-### Пакет 1 — Проект
+### Batch 1 — Project
 
-| Токен | Вопрос | Умолчание |
+| Token | Question | Default |
 |---|---|---|
-| `<PROJECT_NAME>` | Название проекта (CamelCase, без пробелов) | обязательный |
-| `<ORG_NAME>` | Организация или продукт | обязательный |
-| `<PROJECT_PREFIX>` | Префикс задач в трекере (`ABC` → `ABC-142`) | обязательный |
-| `<DEV_LANGUAGE>` | Язык интерфейса продукта | `ru` |
+| `<PROJECT_NAME>` | Project name (CamelCase, no spaces) | required |
+| `<ORG_NAME>` | Organization or product | required |
+| `<PROJECT_PREFIX>` | Task prefix in the tracker (`ABC` → `ABC-142`) | required |
+| `<DEV_LANGUAGE>` | Product interface language | `en` |
 
-### Пакет 2 — Figma
+### Batch 2 — Figma
 
-| Токен | Вопрос | Умолчание |
+| Token | Question | Default |
 |---|---|---|
-| `<FIGMA_DS_FILE_KEY>` | File key файла дизайн-системы | можно пропустить |
-| `<FIGMA_PRODUCT_FILE_KEY>` | File key продуктового файла | можно пропустить |
-| `<DS_LIBRARY_NAME>` | Название библиотеки | `<PROJECT_NAME> DS` |
+| `<FIGMA_DS_FILE_KEY>` | File key of the design-system file | may be skipped |
+| `<FIGMA_PRODUCT_FILE_KEY>` | File key of the product file | may be skipped |
+| `<DS_LIBRARY_NAME>` | Library name | `<PROJECT_NAME> DS` |
 
-File key — часть ссылки: `figma.com/design/<KEY>/<name>`. Если человек вставит полную ссылку, извлечь ключ самостоятельно, не заставляя редактировать.
+The file key is part of the link: `figma.com/design/<KEY>/<name>`. If the person pastes a full URL, extract the key yourself instead of making them edit it.
 
-Если ключей пока нет — оставить как есть и предупредить, что `/design.audit` и `/design.tokens` не заработают до заполнения.
+If the keys do not exist yet, leave them and warn that `/design.audit` and `/design.tokens` will not work until they are filled in.
 
-### Пакет 3 — Платформы и шкалы
+### Batch 3 — Platforms and scales
 
-| Токен | Вопрос | Варианты |
+| Token | Question | Options |
 |---|---|---|
-| `<PLATFORMS>` | Платформы продукта (multiSelect) | Web · iOS · Android · Desktop |
-| `<SPACING_BASE>` | База spacing-шкалы | `4` (рекомендую) · `8` |
-| `<SPACING_SCALE>` | Шкала | из базы `4`: `4, 8, 12, 16, 24, 32, 48, 64`; из `8`: `8, 16, 24, 32, 48, 64` |
-| `<WCAG_LEVEL>` | Уровень доступности | `AA` (рекомендую) · `AAA` · `A` |
+| `<PLATFORMS>` | Product platforms (multiSelect) | Web · iOS · Android · Desktop |
+| `<SPACING_BASE>` | Spacing scale base | `4` (recommended) · `8` |
+| `<SPACING_SCALE>` | The scale | from base `4`: `4, 8, 12, 16, 24, 32, 48, 64`; from `8`: `8, 16, 24, 32, 48, 64` |
+| `<WCAG_LEVEL>` | Accessibility level | `AA` (recommended) · `AAA` · `A` |
 
-`<PLATFORMS>` записывается через запятую. От выбора зависят брейкпоинты в `domain/layout.spec.md` — предложить дописать их значения сразу.
+`<PLATFORMS>` is written comma-separated. Breakpoints in `domain/layout.spec.md` depend on the choice — offer to fill in their values right away.
 
-### Пакет 4 — Модули
+### Batch 4 — Modules
 
-Какие возможности включить (multiSelect, по умолчанию все, кроме последней):
+Which capabilities to enable (multiSelect, all on by default except the last):
 
-| Модуль | Что тянет за собой |
+| Module | What it pulls in |
 |---|---|
-| Аудит макета по правилам ДС | `/design.audit`, `reviewer-designsystem` |
-| Handoff-спеки для разработки | `/design.handoff`, `handoff-author`, `domain/handoff` |
-| Проверка доступности | `reviewer-a11y`, `domain/accessibility` |
-| UX-тексты | `/design.critique` в части текстов, `reviewer-ux-copy`, `domain/ux-writing` |
-| Экспорт design tokens | `/design.tokens`, `domain/tokens-export`, спросит `<TOKENS_EXPORT_PATH>` |
-| Сверка реализации с макетом | `/design.drift`, `workflows/drift-check`, спросит `<CODE_REPO_PATH>` |
+| Design audit against DS rules | `/design.audit`, `reviewer-designsystem` |
+| Handoff specs for engineering | `/design.handoff`, `handoff-author`, `domain/handoff` |
+| Accessibility checks | `reviewer-a11y`, `domain/accessibility` |
+| UX copy | the copy part of `/design.critique`, `reviewer-ux-copy`, `domain/ux-writing` |
+| Design token export | `/design.tokens`, `domain/tokens-export`, prompts for `<TOKENS_EXPORT_PATH>` |
+| Implementation drift check | `/design.drift`, `workflows/drift-check`, prompts for `<CODE_REPO_PATH>` |
 
-Отключённый модуль удаляется целиком: спеки, команда, агент, строки в `INDEX.md` и в `CLAUDE.md`. Полумеры оставляют мёртвые ссылки, которые агенты потом пытаются открыть.
+A disabled module is removed entirely: specs, command, agent, and the lines in `INDEX.md` and `CLAUDE.md`. Half-measures leave dead links that agents will later try to open.
 
-### Пакет 5 — Кодовый репозиторий
+### Batch 5 — Code repository
 
-Задаётся, только если выбран экспорт токенов или сверка реализации.
+Asked only when token export or drift check was selected.
 
-| Токен | Вопрос | Умолчание |
+| Token | Question | Default |
 |---|---|---|
-| `<CODE_REPO_PATH>` | Путь к репозиторию реализации | пусто |
-| `<TOKENS_EXPORT_PATH>` | Куда класть токены внутри него | `<CODE_REPO_PATH>/tokens` |
+| `<CODE_REPO_PATH>` | Path to the implementation repository | empty |
+| `<TOKENS_EXPORT_PATH>` | Where tokens go inside it | `<CODE_REPO_PATH>/tokens` |
 
-При непустом `<CODE_REPO_PATH>` предложить создать symlink `./code`.
+When `<CODE_REPO_PATH>` is non-empty, offer to create the `./code` symlink.
 
-### Пакет 6 — Хранилище артефактов
+### Batch 6 — Artifact storage
 
-Сначала проверить наличие Obsidian:
+First check whether Obsidian is present:
 
 ```bash
 ls -d ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/*/ 2>/dev/null
 ```
 
-| Вариант | Когда предлагать первым |
+| Option | Offer first when |
 |---|---|
-| Obsidian vault + symlink | vault найден |
-| Только репозиторий | vault не найден |
+| Obsidian vault plus symlink | a vault was found |
+| Repository only | no vault was found |
 
-При выборе Obsidian: если vault один — взять его, если несколько — дать выбрать, если ни одного — спросить путь.
+If Obsidian is chosen: one vault means take it; several means let them pick; none means ask for the path.
 
-Далее заполнить:
+Then fill in:
 
-| Токен | Obsidian | Только репозиторий |
+| Token | Obsidian | Repository only |
 |---|---|---|
-| `<TASK_SPEC_SOURCE_PATH>` | `<VAULT>/Projects/<PROJECT_NAME>/ТЗ` | название трекера или путь |
+| `<TASK_SPEC_SOURCE_PATH>` | `<VAULT>/Projects/<PROJECT_NAME>/Requirements` | tracker name or path |
 | `<PER_TASK_SPEC_LOCATION>` | `<VAULT>/Projects/<PROJECT_NAME>/Tasks` | `tasks` |
 | `<AGENT_LOGS_LOCATION>` | `<VAULT>/Projects/<PROJECT_NAME>/Agent Logs` | `tasks` |
 
-### Пакет 7 — Трекер и git
+### Batch 7 — Tracker and git
 
-| Токен | Вопрос | Умолчание |
+| Token | Question | Default |
 |---|---|---|
-| `<TRACKER_NAME>` | Трекер задач | `Jira` · `Linear` · `Bitrix24` · `YouTrack` |
-| `<TRACKER_TESTING_STATUS>` | Статус «на проверке» | `Testing` |
-| `<TRACKER_BLOCKED_STATUS>` | Статус «заблокировано» | `Blocked` |
-| `<GIT_USER_NAME>` | Имя для коммитов | из `git config user.name` |
-| `<GIT_USER_EMAIL>` | Почта для коммитов | из `git config user.email` |
-| `<COMMIT_LANGUAGE>` | Язык сообщений коммитов | `Russian` |
-| `<INTEGRATION_BRANCH>` | Интеграционная ветка | `develop` |
-| `<RELEASE_BRANCH>` | Релизная ветка | `main` |
-| `<REFERENCE_PLATFORM>` | Референс-платформа, если есть | пусто |
+| `<TRACKER_NAME>` | Task tracker | `Jira` · `Linear` · `Bitrix24` · `YouTrack` |
+| `<TRACKER_TESTING_STATUS>` | The "in review" status | `Testing` |
+| `<TRACKER_BLOCKED_STATUS>` | The "blocked" status | `Blocked` |
+| `<GIT_USER_NAME>` | Commit author name | from `git config user.name` |
+| `<GIT_USER_EMAIL>` | Commit author email | from `git config user.email` |
+| `<COMMIT_LANGUAGE>` | Commit message language | `English` |
+| `<INTEGRATION_BRANCH>` | Integration branch | `develop` |
+| `<RELEASE_BRANCH>` | Release branch | `main` |
+| `<REFERENCE_PLATFORM>` | Reference platform, if any | empty |
 
-## Шаг 2 — Подтверждение
+## Step 2 — Confirmation
 
-Показать таблицу «токен → значение» целиком и спросить подтверждение одним вопросом. Не применять ничего до явного согласия.
+Show the full token → value table and ask for confirmation in a single question. Apply nothing before explicit agreement.
 
-## Шаг 3 — Применение
+## Step 3 — Applying
 
-1. **Замена токенов** во всех `*.md`, `*.json`, `*.sh`, `*.yml` в `specs/`, `.claude/`, `bootstrap/`, `scripts/`, `CLAUDE.md`, `README.md`.
-   - Заменять только полные токены `<UPPER_CASE>`, не подстроки.
-   - Пустое значение → удалять строку с токеном, если она становится бессмысленной, иначе оставлять токен и отметить в отчёте.
-2. **Удаление отключённых модулей** — файлы спек, команд, агентов + строки в `INDEX.md`, `CLAUDE.md`, `LOADER.md`.
-3. **Брейкпоинты** — дописать в `domain/layout.spec.md` таблицу под выбранные `<PLATFORMS>`.
-4. **Spacing-шкала** — проставить значения в `domain/variables.spec.md`.
-5. **Obsidian** (если выбран):
-   - `mkdir -p` для `ТЗ`, `Tasks`, `Agent Logs`
-   - перенести `specs/` в `<VAULT>/Projects/<PROJECT_NAME>/Specs/`, оставить symlink
-   - дописать `/specs` в `.gitignore`
-6. **Symlink `./code`** (если задан `<CODE_REPO_PATH>`).
-7. **MCP** — скопировать `.mcp.json.example` → `.mcp.json`, если его нет; напомнить про токен Figma.
-8. **settings.local.json** — скопировать из `.example`, если его нет.
-9. **git config** — предложить проставить `user.name` / `user.email` в этом репозитории.
+1. **Token substitution** across every `*.md`, `*.json`, `*.sh`, `*.yml` in `specs/`, `.claude/`, `bootstrap/`, `scripts/`, plus `CLAUDE.md` and `README.md`.
+   - Replace whole `<UPPER_CASE>` tokens only, never substrings.
+   - An empty value: drop the line carrying the token when it becomes meaningless; otherwise leave the token and note it in the report.
+2. **Remove disabled modules** — spec, command, and agent files plus the lines in `INDEX.md`, `CLAUDE.md`, and `LOADER.md`.
+3. **Breakpoints** — write the table in `domain/layout.spec.md` for the chosen `<PLATFORMS>`.
+4. **Spacing scale** — write the values into `domain/variables.spec.md`.
+5. **Obsidian** (if chosen):
+   - `mkdir -p` for `Requirements`, `Tasks`, `Agent Logs`
+   - move `specs/` into `<VAULT>/Projects/<PROJECT_NAME>/Specs/` and leave a symlink
+   - append `/specs` to `.gitignore`
+6. **The `./code` symlink** (if `<CODE_REPO_PATH>` was set).
+7. **MCP** — copy `.mcp.json.example` → `.mcp.json` if it is missing; remind them about the Figma token.
+8. **settings.local.json** — copy from the `.example` if it is missing.
+9. **git config** — offer to set `user.name` and `user.email` in this repository.
 
-## Шаг 4 — Проверка
+## Step 4 — Verification
 
 ```bash
 ./scripts/validate-specs.sh
 grep -rEo '<[A-Z_]+>' specs/ CLAUDE.md README.md | sed 's/.*://' | sort -u
 ```
 
-Второй вывод должен быть пуст. Оставшиеся токены перечислить человеку с указанием файлов.
+The second output should be empty. List any surviving tokens with the files they sit in.
 
-## Шаг 5 — Отчёт
+## Step 5 — Report
 
-Вывести:
+Print:
 
-- таблицу проставленных значений
-- список удалённых модулей
-- что осталось сделать руками: заполнить словарь терминов в `domain/ux-writing.spec.md`, брейкпоинты в `domain/layout.spec.md`, проверить Constitution в `core/project.spec.md §1`, добавить токен Figma в `.mcp.json`
-- предложить первую задачу: «попробуем `/design.audit` на любом фрейме?»
+- the table of applied values
+- the list of removed modules
+- what is left to do by hand: fill in the glossary in `domain/ux-writing.spec.md`, the breakpoints in `domain/layout.spec.md`, review the Constitution in `core/project.spec.md §1`, add the Figma token to `.mcp.json`
+- an offer for the first task: "want to try `/design.audit` on a frame?"
 
-## Чего не делать
+## What not to do
 
-- Не задавать вопросы, ответ на которые уже есть в окружении (git config, наличие vault, содержимое `.mcp.json`) — прочитать и предложить как умолчание.
-- Не применять изменения до подтверждения на шаге 2.
-- Не оставлять частично удалённые модули.
-- Не трогать `core/project.spec.md §1.1 Overrides` — это зона человека.
+- Do not ask questions the environment already answers (git config, whether a vault exists, the contents of `.mcp.json`) — read them and offer them as defaults.
+- Do not apply changes before the step 2 confirmation.
+- Do not leave partially removed modules.
+- Do not touch `core/project.spec.md §1.1 Overrides` — that belongs to the human.

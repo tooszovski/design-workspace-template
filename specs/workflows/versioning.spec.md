@@ -1,99 +1,99 @@
 ---
 name: versioning
 layer: workflow
-purpose: Версии дизайн-системы, changelog, классификация изменений, deprecation, миграция потребителей
+purpose: Design-system versions, changelog, change classification, deprecation, consumer migration
 applies_to:
-  task_keywords: ["версия", "version", "changelog", "релиз библиотеки", "публикация", "deprecation", "миграция", "breaking"]
+  task_keywords: ["version", "changelog", "library release", "publish", "deprecation", "migration", "breaking"]
   loaded_for_modes: ["full"]
 owner: design-lead
 ---
 
 # Design System Versioning
 
-Библиотека `<DS_LIBRARY_NAME>` версионируется как API, потому что она им и является.
+`<DS_LIBRARY_NAME>` is versioned like an API, because that is what it is.
 
-## Схема версий
+## Version scheme
 
 ```
 MAJOR.MINOR.PATCH
 ```
 
-| Часть | Когда растёт | Примеры |
+| Part | When it increments | Examples |
 |---|---|---|
-| **MAJOR** | breaking change | удалён компонент, переименовано property, удалена variable, изменена семантика роли |
-| **MINOR** | additive | новый компонент, новый вариант, новое опциональное property, новая variable |
-| **PATCH** | fix | исправлен контраст, поправлен отступ внутри компонента, уточнено описание |
+| **MAJOR** | breaking change | a component removed, a property renamed, a variable deleted, a role's semantics changed |
+| **MINOR** | additive | a new component, a new variant, a new optional property, a new variable |
+| **PATCH** | fix | corrected contrast, adjusted spacing inside a component, clarified description |
 
-Изменение дефолтного значения — MAJOR, а не PATCH: оно молча меняет все существующие инстансы.
+Changing a default value is MAJOR, not PATCH: it silently alters every existing instance.
 
-## Классификация изменения
+## Classifying a change
 
-Перед публикацией каждое изменение относится к одной из категорий:
+Before publishing, every change lands in one of three categories:
 
-| Категория | Что требуется |
+| Category | What it requires |
 |---|---|
-| additive | строка в changelog |
-| modifying | changelog + список затронутых экранов + уведомление разработки |
-| breaking | DDR + deprecation-период + миграционная заметка + согласование с разработкой |
+| additive | a changelog line |
+| modifying | changelog plus the list of affected screens plus notice to engineering |
+| breaking | DDR plus deprecation period plus migration note plus sign-off from engineering |
 
-Категория определяется по последствию для потребителя, а не по объёму работы. Правка одного пикселя в дефолте кнопки — modifying.
+The category follows from the consequence for consumers, not from the amount of work. Nudging one pixel in a button's default is modifying.
 
 ## Changelog
 
-Живёт в `<PER_TASK_SPEC_LOCATION>/../DS-CHANGELOG.md` (или в vault рядом со Specs). Формат:
+Lives in `<PER_TASK_SPEC_LOCATION>/../DS-CHANGELOG.md` (or in the vault next to Specs). Format:
 
 ```markdown
 ## 2.3.0 — 2026-03-14
 
 ### Added
-- `Card/Product` — вариант `compact` для узких брейкпоинтов
+- `Card/Product` — `compact` variant for narrow breakpoints
 
 ### Changed
-- `Button/Primary` — высота `md` 40→44pt для соответствия тач-таргету (modifying, затронуты: Checkout, Profile)
+- `Button/Primary` — `md` height 40→44pt to meet the touch-target floor (modifying, affects: Checkout, Profile)
 
 ### Deprecated
-- `Input/Legacy` — использовать `Input/Text`; удаление в 3.0.0
+- `Input/Legacy` — use `Input/Text`; removal in 3.0.0
 
 ### Removed
 - —
 
 ### Fixed
-- `status/warning-surface` — контраст 3.9:1 → 4.6:1
+- `status/warning-surface` — contrast 3.9:1 → 4.6:1
 ```
 
-Пустые разделы оставляются: их отсутствие читается как «забыли», а не «не было».
+Empty sections stay: their absence reads as "we forgot", not as "there were none".
 
 ## Deprecation
 
-| Шаг | Действие |
+| Step | Action |
 |---|---|
-| 1 | Пометить компонент `[deprecated] <Name>` в описании, указать замену |
-| 2 | Внести в changelog с указанием версии удаления |
-| 3 | Составить список потребителей и завести задачи на миграцию |
-| 4 | Дождаться миграции; удалить в следующей MAJOR |
+| 1 | Mark the component `[deprecated] <Name>` in its description and name the replacement |
+| 2 | Record it in the changelog with the removal version |
+| 3 | List the consumers and file migration tasks |
+| 4 | Wait for migration; remove in the next MAJOR |
 
-Deprecated-компонент в новом макете — `DS_VIOLATION severity CRITICAL`.
+A deprecated component in a new design is a `DS_VIOLATION, severity CRITICAL`.
 
-Компонент не удаляется тем же релизом, в котором объявлен устаревшим, даже если потребителей ноль: у токенов и кода свой цикл обновления.
+A component is never removed in the same release that deprecates it, even with zero consumers: tokens and code follow their own update cycle.
 
-## Публикация
+## Publishing
 
-Готовит агент, нажимает человек (D-02). Пакет к публикации:
+The agent prepares it; a human presses the button (D-02). The publication package:
 
-- [ ] Версия определена по схеме выше
-- [ ] Changelog написан
-- [ ] Все breaking-изменения имеют DDR
-- [ ] Список потребителей составлен
-- [ ] Экспорт токенов перезапущен **после** публикации (`domain/tokens-export.spec.md`)
-- [ ] Разработка уведомлена, если категория ≠ additive
+- [ ] The version is derived from the scheme above
+- [ ] The changelog is written
+- [ ] Every breaking change has a DDR
+- [ ] The consumer list is compiled
+- [ ] The token export is rerun **after** publication (`domain/tokens-export.spec.md`)
+- [ ] Engineering is notified when the category is anything other than additive
 
-## Версия в продуктовом файле
+## The version in the product file
 
-Актуальная потребляемая версия указана на `📐 Cover` продуктового файла. Задача начинается со сверки: работа на устаревшей версии допустима, только если это зафиксировано в `spec.md`.
+The current consumed version sits on the product file's `📐 Cover`. A task begins by checking it: working against an outdated version is acceptable only when recorded in `spec.md`.
 
 ## Cross-refs
 
-- core/design-system.spec.md — правила изменения библиотеки
-- domain/components.spec.md — properties как API
-- domain/tokens-export.spec.md — синхронизация токенов
-- per-task/DDR-TEMPLATE.md — фиксация breaking-решений
+- core/design-system.spec.md — rules for changing the library
+- domain/components.spec.md — properties as an API
+- domain/tokens-export.spec.md — token synchronization
+- per-task/DDR-TEMPLATE.md — recording breaking decisions

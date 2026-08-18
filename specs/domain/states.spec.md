@@ -1,88 +1,88 @@
 ---
 name: states
 layer: domain
-purpose: Обязательные состояния экрана и элемента, матрица покрытия, states-контракт
+purpose: Required screen and element states, the coverage matrix, the states contract
 applies_to:
-  task_keywords: ["состояние", "state", "empty", "loading", "error", "ошибка", "пустой", "загрузка", "скелетон", "skeleton"]
-  triggers: ["любая задача, где проектируется экран с данными"]
+  task_keywords: ["state", "empty", "loading", "error", "skeleton"]
+  triggers: ["any task designing a screen that displays data"]
 owner: reviewer-designsystem
 ---
 
 # States
 
-D-05: экран не сдан, пока не покрыты все применимые состояния. Это **контракт**, а не рекомендация.
+D-05: a screen is not done until every applicable state is covered. This is a **contract**, not a recommendation.
 
-## Состояния экрана
+## Screen states
 
-| Состояние | Когда возникает | Что обязано быть |
+| State | When it happens | What it must contain |
 |---|---|---|
-| **empty** | данных нет и это норма | объяснение, почему пусто, и действие для выхода из пустоты |
-| **empty-filtered** | данных нет из-за фильтра/поиска | текст со ссылкой на сброс фильтра — отличается от `empty` |
-| **loading** | данные грузятся | скелетон по форме будущего контента; спиннер — только для <400мс операций |
-| **partial** | часть данных пришла | что показывать в незагруженной части |
-| **error** | запрос упал | причина человеческим языком + повтор действия |
-| **offline** | нет сети | отличается от `error`: показать, что доступно из кэша |
-| **success** | действие завершилось | подтверждение и следующий шаг |
-| **data** | нормальный сценарий | базовый макет |
+| **empty** | there is no data and that is normal | why it is empty and an action that gets the user out of it |
+| **empty-filtered** | no data because of a filter or search | text with a way to clear the filter — distinct from `empty` |
+| **loading** | data is being fetched | a skeleton shaped like the coming content; a spinner only for operations under 400ms |
+| **partial** | some data has arrived | what to show in the unloaded part |
+| **error** | the request failed | the cause in human language plus a way to retry |
+| **offline** | no network | distinct from `error`: show what is available from cache |
+| **success** | an action completed | confirmation and the next step |
+| **data** | the normal path | the base design |
 
-**Неприменимость фиксируется явно** в spec.md задачи: `offline — н/п, экран доступен только онлайн`. Молчание неприменимостью не считается.
+**Non-applicability is stated explicitly** in the task's `spec.md`: `offline — n/a, the screen is online-only`. Silence does not count as non-applicability.
 
-## Состояния элемента
+## Element states
 
-Для интерактивных элементов: `default`, `hover` (указательные устройства), `pressed`, `focused` (обязательно — `domain/accessibility.spec.md`), `disabled`, `loading` (если действие асинхронное), `error` (если элемент валидируется), `read-only` (если отличается от `disabled`).
+For interactive elements: `default`, `hover` (pointer devices), `pressed`, `focused` (mandatory — `domain/accessibility.spec.md`), `disabled`, `loading` (if the action is async), `error` (if the element validates), `read-only` (if it differs from `disabled`).
 
-`focused` ≠ `hover`. Отсутствие видимого фокуса делает интерфейс непроходимым с клавиатуры.
+`focused` is not `hover`. Without a visible focus state the interface cannot be traversed by keyboard.
 
-## Матрица покрытия
+## The coverage matrix
 
-В `spec.md` задачи заполняется таблица — она же чеклист сдачи:
+Filled into the task's `spec.md` — it doubles as the handoff checklist:
 
-| Экран | empty | empty-filtered | loading | error | offline | success | data |
+| Screen | empty | empty-filtered | loading | error | offline | success | data |
 |---|---|---|---|---|---|---|---|
-| Список заказов | ✅ | ✅ | ✅ | ✅ | н/п | — | ✅ |
+| Order list | ✅ | ✅ | ✅ | ✅ | n/a | — | ✅ |
 
-Значения: `✅` собрано, `н/п` неприменимо с обоснованием, `—` не требуется по типу экрана. Пустая клетка = задача не готова.
+Values: `✅` built, `n/a` not applicable with a reason, `—` not required for this screen type. An empty cell means the task is not ready.
 
-## Тексты состояний
+## State copy
 
-Каждое состояние — это текст, а не только картинка. Требования — в `domain/ux-writing.spec.md`:
+Every state is text, not just an illustration. Requirements live in `domain/ux-writing.spec.md`:
 
-- **empty**: что здесь появится и как это получить. Не «Ничего не найдено».
-- **error**: что случилось, что делать. Без кодов ошибок в основном тексте и без «Что-то пошло не так».
-- **loading**: молчит, если быстрое; поясняет, если дольше 3 секунд.
+- **empty**: what will appear here and how to get it. Not "Nothing found".
+- **error**: what happened and what to do. No error codes in the primary text, no "Something went wrong".
+- **loading**: silent when fast; explanatory past three seconds.
 
-## Переходы
+## Transitions
 
-Состояния связаны переходами, и переходы тоже проектируются:
+States are joined by transitions, and transitions are designed too:
 
-- `loading → error` — что мигает, что остаётся на месте
-- `empty → data` после первого добавления
-- `error → loading` при повторе
-- Не должно быть скачков раскладки между состояниями: скелетон повторяет геометрию контента.
+- `loading → error` — what flickers, what stays put
+- `empty → data` after the first item is added
+- `error → loading` on retry
+- No layout jumps between states: the skeleton mirrors the geometry of the content.
 
-## States-контракт (для Standard/Full)
+## The states contract (Standard/Full)
 
-Аналог TDD в дизайне — состояния собираются **до** финальной полировки:
+The design equivalent of TDD — states are built **before** final polish:
 
-| Шаг | Что делается |
+| Step | What happens |
 |---|---|
-| **4a** | Заполнить матрицу покрытия в `spec.md`. Ни одного пустого поля. |
-| **4b** | Собрать каждое отмеченное состояние отдельным фреймом по `core/naming.spec.md`. |
-| **4c** | Проверка: каждая `✅` в матрице имеет реальный фрейм в Figma. Расхождение — FAIL. |
+| **4a** | Fill the coverage matrix in `spec.md`. No empty cells. |
+| **4b** | Build each marked state as its own frame per `core/naming.spec.md`. |
+| **4c** | Verify: every `✅` in the matrix has a real frame in Figma. A mismatch is a FAIL. |
 
-Полировка `data`-состояния до того, как собраны `empty` и `error`, — типичная ошибка, из-за которой они не появляются никогда.
+Polishing the `data` state before `empty` and `error` exist is the classic mistake that keeps them from ever appearing.
 
 ## Findings
 
-| Код | Severity | Когда |
+| Code | Severity | When |
 |---|---|---|
-| `STATE_MISSING` | IMPORTANT | нет `hover`/`pressed`; `empty-filtered` слит с `empty` |
-| `STATE_MISSING` | CRITICAL | нет `empty`, `loading` или `error` без обоснования; нет `focused`; клетка матрицы пуста |
-| `STATE` | IMPORTANT | скачок раскладки между состояниями; текст состояния не по `ux-writing` |
+| `STATE_MISSING` | IMPORTANT | no `hover`/`pressed`; `empty-filtered` merged into `empty` |
+| `STATE_MISSING` | CRITICAL | no `empty`, `loading`, or `error` without a reason; no `focused`; an empty matrix cell |
+| `STATE` | IMPORTANT | layout jump between states; state copy that ignores `ux-writing` |
 
 ## Cross-refs
 
-- domain/components.spec.md — состояния компонента
-- domain/ux-writing.spec.md — тексты состояний
-- domain/accessibility.spec.md — фокус
-- workflows/handoff-quality.spec.md — гейты сдачи
+- domain/components.spec.md — component states
+- domain/ux-writing.spec.md — state copy
+- domain/accessibility.spec.md — focus
+- workflows/handoff-quality.spec.md — handoff gates

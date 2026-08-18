@@ -1,79 +1,79 @@
 ---
 name: typography
 layer: domain
-purpose: Типографическая шкала, text styles, читаемость, длина строки, локализация текста
+purpose: Type scale, text styles, readability, line length, text growth under localization
 applies_to:
-  task_keywords: ["шрифт", "типографика", "typography", "текст", "text style", "заголовок", "кегль", "интерлиньяж"]
-  triggers: ["задача вводит новые текстовые стили или меняет иерархию текста"]
+  task_keywords: ["typography", "font", "text", "text style", "heading", "type size", "leading"]
+  triggers: ["task introduces new text styles or changes text hierarchy"]
 owner: reviewer-designsystem
 ---
 
 # Typography
 
-## Шкала
+## The scale
 
-Типографика живёт как **text styles** + variables (`font/<группа>/<размер>`), не как ручные значения.
+Typography lives as **text styles** plus variables (`font/<group>/<size>`), never as manual values.
 
-| Группа | Назначение | Диапазон |
+| Group | Purpose | Range |
 |---|---|---|
-| `display` | крупные промо-заголовки | самые большие кегли |
-| `heading` | иерархия страницы: `xl` / `lg` / `md` / `sm` | — |
-| `body` | основной текст: `lg` / `md` / `sm` | `md` — базовый |
-| `label` | подписи к контролам, кнопки | — |
-| `caption` | сноски, метаданные | минимальный допустимый кегль |
-| `code` | моноширинный | — |
+| `display` | large promotional headlines | the biggest sizes |
+| `heading` | page hierarchy: `xl` / `lg` / `md` / `sm` | — |
+| `body` | main text: `lg` / `md` / `sm` | `md` is the base |
+| `label` | control captions, buttons | — |
+| `caption` | footnotes, metadata | the smallest permitted size |
+| `code` | monospace | — |
 
-Количество ступеней ограничено: если в макете 14 разных кеглей, иерархии нет.
+The number of steps is limited: fourteen distinct sizes in a design means there is no hierarchy.
 
-## Обязательные параметры стиля
+## Required style parameters
 
-Стиль неполон без всех четырёх: **кегль, интерлиньяж, начертание, трекинг**. Интерлиньяж задаётся в процентах или множителем, не в фиксированных пикселях — иначе локализация с диакритикой обрежет символы.
+A style is incomplete without all four: **size, line height, weight, tracking**. Line height is set in percent or as a multiplier, never in fixed pixels — otherwise localization with diacritics clips glyphs.
 
-Ориентиры интерлиньяжа: заголовки 110–125%, основной текст 140–150%, caption 130–140%.
+Line-height guidance: headings 110–125%, body text 140–150%, caption 130–140%.
 
-## Читаемость
+## Readability
 
-| Параметр | Норма |
+| Parameter | Target |
 |---|---|
-| Длина строки основного текста | 45–75 символов |
-| Минимальный кегль интерфейсного текста | 12pt (`caption`), для основного — не ниже 14pt |
-| Выравнивание основного текста | по левому краю; justify запрещён |
-| Заглавные буквы | только для коротких `label`, никогда для предложений |
-| Перенос | без ручных переносов и `<br>` внутри абзаца |
+| Body line length | 45–75 characters |
+| Minimum UI text size | 12pt (`caption`); body text no smaller than 14pt |
+| Body text alignment | left; justified is forbidden |
+| All caps | short `label` only, never sentences |
+| Hyphenation | no manual hyphens or `<br>` inside a paragraph |
 
-## Иерархия
+## Hierarchy
 
-На экране одновременно различимы максимум три уровня текстовой важности. Различие уровней строится на кегле **и** цвете (`text/primary` → `text/secondary`), не на одном только начертании.
+At most three levels of textual importance are distinguishable on one screen at a time. Levels are separated by size **and** color (`text/primary` → `text/secondary`), not by weight alone.
 
-Один экран — один `heading/xl`. Два главных заголовка = дефект иерархии (D-10).
+One screen, one `heading/xl`. Two top-level headings is a hierarchy defect (D-10).
 
-## Локализация и рост текста
+## Localization and text growth
 
-Макет обязан выдерживать рост длины текста:
+The design must absorb text growth:
 
-| Язык-источник → цель | Запас |
+| Source → target | Headroom |
 |---|---|
 | en → de / fi / ru | +30–35% |
-| en → ar / he | +20% и зеркальная раскладка |
-| любой → zh / ja | текст короче, но выше строка |
+| en → ar / he | +20% plus mirrored layout |
+| any → zh / ja | shorter text, taller line |
 
-Проверяется на самых узких элементах: кнопки, табы, чипсы, метки полей. Обрезание троеточием допустимо только там, где полный текст доступен иначе (tooltip, экран деталей).
+Check it on the tightest elements: buttons, tabs, chips, field labels. Ellipsis truncation is acceptable only where the full text is reachable another way (tooltip, detail screen).
 
-## Динамический размер шрифта
+## Dynamic type
 
-Если `<PLATFORMS>` включает мобильные ОС, макет учитывает системное увеличение шрифта: при 200% раскладка переходит в вертикальную, а не обрезает текст. Фиксированная высота текстового контейнера — дефект.
+If `<PLATFORMS>` includes mobile operating systems, the design accounts for system font scaling: at 200% the layout reflows vertically instead of clipping. A fixed-height text container is a defect.
 
 ## Findings
 
-| Код | Severity | Когда |
+| Code | Severity | When |
 |---|---|---|
-| `TYPO` | MINOR | трекинг не задан; длина строки чуть вне нормы |
-| `TYPO` | IMPORTANT | ручной кегль вместо text style; интерлиньяж в пикселях; >3 уровней иерархии на экране |
-| `TYPO` | CRITICAL | кегль ниже минимального; фиксированная высота у растущего текста; два `heading/xl` на экране |
+| `TYPO` | MINOR | tracking unset; line length slightly out of range |
+| `TYPO` | IMPORTANT | manual size instead of a text style; line height in pixels; more than three hierarchy levels on a screen |
+| `TYPO` | CRITICAL | size below the minimum; fixed height on growing text; two `heading/xl` on one screen |
 
 ## Cross-refs
 
-- domain/variables.spec.md — коллекция Typography
-- domain/layout.spec.md — поведение при росте контента
-- domain/ux-writing.spec.md — сами тексты
-- domain/accessibility.spec.md — динамический шрифт
+- domain/variables.spec.md — the Typography collection
+- domain/layout.spec.md — behavior as content grows
+- domain/ux-writing.spec.md — the text itself
+- domain/accessibility.spec.md — dynamic type

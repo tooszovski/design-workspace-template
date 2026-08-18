@@ -1,5 +1,5 @@
 {
-  "_comment": "Скопировать в .claude/settings.local.json (gitignored) и адаптировать. Снимает большинство permission prompts. Не коммитить settings.local.json.",
+  "_comment": "Copy to .claude/settings.local.json (gitignored) and adapt. Removes most permission prompts. Do not commit settings.local.json.",
   "permissions": {
     "allow": [
       "mcp__figma__get_figma_data",

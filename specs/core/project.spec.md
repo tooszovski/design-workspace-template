@@ -1,7 +1,7 @@
 ---
 name: project
 layer: core
-purpose: Constitution D-01..D-14, Definition of Done, источники правды, три уровня SDD
+purpose: Constitution D-01..D-14, Definition of Done, sources of truth, three SDD levels
 always_loaded: true
 owner: design-lead
 ---
@@ -10,89 +10,89 @@ owner: design-lead
 
 ## §1 Constitution (D-01..D-14)
 
-Правила, которые не нарушаются без явного письменного исключения в §1.1.
+Rules that are not broken without an explicit written exception in §1.1.
 
-| ID | Правило |
+| ID | Rule |
 |---|---|
-| **D-01** | **Figma — единственный source of truth визуала.** Любой `.md` описывает макет, но не заменяет его. При расхождении прав макет. |
-| **D-02** | **Claude read-only в Figma.** Чтение через MCP разрешено всегда, запись — никогда без явной команды человека в текущей сессии. Изменения оформляются как инструкция человеку, не как автоправка. |
-| **D-03** | **Ноль хардкода.** Цвет, отступ, радиус, шрифт, тень — только через variable/style дизайн-системы. Сырое значение допустимо лишь как временный эксперимент, помеченный `🚧` в имени слоя. |
-| **D-04** | **Компонент вместо копии.** Повторяющийся на ≥2 экранах паттерн живёт как компонент ДС `<DS_LIBRARY_NAME>`, не как detached-копия. |
-| **D-05** | **Все состояния обязательны.** Экран не сдан, пока не покрыты empty / loading / error / success / disabled-варианты, применимые к нему. Неприменимость фиксируется явно, а не молчанием. |
-| **D-06** | **WCAG `<WCAG_LEVEL>` — минимум.** Контраст, размер тач-таргета, порядок фокуса, текстовые альтернативы проверяются до сдачи. |
-| **D-07** | **Нейминг по контракту** `core/naming.spec.md`. Слой без осмысленного имени = технический долг. |
-| **D-08** | **Adaptive by default.** Каждый макет отвечает на вопрос, что происходит на минимальном и максимальном брейкпоинте `<PLATFORMS>`. |
-| **D-09** | **Контент реалистичный.** Никаких `Lorem ipsum`, `Иван Иванов` и идеальной длины строки — крайние случаи (пустая строка, очень длинная строка, ноль элементов, 999+) присутствуют в макете. |
-| **D-10** | **Один экран — одна главная задача.** Если на экране два равнозначных primary-действия, это дефект иерархии, а не вкусовщина. |
-| **D-11** | **Изменение публичного компонента ДС — breaking change.** Требует DDR, версии и списка затронутых потребителей (`workflows/versioning.spec.md`). |
-| **D-12** | **Handoff самодостаточен.** Разработчик обязан реализовать экран, не задавая вопросов дизайнеру. Всё, что он спросит, — дефект спеки. |
-| **D-13** | **Решения фиксируются.** Выбор между валидными альтернативами → DDR (`per-task/DDR-TEMPLATE.md`), а не устная договорённость. |
-| **D-14** | **Терминология едина.** Одна сущность — одно слово в макете, в UX-тексте, в спеке и в коде. Словарь — `domain/ux-writing.spec.md`. |
+| **D-01** | **Figma is the single source of truth for visuals.** Any `.md` describes the design but never replaces it. On conflict, the file wins. |
+| **D-02** | **Claude is read-only in Figma.** Reading through MCP is always allowed; writing never is, absent an explicit human instruction in the current session. Changes are delivered as instructions for a human, not as automatic edits. |
+| **D-03** | **Zero hardcoded values.** Color, spacing, radius, type, shadow — only through a design-system variable or style. A raw value is acceptable only as a temporary experiment, marked `🚧` in the layer name. |
+| **D-04** | **A component, not a copy.** A pattern that appears on 2+ screens lives as a `<DS_LIBRARY_NAME>` component, not as a detached copy. |
+| **D-05** | **Every state is mandatory.** A screen is not done until empty / loading / error / success / disabled variants that apply to it are covered. Non-applicability is stated explicitly, not implied by silence. |
+| **D-06** | **WCAG `<WCAG_LEVEL>` is the floor.** Contrast, touch-target size, focus order, and text alternatives are verified before handoff. |
+| **D-07** | **Naming follows the contract** in `core/naming.spec.md`. A layer without a meaningful name is technical debt. |
+| **D-08** | **Adaptive by default.** Every design answers what happens at the smallest and largest breakpoint of `<PLATFORMS>`. |
+| **D-09** | **Content is realistic.** No `Lorem ipsum`, no `John Doe`, no conveniently perfect line lengths — edge cases (empty string, very long string, zero items, 999+) appear in the design. |
+| **D-10** | **One screen, one primary job.** Two equally weighted primary actions on a screen is a hierarchy defect, not a matter of taste. |
+| **D-11** | **Changing a public DS component is a breaking change.** It requires a DDR, a version bump, and a list of affected consumers (`workflows/versioning.spec.md`). |
+| **D-12** | **Handoff is self-sufficient.** An engineer must be able to build the screen without asking the designer anything. Every question they ask is a defect in the spec. |
+| **D-13** | **Decisions are recorded.** A choice between valid alternatives goes into a DDR (`per-task/DDR-TEMPLATE.md`), not into a verbal agreement. |
+| **D-14** | **Terminology is unified.** One entity, one word — in the design, in the UX copy, in the spec, and in the code. The glossary lives in `domain/ux-writing.spec.md`. |
 
 ### §1.1 Overrides
 
-Проектные исключения из Constitution. Каждое — с причиной и датой. Пусто = исключений нет.
+Project-specific exceptions to the Constitution. Each one carries a reason and a date. Empty means no exceptions.
 
-| ID | Исключение | Причина | Дата |
+| ID | Exception | Reason | Date |
 |---|---|---|---|
 | — | — | — | — |
 
 ## §2 Definition of Done
 
-Задача закрыта, когда выполнено **всё**:
+A task is closed when **all** of the following hold:
 
-- [ ] Макет собран в `<FIGMA_PRODUCT_FILE_KEY>`, фрейм назван по `core/naming.spec.md`
-- [ ] Все применимые состояния присутствуют (`domain/states.spec.md`)
-- [ ] Ноль detached-инстансов и хардкод-значений (`/design.audit` чистый)
-- [ ] Контраст и тач-таргеты проходят WCAG `<WCAG_LEVEL>` (`domain/accessibility.spec.md`)
-- [ ] Брейкпоинты `<PLATFORMS>` покрыты (`domain/layout.spec.md`)
-- [ ] UX-тексты вычитаны, термины из словаря (`domain/ux-writing.spec.md`)
-- [ ] Handoff-спека написана и самодостаточна (`domain/handoff.spec.md`)
-- [ ] Прототип покрывает основной happy path (если задача этого требует)
-- [ ] `worklog.md` закрыт строкой `— DONE: ...`
-- [ ] Задача переведена в `<TRACKER_TESTING_STATUS>` в `<TRACKER_NAME>`
+- [ ] The design is built in `<FIGMA_PRODUCT_FILE_KEY>`, frame named per `core/naming.spec.md`
+- [ ] All applicable states are present (`domain/states.spec.md`)
+- [ ] Zero detached instances and zero hardcoded values (`/design.audit` is clean)
+- [ ] Contrast and touch targets pass WCAG `<WCAG_LEVEL>` (`domain/accessibility.spec.md`)
+- [ ] Breakpoints for `<PLATFORMS>` are covered (`domain/layout.spec.md`)
+- [ ] UX copy is proofread, terms come from the glossary (`domain/ux-writing.spec.md`)
+- [ ] The handoff spec is written and self-sufficient (`domain/handoff.spec.md`)
+- [ ] The prototype covers the main happy path (if the task calls for one)
+- [ ] `worklog.md` is closed with a `— DONE: ...` line
+- [ ] The task is moved to `<TRACKER_TESTING_STATUS>` in `<TRACKER_NAME>`
 
-## §3 Источники правды
+## §3 Sources of truth
 
-| Что | Где | Кто владеет |
+| What | Where | Owner |
 |---|---|---|
-| Визуал экранов | Figma `<FIGMA_PRODUCT_FILE_KEY>` | дизайнер |
-| Компоненты, variables, стили | Figma `<FIGMA_DS_FILE_KEY>` (`<DS_LIBRARY_NAME>`) | владелец ДС |
-| Продуктовые требования | `<TASK_SPEC_SOURCE_PATH>` | продукт |
-| Правила дизайна | `specs/` (этот репозиторий) | дизайн-лид |
-| Токены в коде | `<TOKENS_EXPORT_PATH>` | генерируются из Figma, руками не правятся |
-| Реализация | `<CODE_REPO_PATH>` | разработка |
-| Референс-платформа | `<REFERENCE_PLATFORM>` | — |
+| Screen visuals | Figma `<FIGMA_PRODUCT_FILE_KEY>` | designer |
+| Components, variables, styles | Figma `<FIGMA_DS_FILE_KEY>` (`<DS_LIBRARY_NAME>`) | DS owner |
+| Product requirements | `<TASK_SPEC_SOURCE_PATH>` | product |
+| Design rules | `specs/` (this repository) | design lead |
+| Tokens in code | `<TOKENS_EXPORT_PATH>` | generated from Figma, never edited by hand |
+| Implementation | `<CODE_REPO_PATH>` | engineering |
+| Reference platform | `<REFERENCE_PLATFORM>` | — |
 
-Конфликт источников → выше по таблице побеждает. Конфликт визуала и требований → Tier 2 stop.
+When sources conflict, the one higher in this table wins. When visuals conflict with requirements, that is a Tier 2 stop.
 
-## §4 Три уровня SDD
+## §4 Three SDD levels
 
-| Уровень | Артефакт | Когда |
+| Level | Artifact | When |
 |---|---|---|
-| **PROJECT** | этот файл + весь `core/` | всегда |
-| **EPIC** | `<PER_TASK_SPEC_LOCATION>/<epic-id>/epic.md` по `per-epic/EPIC-TEMPLATE.md` | раздел / поток из нескольких экранов |
-| **TASK** | `<PER_TASK_SPEC_LOCATION>/<task-id>/spec.md` по `per-task/DESIGN-TASK-TEMPLATE.spec.md` или `QUICK-TEMPLATE.spec.md` | каждая задача |
+| **PROJECT** | this file plus all of `core/` | always |
+| **EPIC** | `<PER_TASK_SPEC_LOCATION>/<epic-id>/epic.md` per `per-epic/EPIC-TEMPLATE.md` | a section or flow spanning several screens |
+| **TASK** | `<PER_TASK_SPEC_LOCATION>/<task-id>/spec.md` per `per-task/DESIGN-TASK-TEMPLATE.spec.md` or `QUICK-TEMPLATE.spec.md` | every task |
 
-DDR (`per-task/DDR-TEMPLATE.md`) прикладывается, если pre-spec ссылается на конкретные DDR-ID.
+A DDR (`per-task/DDR-TEMPLATE.md`) is attached when the pre-spec references specific DDR IDs.
 
-## §5 Где живут per-task артефакты
+## §5 Where per-task artifacts live
 
 ```
 <PER_TASK_SPEC_LOCATION>/<task-id>/
 ├── spec.md          — pre-spec (DESIGN-TASK / QUICK)
-├── worklog.md       — append-only лог, закрывается строкой `— DONE: ...`
-├── handoff.md       — спека для разработки
-├── critique.md      — findings ревью (если были)
-├── ddr-NNN.md       — design decision records (если были)
-└── agent-log.md     — финальный отчёт агентной сессии
+├── worklog.md       — append-only log, closed with `— DONE: ...`
+├── handoff.md       — spec for engineering
+├── critique.md      — review findings (if any)
+├── ddr-NNN.md       — design decision records (if any)
+└── agent-log.md     — final report of the agent session
 ```
 
-`<task-id>` = `<PROJECT_PREFIX>-<номер>` из `<TRACKER_NAME>`.
+`<task-id>` is `<PROJECT_PREFIX>-<number>` from `<TRACKER_NAME>`.
 
 ## Cross-refs
 
-- core/workspace.spec.md — layout и границы
-- core/design-system.spec.md — иерархия ДС
-- workflows/design-workflow.spec.md — шаги задачи
+- core/workspace.spec.md — layout and boundaries
+- core/design-system.spec.md — DS hierarchy
+- workflows/design-workflow.spec.md — task steps
 - workflows/decision-gates.spec.md — Tier 1 / Tier 2

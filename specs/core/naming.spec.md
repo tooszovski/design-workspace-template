@@ -1,52 +1,52 @@
 ---
 name: naming
 layer: core
-purpose: Контракт нейминга страниц, фреймов, слоёв, компонентов, variables и файлов экспорта
+purpose: Naming contract for pages, frames, layers, components, variables, and export files
 always_loaded: true
 owner: design-lead
 ---
 
 # Naming
 
-Нейминг — это API дизайна. По имени должно быть понятно, что это, без открытия слоя.
+Naming is the API of a design. A name should tell you what something is without opening it.
 
-## Общие правила
+## General rules
 
-- Язык имён — **английский** для всего, что попадает в код (компоненты, variables, стили, экспорт ассетов). `<DEV_LANGUAGE>` допустим только в текстовых слоях контента и названиях страниц/секций.
-- Регистр: `PascalCase` для компонентов, `kebab-case` для variables и файлов, `Sentence case` для страниц и секций.
-- Никаких `Frame 427`, `Group 12`, `Rectangle 3`, `Copy of ...`, `Component 1`. Автоимя = технический долг.
-- Никаких дат и инициалов в именах слоёв — история живёт в версиях Figma, не в неймингах.
+- Names are **English** for anything that reaches code: components, variables, styles, exported assets. `<DEV_LANGUAGE>` is allowed only in content text layers and in page or section titles.
+- Case: `PascalCase` for components, `kebab-case` for variables and files, `Sentence case` for pages and sections.
+- No `Frame 427`, `Group 12`, `Rectangle 3`, `Copy of ...`, `Component 1`. An auto-generated name is technical debt.
+- No dates or initials in layer names — history lives in Figma version history, not in naming.
 
-## Страницы файла
+## File pages
 
 ```
 📐 Cover
 🚧 WIP
-✅ <Раздел>
-📦 Components        (только в файле ДС)
-🎨 Foundations       (только в файле ДС)
+✅ <Section>
+📦 Components        (design-system file only)
+🎨 Foundations       (design-system file only)
 🗃 Archive
 ```
 
-Эмодзи-префикс задаёт статус страницы, читается агентом при аудите (`domain/figma-structure.spec.md`).
+The emoji prefix carries page status and is read by the agent during audits (`domain/figma-structure.spec.md`).
 
-## Фреймы экранов
+## Screen frames
 
 ```
-<PROJECT_PREFIX>-<номер> · <Экран> · <Состояние> · <Брейкпоинт>
+<PROJECT_PREFIX>-<number> · <Screen> · <State> · <Breakpoint>
 ```
 
-Примеры:
+Examples:
 
 - `<PROJECT_PREFIX>-142 · Checkout · default · desktop`
 - `<PROJECT_PREFIX>-142 · Checkout · empty-cart · mobile`
 - `<PROJECT_PREFIX>-142 · Checkout · error-payment · mobile`
 
-Разделитель — ` · ` (пробел, middle dot, пробел). Он парсится агентом, поэтому не заменяется на дефис или слэш.
+The separator is ` · ` (space, middle dot, space). The agent parses it, so do not substitute a hyphen or a slash.
 
-## Слои внутри фрейма
+## Layers inside a frame
 
-Имя описывает **роль**, а не внешность:
+A name describes the **role**, not the appearance:
 
 | ✅ | ❌ |
 |---|---|
@@ -55,42 +55,42 @@ owner: design-lead
 | `divider` | `Line 3` |
 | `state:empty` | `Group 8 copy` |
 
-Служебные префиксы:
+Reserved prefixes:
 
-| Префикс | Значение |
+| Prefix | Meaning |
 |---|---|
-| `state:` | слой-состояние, показывается взаимоисключающе (`state:loading`) |
-| `spec:` | аннотация для разработки, не часть UI, не экспортируется |
-| `🚧` | эксперимент/незакрытое решение, блокирует сдачу |
-| `_` | вспомогательный слой (маска, направляющая), игнорируется аудитом |
+| `state:` | a state layer, shown mutually exclusively (`state:loading`) |
+| `spec:` | an annotation for engineering; not part of the UI, never exported |
+| `🚧` | an experiment or unresolved decision; blocks handoff |
+| `_` | a helper layer (mask, guide); ignored by audits |
 
-## Компоненты
+## Components
 
 ```
 <Category>/<Name>
 <Category>/<Name>/<Subcomponent>
 ```
 
-Примеры: `Button/Primary`, `Input/Text`, `Card/Product`, `Navigation/Tab Bar`, `Icon/24/Chevron Right`.
+Examples: `Button/Primary`, `Input/Text`, `Card/Product`, `Navigation/Tab Bar`, `Icon/24/Chevron Right`.
 
-Variant properties — `Title Case` с предсказуемыми значениями:
+Variant properties use `Title Case` with predictable values:
 
-| Property | Значения |
+| Property | Values |
 |---|---|
 | `Size` | `sm` / `md` / `lg` |
 | `State` | `default` / `hover` / `pressed` / `focused` / `disabled` |
 | `Variant` | `primary` / `secondary` / `tertiary` / `danger` |
 | `Icon` | boolean |
 
-Одно и то же property в разных компонентах называется одинаково. `State` в одном месте и `Status` в другом — DS_VIOLATION.
+The same property is named identically across components. `State` in one place and `Status` in another is a DS_VIOLATION.
 
 ## Variables
 
 ```
-<коллекция>/<группа>/<роль>[/<модификатор>]
+<collection>/<group>/<role>[/<modifier>]
 ```
 
-| Тип | Пример |
+| Type | Example |
 |---|---|
 | primitive color | `color/blue/500` |
 | semantic color | `action/primary`, `text/secondary`, `surface/raised` |
@@ -98,31 +98,31 @@ Variant properties — `Title Case` с предсказуемыми значен
 | radius | `radius/sm`, `radius/pill` |
 | typography | `font/body/md`, `font/heading/lg` |
 
-Semantic-имя описывает **назначение**, не вид: `text/danger`, не `text/red`.
+A semantic name states **purpose**, not appearance: `text/danger`, not `text/red`.
 
-## Экспорт ассетов
+## Asset exports
 
 ```
-<категория>-<имя>[-<вариант>]@<масштаб>.<ext>
+<category>-<name>[-<variant>]@<scale>.<ext>
 ```
 
-Примеры: `icon-chevron-right@2x.png`, `illustration-empty-cart.svg`, `logo-primary-dark.svg`.
+Examples: `icon-chevron-right@2x.png`, `illustration-empty-cart.svg`, `logo-primary-dark.svg`.
 
-Только `kebab-case`, только ASCII, без пробелов. Полные правила — `domain/assets.spec.md`.
+`kebab-case` only, ASCII only, no spaces. Full rules in `domain/assets.spec.md`.
 
-## Проверка
+## Verification
 
-`/design.audit` проверяет нейминг и выдаёт findings `NAMING`:
+`/design.audit` checks naming and emits `NAMING` findings:
 
-| Severity | Когда |
+| Severity | When |
 |---|---|
-| MINOR | автоимя вспомогательного слоя |
-| IMPORTANT | автоимя значимого слоя, неконсистентное variant property |
-| CRITICAL | `🚧`-слой в фрейме, помеченном готовым к сдаче |
+| MINOR | auto-generated name on a helper layer |
+| IMPORTANT | auto-generated name on a meaningful layer; inconsistent variant property |
+| CRITICAL | a `🚧` layer inside a frame marked ready for handoff |
 
 ## Cross-refs
 
-- domain/figma-structure.spec.md — страницы и секции
-- domain/components.spec.md — анатомия компонента
-- domain/variables.spec.md — коллекции
-- domain/assets.spec.md — экспорт
+- domain/figma-structure.spec.md — pages and sections
+- domain/components.spec.md — component anatomy
+- domain/variables.spec.md — collections
+- domain/assets.spec.md — exports

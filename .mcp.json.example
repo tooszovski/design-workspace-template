@@ -1,5 +1,5 @@
 {
-  "_comment": "Скопировать в .mcp.json и подставить токен. .mcp.json в .gitignore — он содержит доступ.",
+  "_comment": "Copy to .mcp.json and substitute the token. .mcp.json is gitignored — it carries credentials.",
   "mcpServers": {
     "figma": {
       "command": "npx",

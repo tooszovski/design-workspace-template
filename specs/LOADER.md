@@ -1,92 +1,92 @@
 ---
 name: loader
-purpose: Контракт on-demand подгрузки спек оркестратором и агентами + schema frontmatter
+purpose: Contract for on-demand spec loading by the orchestrator and agents, plus the frontmatter schema
 schema_version: 2
 ---
 
 # Loader Contract
 
-**Цель:** уменьшить контекст-бюджет агентов и убрать расхождение трактовок одного и того же ТЗ.
+**Goal:** shrink each agent's context budget and eliminate divergent readings of the same requirements.
 
 ## Bootstrap
 
-Все агенты этого workspace читают:
+Every agent in this workspace reads:
 
-1. `CLAUDE.md` — slim bootstrap, указывает на INDEX и LOADER.
-2. `specs/INDEX.md` — карта триггеров.
-3. Все `specs/core/*.spec.md` — **always loaded**.
-4. Все `specs/**/*.spec.md` с `always_loaded: true` — независимо от слоя.
+1. `CLAUDE.md` — the slim bootstrap, which points at INDEX and LOADER.
+2. `specs/INDEX.md` — the trigger map.
+3. Every `specs/core/*.spec.md` — **always loaded**.
+4. Every `specs/**/*.spec.md` marked `always_loaded: true`, regardless of layer.
 
 ## Frontmatter schema (schema_version: 2)
 
 ### Required (`core/`, `domain/`, `workflows/`)
 
-Шаблоны в `per-task/` и `per-epic/` следуют отдельной схеме — у них вместо `layer` есть `kind: template`.
+Templates in `per-task/` and `per-epic/` follow a separate schema — instead of `layer` they carry `kind: template`.
 
-| Поле | Тип | Значения |
+| Field | Type | Values |
 |---|---|---|
-| `name` | string | уникальный kebab-case slug |
+| `name` | string | a unique kebab-case slug |
 | `layer` | string | `core` / `domain` / `workflow` |
-| `purpose` | string | одна строка: что и зачем |
+| `purpose` | string | one line: what and why |
 | `owner` | string | `design-lead` / `figma-analyst` / `handoff-author` / `reviewer-designsystem` / `reviewer-a11y` / `reviewer-ux-copy` |
 
 ### Conditional
 
-| Поле | Когда обязательно | Значения |
+| Field | Required when | Values |
 |---|---|---|
-| `always_loaded` | `core/*` и любая спека, что грузится всегда | `true` |
-| `applies_to` | `domain/*` и `workflows/*` | object — см. ниже |
+| `always_loaded` | `core/*` and any spec that always loads | `true` |
+| `applies_to` | `domain/*` and `workflows/*` | object — see below |
 
 ### `applies_to` sub-fields
 
-| Sub-field | Тип | Назначение | Правило матчинга |
+| Sub-field | Type | Purpose | Matching rule |
 |---|---|---|---|
-| `task_keywords` | `[string]` | слова из ТЗ, названия задачи, описания | case-insensitive substring в `task.title + task.description` |
-| `paths` | `[string]` (glob) | пути в scope — для спек, работающих с файлами (`code/`, `exports/`) | любой `scope.paths[i]` матчит любой `applies_to.paths[j]` |
-| `loaded_for_modes` | `[string]` | только для `layer: workflow` — автозагрузка по режиму | режим в списке |
-| `task_attachments` | `[string]` | `figma_link` / `screenshot` / `reference` / `recording` | любое вложение совпало |
-| `triggers` | `[string]` | free-form описание для LLM-оркестратора, fallback | суждение оркестратора, с логированием причины |
+| `task_keywords` | `[string]` | words from the requirements, task title, or description | case-insensitive substring against `task.title + task.description` |
+| `paths` | `[string]` (glob) | paths in scope, for specs that work with files (`code/`, `exports/`) | any `scope.paths[i]` matches any `applies_to.paths[j]` |
+| `loaded_for_modes` | `[string]` | `layer: workflow` only — auto-load by mode | the mode is in the list |
+| `task_attachments` | `[string]` | `figma_link` / `screenshot` / `reference` / `recording` | any attachment matches |
+| `triggers` | `[string]` | free-form description for the LLM orchestrator, a fallback | orchestrator judgment, with the reason logged |
 
-### Правила схемы
+### Schema rules
 
-- `task_keywords` — **нижний регистр**, естественный язык. Русский и английский смешиваются: ТЗ приходит на `<DEV_LANGUAGE>`, термины дизайна — на английском.
-- `paths` — глобы. В дизайн-workspace они применимы только к `code/**`, `exports/**` и `<TOKENS_EXPORT_PATH>`; для макетов путей нет, их роль играют `task_keywords` и `task_attachments`.
-- **Неизвестные поля игнорируются** лоадером, но являются smell — фиксить при ревью.
+- `task_keywords` are **lowercase** natural language, English by default. When `<DEV_LANGUAGE>` is not English, add local-language keywords alongside the English ones — requirements arrive in the local language while design terms stay English, and the loader matches either.
+- `paths` are globs. In a design workspace they apply only to `code/**`, `exports/**`, and `<TOKENS_EXPORT_PATH>`; designs have no paths, and `task_keywords` plus `task_attachments` play that role instead.
+- **Unknown fields are ignored** by the loader but are a smell — fix them at review time.
 
 ### Forbidden fields
 
-| Поле | Почему | Заменить на |
+| Field | Why | Use instead |
 |---|---|---|
-| `symbols` | наследие кодового шаблона, в дизайне нет символов | `task_keywords` |
-| `always_for_orchestrator` | дублирует `always_loaded` | `always_loaded: true` |
-| `triggers_on_task_attachments` | переименовано | `task_attachments` |
+| `symbols` | inherited from the code template; a design has no symbols | `task_keywords` |
+| `always_for_orchestrator` | duplicates `always_loaded` | `always_loaded: true` |
+| `triggers_on_task_attachments` | renamed | `task_attachments` |
 
 ## Per-task bundle
 
-> **SDD три уровня** (`core/project.spec.md §4`):
+> **Three SDD levels** (`core/project.spec.md §4`):
 > - **PROJECT** — `core/*` (always loaded)
-> - **EPIC** — `<PER_TASK_SPEC_LOCATION>/<epic-id>/epic.md`, прикладывается при `task.epic_ref`
+> - **EPIC** — `<PER_TASK_SPEC_LOCATION>/<epic-id>/epic.md`, attached when `task.epic_ref` is set
 > - **TASK** — `<PER_TASK_SPEC_LOCATION>/<task-id>/spec.md`
 >
-> DDR прикладывается, если pre-spec ссылается на конкретные DDR-ID.
+> A DDR is attached when the pre-spec references specific DDR IDs.
 
-Вход: `spec.md` задачи (задача, scope, `task_keywords`, `mode`, `attachments`).
+Input: the task's `spec.md` (problem, scope, `task_keywords`, `mode`, `attachments`).
 
-Алгоритм:
+Algorithm:
 
-1. **Always-loaded:** все `**/*.spec.md` с `always_loaded: true`.
-2. **Mode-based workflows:** все `workflows/*.spec.md`, где `applies_to.loaded_for_modes` содержит текущий режим.
+1. **Always-loaded:** every `**/*.spec.md` with `always_loaded: true`.
+2. **Mode-based workflows:** every `workflows/*.spec.md` whose `applies_to.loaded_for_modes` contains the current mode.
 3. **Trigger-based workflows:**
-   - `versioning` — если задача трогает `<DS_LIBRARY_NAME>`
-   - `checkpoint` — если `mode: full` или оценка >2ч
-   - `drift-check` — если задача про приёмку реализации
-   - `clarify` — Standard/Full до старта работы
-4. **Domain по keyword:** `domain/*.spec.md`, у которых `applies_to.task_keywords` пересекается с ключевыми словами задачи.
-5. **Domain по attachment:** спеки с `applies_to.task_attachments`, совпавшим с `task.attachments`.
-6. **Domain по path:** только для задач, затрагивающих `code/**` или `exports/**`.
-7. **Domain по умолчанию для любой экранной задачи:** `states`, `accessibility`, `layout` — они применимы почти всегда; не грузятся только для задач чисто по токенам или ассетам.
-8. **Free-form fallback:** если ничего не сработало, но оркестратор считает `applies_to.triggers` релевантным — включить и залогировать причину.
-9. Дедуплицировать, передать агенту.
+   - `versioning` — when the task touches `<DS_LIBRARY_NAME>`
+   - `checkpoint` — when `mode: full` or the estimate exceeds 2 hours
+   - `drift-check` — when the task is about accepting an implementation
+   - `clarify` — Standard/Full, before work starts
+4. **Domain by keyword:** `domain/*.spec.md` whose `applies_to.task_keywords` intersect the task's keywords.
+5. **Domain by attachment:** specs whose `applies_to.task_attachments` match `task.attachments`.
+6. **Domain by path:** only for tasks touching `code/**` or `exports/**`.
+7. **Domain defaults for any screen task:** `states`, `accessibility`, `layout` — they apply almost always; skip them only for pure token or asset tasks.
+8. **Free-form fallback:** if nothing matched but the orchestrator judges `applies_to.triggers` relevant, include it and log the reason.
+9. Deduplicate and hand the bundle to the agent.
 
 ## Subagent input contract
 
@@ -96,34 +96,34 @@ core: [project, workspace, vault-contract, design-system, naming, git-policy, co
 workflows: [task-modes, design-workflow, review-pipeline, ...]
 domain: [states, accessibility, layout, ...]
 task: <PER_TASK_SPEC_LOCATION>/<task-id>/spec.md
-figma: <file-key> · <node-id> · <путь к кэшу>
-scope: <фреймы задачи>
+figma: <file-key> · <node-id> · <path to cache>
+scope: <the task's frames>
 </spec-bundle>
 ```
 
-Агент **не** получает спеки вне bundle. Если по ходу нужна ещё одна — сигнализирует `REROUTE` с `SpecsMissing`; решение принимает оркестратор.
+An agent receives **no** specs outside the bundle. If it needs another one mid-flight, it signals `REROUTE` with `SpecsMissing`; the orchestrator decides.
 
 ## Subagent output contract (lean return) — canonical
 
-Единый формат для всех агентов этого workspace:
+One format for every agent in this workspace:
 
 ```
 Signal: COMPLETE | FAIL | REROUTE
-Checkpoint: <путь к файлу с деталями>
-SpecsUsed: [список загруженных спек]
-SpecsMissing: [спеки, которые потребовались, но не были загружены]
+Checkpoint: <path to the file holding the detail>
+SpecsUsed: [specs that were loaded]
+SpecsMissing: [specs that turned out to be needed but were not loaded]
 ```
 
-`SpecsUsed` — для аудита. `SpecsMissing` — обратная связь лоадеру: по ней правятся триггеры в `INDEX.md` и в самих спеках.
+`SpecsUsed` is for audit. `SpecsMissing` is loader feedback: triggers in `INDEX.md` and in the specs themselves get corrected from it.
 
-## Convention: ссылки между спеками
+## Convention: referencing other specs
 
-Ссылка на другую спеку — относительный путь от `specs/`:
+A reference to another spec is a path relative to `specs/`:
 
-- ✅ `см. core/naming.spec.md`
-- ❌ `см. раздел «Нейминг»` — без пути не грепается
+- ✅ `see core/naming.spec.md`
+- ❌ `see the "Naming" section` — ungreppable without a path
 
-Проверка целостности: `grep -rE '\.spec\.md' specs/`.
+Integrity check: `grep -rE '\.spec\.md' specs/`.
 
 ## Validation
 
@@ -131,13 +131,13 @@ SpecsMissing: [спеки, которые потребовались, но не 
 ./scripts/validate-specs.sh
 ```
 
-Проверяет:
+It checks that:
 
-- у каждой `.spec.md` есть обязательные поля, `layer` соответствует директории
-- нет forbidden fields
-- `loaded_for_modes` содержит только `quick` / `standard` / `full`
-- шаблоны в `per-task/` и `per-epic/` имеют `kind: template`
-- все cross-refs резолвятся в существующие файлы
-- в спеках не осталось placeholder'ов `<UPPER_CASE>` (после init)
+- every `.spec.md` has the required fields and a `layer` matching its directory
+- no forbidden fields are present
+- `loaded_for_modes` contains only `quick` / `standard` / `full`
+- templates in `per-task/` and `per-epic/` carry `kind: template`
+- every cross-ref resolves to an existing file
+- no `<UPPER_CASE>` placeholders remain after init
 
-Запускать после любого изменения frontmatter или добавления/переименования спек.
+Run it after any frontmatter change and after adding or renaming a spec.

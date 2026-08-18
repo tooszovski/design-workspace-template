@@ -1,78 +1,78 @@
 ---
-description: Собрать handoff-спеку для разработки из фрейма Figma и spec.md задачи
+description: Build the engineering handoff spec from a Figma frame and the task spec
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash, AskUserQuestion, mcp__figma__get_figma_data, mcp__figma__download_figma_images
 ---
 
 # /design.handoff
 
-Генерация `handoff.md` — спеки, по которой разработчик реализует экран, не задавая вопросов (D-12).
+Generates `handoff.md` — the spec an engineer builds the screen from without asking anything (D-12).
 
-**Аргумент:** id задачи (`<PROJECT_PREFIX>-NNN`) или ссылка на фрейм.
+**Argument:** a task id (`<PROJECT_PREFIX>-NNN`) or a frame link.
 
-## Предусловия
+## Preconditions
 
-Не начинать, пока не выполнено:
+Do not start until:
 
-- `/design.audit` без CRITICAL
-- матрица состояний в `spec.md` заполнена
-- фреймы переведены на `✅`-страницу
+- `/design.audit` reports no CRITICALs
+- the state matrix in `spec.md` is filled in
+- the frames have moved to a `✅` page
 
-Нарушено — сообщить, что именно, и остановиться. Спека к незакрытому макету устареет за день.
+If any of those fail, say which and stop. A spec written against an unfinished design goes stale within a day.
 
-## Шаг 1 — Сбор
+## Step 1 — Gather
 
-1. Прочитать `spec.md` задачи: задача, AC, матрица состояний, адаптив, guardrails.
-2. Выгрузить через MCP все фреймы задачи (каждое состояние, каждый брейкпоинт).
-3. Собрать перечень использованных компонентов: `componentId` → имя и properties.
-4. Собрать все текстовые узлы с их путями — это будущая таблица текстов.
-5. Собрать слои с префиксом `spec:` — это аннотации доступности и поведения.
-6. Прочитать `📐 Cover` — зафиксировать версию библиотеки.
+1. Read the task's `spec.md`: problem, AC, state matrix, adaptivity, guardrails.
+2. Export every frame of the task through MCP — each state, each breakpoint.
+3. Collect the components used: `componentId` → name and properties.
+4. Collect every text node with its path — that becomes the copy table.
+5. Collect layers prefixed `spec:` — those are the accessibility and behavior annotations.
+6. Read `📐 Cover` and record the library version.
 
-## Шаг 2 — Заполнение
+## Step 2 — Fill it in
 
-Взять структуру из `domain/handoff.spec.md` и заполнить все разделы.
+Take the structure from `domain/handoff.spec.md` and complete every section.
 
-Правила заполнения:
+Rules:
 
-| Раздел | Откуда берётся | Чего не делать |
+| Section | Where it comes from | What not to do |
 |---|---|---|
-| Компоненты | `componentId` из выгрузки | не описывать внутренности компонента — они в ДС |
-| Состояния | матрица + ссылки на реальные фреймы с node-id | не писать «см. Figma» без node-id |
-| Адаптив | сравнение фреймов разных брейкпоинтов | не ограничиваться одним брейкпоинтом |
-| Поведение | AC из `spec.md` + крайние случаи | не писать «как обычно» |
-| Данные | поля экрана + что при отсутствии каждого | не пропускать «что если пусто» |
-| Тексты | все текстовые узлы таблицей | не оставлять тексты только на картинке |
-| Моушен | таблица по `domain/prototyping.spec.md` | не ссылаться на прототип вместо таблицы |
-| Доступность | слои `spec:*` + порядок фокуса | не считать, что разработчик догадается |
-| Ассеты | что экспортировано и куда | не прикладывать бинарники в спеку |
+| Components | `componentId` from the export | do not describe a component's internals — those live in the DS |
+| States | the matrix plus links to real frames with node-ids | do not write "see Figma" without a node-id |
+| Adaptivity | comparing frames across breakpoints | do not settle for a single breakpoint |
+| Behavior | AC from `spec.md` plus edge cases | do not write "as usual" |
+| Data | the screen's fields plus what happens when each is absent | do not skip "what if it is empty" |
+| Copy | every text node as a table | do not leave text living only in a picture |
+| Motion | the table from `domain/prototyping.spec.md` | do not point at the prototype instead of the table |
+| Accessibility | `spec:*` layers plus focus order | do not assume the engineer will infer it |
+| Assets | what was exported and where | do not attach binaries to the spec |
 
-Отступы, цвета и размеры **не дублировать** — они читаются инспектором Figma и устареют в спеке первыми. Дублируются только правила и поведение.
+Spacing, colors, and sizes are **not** duplicated — the Figma inspector reports them and they are the first thing to go stale in a spec. Only rules and behavior get written down.
 
-## Шаг 3 — Пробелы
+## Step 3 — Gaps
 
-Всё, чего не хватило, собрать в раздел «Открытые вопросы» и задать человеку через `AskUserQuestion` одним пакетом.
+Collect everything you could not resolve into the "Open questions" section and put it to the human as one batch through `AskUserQuestion`.
 
-Раздел обязан стать пустым до сдачи: непустой = черновик (`workflows/handoff-quality.spec.md` G5).
+That section must be empty before handoff: non-empty means draft (`workflows/handoff-quality.spec.md` G5).
 
-## Шаг 4 — Самопроверка
+## Step 4 — Self-check
 
-Прочитать получившуюся спеку **глазами разработчика, который не видел задачу**. Отметить каждое место, где возник бы вопрос, и дописать. Типичные пробелы:
+Read the finished spec **as an engineer who has not seen the task**. Mark every place a question would arise and write the answer in. The usual gaps:
 
-- что происходит при повторном нажатии, пока идёт запрос
-- что при 0, 1 и 1000 элементах
-- откуда берётся значение по умолчанию
-- что при отсутствии прав
-- сохраняется ли состояние при уходе с экрана
+- what happens on a second tap while a request is in flight
+- what happens at 0, 1, and 1000 items
+- where the default value comes from
+- what happens without permissions
+- whether state survives leaving the screen and coming back
 
-## Шаг 5 — Возврат
+## Step 5 — Return
 
-Записать в `<PER_TASK_SPEC_LOCATION>/<task-id>/handoff.md`.
+Write to `<PER_TASK_SPEC_LOCATION>/<task-id>/handoff.md`.
 
 ```
 Signal: COMPLETE | FAIL
-Checkpoint: <путь к handoff.md>
-Открытых вопросов: N
+Checkpoint: <path to handoff.md>
+Open questions: N
 SpecsUsed: [...]
 ```
 
-При `N > 0` — `Signal: FAIL`, спека не готова к передаче.
+When `N > 0`, return `Signal: FAIL` — the spec is not ready to hand over.

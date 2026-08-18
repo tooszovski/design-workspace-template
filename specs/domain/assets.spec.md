@@ -1,68 +1,68 @@
 ---
 name: assets
 layer: domain
-purpose: Иконки, иллюстрации, изображения — форматы, экспорт, именование, оптимизация
+purpose: Icons, illustrations, images — formats, export, naming, optimization
 applies_to:
   paths: ["exports/assets/**"]
-  task_keywords: ["иконка", "icon", "иллюстрация", "картинка", "изображение", "asset", "svg", "экспорт ассетов", "лого"]
-  triggers: ["задача добавляет или меняет графику"]
+  task_keywords: ["icon", "illustration", "image", "asset", "svg", "logo"]
+  triggers: ["task adds or changes graphics"]
 owner: figma-analyst
 ---
 
 # Assets
 
-## Иконки
+## Icons
 
-| Параметр | Правило |
+| Parameter | Rule |
 |---|---|
-| Источник | компонент из icon-set библиотеки, не вставленный SVG |
-| Сетка | единый бокс `24×24` (или размер, зафиксированный при init), с оптическим полем внутри |
-| Толщина линии | одинаковая во всём наборе |
-| Цвет | наследуется от текста через variable, не зашит в иконку |
-| Формат экспорта | SVG, контуры (не обводки), без `<style>` и без `id` |
+| Source | a component from the library icon set, never a pasted SVG |
+| Grid | a single `24×24` box (or the size fixed at init), with optical padding inside |
+| Stroke weight | identical across the whole set |
+| Color | inherited from text through a variable, never baked into the icon |
+| Export format | SVG, outlined paths (not strokes), no `<style>`, no `id` |
 
-Иконка с зашитым цветом не переживёт смену темы. Иконка с обводками вместо контуров поедет при масштабировании.
+An icon with a baked-in color will not survive a theme switch. An icon with strokes instead of outlines distorts when scaled.
 
-Именование — `Icon/<размер>/<Имя>` в Figma, `icon-<имя>@<масштаб>.<ext>` при экспорте (`core/naming.spec.md`).
+Naming is `Icon/<size>/<Name>` in Figma and `icon-<name>@<scale>.<ext>` on export (`core/naming.spec.md`).
 
-## Иллюстрации
+## Illustrations
 
-- Живут отдельным набором, не в icon-set: у них другая сетка и другой жизненный цикл.
-- Обязателен вариант для каждой темы, если иллюстрация содержит фон или тёмные линии.
-- Формат: SVG, если геометрия простая; PNG@2x/@3x или WebP, если есть градиенты и растр.
-- Для каждой иллюстрации в макете есть `spec:alt` или `spec:decorative` (`domain/accessibility.spec.md`).
+- They live as a separate set, not in the icon set: different grid, different lifecycle.
+- A per-theme variant is required whenever the illustration contains a background or dark linework.
+- Format: SVG when the geometry is simple; PNG@2x/@3x or WebP when there are gradients and raster content.
+- Each illustration in the design carries `spec:alt` or `spec:decorative` (`domain/accessibility.spec.md`).
 
-## Растровые изображения
+## Raster images
 
-| Что | Правило |
+| What | Rule |
 |---|---|
-| Соотношение сторон | зафиксировано; кроп задаётся в макете, не отдаётся на усмотрение вёрстки |
-| Плейсхолдер | обязателен: что показать, пока изображение грузится и если его нет |
-| Фокусная точка | указана для изображений, которые кропятся по-разному на брейкпоинтах |
-| Вес | ориентир: ≤200КБ для контентного изображения, ≤50КБ для превью |
+| Aspect ratio | fixed; the crop is set in the design, not left to the implementation |
+| Placeholder | required: what to show while loading and when the image is missing |
+| Focal point | specified for images that crop differently across breakpoints |
+| Weight | guidance: 200KB or less for a content image, 50KB or less for a thumbnail |
 
-## Экспорт
+## Export
 
-Кладётся в `exports/assets/`, оттуда передаётся в разработку. В git workspace'а бинарники не коммитятся (`core/git-policy.spec.md`).
+Output goes to `exports/assets/` and from there to engineering. Binaries are not committed to the workspace repository (`core/git-policy.spec.md`).
 
-Правила:
+Rules:
 
-- Только `kebab-case`, ASCII, без пробелов и кириллицы в именах файлов.
-- Масштабы: `@1x`, `@2x`, `@3x` для растра под мобильные; для web — SVG или WebP с `srcset`.
-- SVG прогоняется через оптимизацию: убрать метаданные редактора, схлопнуть группы, округлить координаты до 2 знаков. Не удалять `viewBox` — без него масштабирование ломается.
-- Экспорт воспроизводим: те же настройки → тот же файл. Ручная доработка экспортированного файла запрещена, правится источник в Figma.
+- `kebab-case` only, ASCII only, no spaces and no non-Latin characters in filenames.
+- Scales: `@1x`, `@2x`, `@3x` for mobile raster; for web, SVG or WebP with `srcset`.
+- Run SVG through optimization: strip editor metadata, collapse groups, round coordinates to two decimals. Do not remove `viewBox` — scaling breaks without it.
+- Export is reproducible: the same settings produce the same file. Hand-editing an exported file is forbidden; fix the source in Figma.
 
 ## Findings
 
-| Код | Severity | Когда |
+| Code | Severity | When |
 |---|---|---|
-| `ASSET` | MINOR | неоптимизированный SVG; лишние метаданные |
-| `ASSET` | IMPORTANT | иконка вставлена как SVG вместо компонента; нет варианта под тему; имя файла вне контракта |
-| `ASSET` | CRITICAL | цвет зашит в иконку; нет плейсхолдера для изображения; удалён `viewBox` |
+| `ASSET` | MINOR | unoptimized SVG; leftover metadata |
+| `ASSET` | IMPORTANT | icon pasted as SVG instead of a component; no per-theme variant; filename off contract |
+| `ASSET` | CRITICAL | color baked into an icon; no image placeholder; `viewBox` removed |
 
 ## Cross-refs
 
-- core/naming.spec.md — имена файлов
-- core/git-policy.spec.md — что не коммитить
-- domain/accessibility.spec.md — alt и decorative
-- domain/states.spec.md — плейсхолдеры
+- core/naming.spec.md — filenames
+- core/git-policy.spec.md — what not to commit
+- domain/accessibility.spec.md — alt and decorative
+- domain/states.spec.md — placeholders

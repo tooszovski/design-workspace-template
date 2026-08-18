@@ -1,55 +1,55 @@
 # Critique · ACM-142 · 2026-02-13
 
-Ревьюеры: `reviewer-designsystem`, `reviewer-a11y`, `reviewer-ux-copy` (параллельно) + критика `design-lead`.
-Дубли сняты: контраст чипсов нашли двое, оставлен один finding.
+Reviewers: `reviewer-designsystem`, `reviewer-a11y`, `reviewer-ux-copy` (in parallel) plus `design-lead` critique.
+Duplicates removed: two reviewers caught the chip contrast; one finding kept.
 
 ## CRITICAL
 
-### COPY: текст empty-filtered ведёт в тупик
-Где: `ACM-142 · Каталог · empty-filtered · mobile` · `state:empty-filtered / title`
-Сейчас: «Ничего не найдено»
-Предлагаю: «Под фильтры ничего не подошло» + кнопка «Сбросить фильтры»
-Почему: пользователь видит пустой экран и не понимает, что виноват фильтр, а не отсутствие товаров. Из этого состояния нет выхода без возврата назад.
+### COPY: the empty-filtered copy dead-ends
+Where: `ACM-142 · Catalog · empty-filtered · mobile` · `state:empty-filtered / title`
+Current: "Nothing found"
+Proposed: "Nothing matched your filters" plus a "Clear filters" button
+Why: the user sees an empty screen and cannot tell that the filter is responsible rather than an empty category. There is no way out of this state except going back.
 
 ## IMPORTANT
 
-### A11Y: порядок фокуса в bottom sheet не задан
-Где: `ACM-142 · Каталог · data · mobile` · `filters-sheet`
-Почему: при открытии sheet фокус остаётся на кнопке под подложкой, пользователь клавиатуры проваливается в недоступный список
-Предложение: добавить `spec:focus-order` — sheet заголовок → чипсы по группам → «Сбросить» → «Закрыть»; при закрытии фокус возвращается на кнопку фильтров
+### A11Y: focus order in the bottom sheet is undefined
+Where: `ACM-142 · Catalog · data · mobile` · `filters-sheet`
+Why: when the sheet opens, focus stays on the button behind the scrim, so a keyboard user falls through into an unreachable list
+Proposal: add `spec:focus-order` — sheet title → chips by group → "Clear" → "Close"; on close, focus returns to the filters button
 
-### DS_VIOLATION: счётчик на кнопке фильтров ссылается на primitive
-Где: `filters-button / badge`
-Почему: `color/red/500` вместо `status/danger`; при смене палитры бейдж останется старым, и это заметят не сразу
-Предложение: заменить на `status/danger`
+### DS_VIOLATION: the filters button counter references a primitive
+Where: `filters-button / badge`
+Why: it uses `color/red/500` instead of `status/danger`; when the palette changes the badge will stay behind, and nobody will notice for a while
+Proposal: switch to `status/danger`
 
-### LAYOUT: отступ между группами фильтров вне шкалы
-Где: `filters-sheet / groups` · gap 20
-Почему: 20 нет в шкале 4, 8, 12, 16, 24, 32, 48, 64 — в коде появится магическое число
-Предложение: 24
+### LAYOUT: spacing between filter groups is off the scale
+Where: `filters-sheet / groups` · gap 20
+Why: 20 is not in the scale 4, 8, 12, 16, 24, 32, 48, 64 — it becomes a magic number in code
+Proposal: 24
 
-### COPY: кнопка «Применить» в sheet при мгновенном применении
-Где: `filters-sheet / actions`
-Почему: фильтры применяются сразу (Q1), кнопка обещает действие, которого нет, и пользователь ждёт результата после нажатия
-Предложение: заменить на «Закрыть» либо убрать, оставив только «Сбросить»
+### COPY: an "Apply" button in a sheet that applies instantly
+Where: `filters-sheet / actions`
+Why: filters apply immediately (Q1), so the button promises an action that does not exist and the user waits for a result after tapping it
+Proposal: change it to "Close", or drop it and keep only "Clear"
 
 ## MINOR
 
-### TYPO: трекинг не задан у `label/sm` в чипсах
-Где: `Chip/Filter` — вопрос к ДС, не к экрану
-Предложение: завести задачу на ДС, в рамках ACM-142 не чинить
+### TYPO: tracking is unset on `label/sm` in the chips
+Where: `Chip/Filter` — a design-system question, not a screen one
+Proposal: file a DS task; do not fix it inside ACM-142
 
-### NAMING: `Frame 88` в скелетоне
-Где: `ACM-142 · Каталог · loading · desktop`
-Предложение: `skeleton-card`
+### NAMING: `Frame 88` in the skeleton
+Where: `ACM-142 · Catalog · loading · desktop`
+Proposal: `skeleton-card`
 
-## Идеи (не блокируют)
+## Ideas (non-blocking)
 
-- Показывать количество товаров рядом с каждым чипсом («Размер M · 24») — снимает часть пустых результатов заранее. Требует данных до применения фильтра, обсудить с продуктом отдельно.
-- Анимировать перестроение сетки при смене фильтра. Не обязательно: сейчас смена мгновенная и это читается нормально.
+- Show the item count next to each chip ("Size M · 24") — it heads off some empty results before they happen. Needs data before the filter is applied; discuss with product separately.
+- Animate the grid reflow when a filter changes. Not required: the current instant swap reads fine.
 
-## Итог
+## Summary
 
-1 critical, 4 important, 2 minor. Блокирует сдачу: **да** (critical).
+1 critical, 4 important, 2 minor. Blocks handoff: **yes** (the critical).
 
-Ответы автора: critical принят и исправлен. 3 important приняты. `LAYOUT` про 3 колонки на 768–1279 отклонён с обоснованием: 4 колонки обрезают название товара до двух слов — зафиксировано в worklog.
+Author's responses: the critical is accepted and fixed. Three importants accepted. The `LAYOUT` finding about 3 columns at 768–1279 is rejected with a reason: four columns clip product names to two words — recorded in the worklog.

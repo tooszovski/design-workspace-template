@@ -1,89 +1,89 @@
 ---
 name: ux-writing
 layer: domain
-purpose: Тексты интерфейса — тон, структура, кнопки, ошибки, пустые состояния, словарь терминов
+purpose: Interface copy — tone, structure, buttons, errors, empty states, glossary
 applies_to:
-  task_keywords: ["текст", "копирайт", "ux-текст", "microcopy", "формулировка", "ошибка", "подпись", "tone of voice", "терминология"]
-  triggers: ["в макете появляются или меняются тексты интерфейса"]
+  task_keywords: ["copy", "microcopy", "wording", "error message", "label", "tone of voice", "terminology"]
+  triggers: ["interface text appears or changes in the design"]
 owner: reviewer-ux-copy
 ---
 
 # UX Writing
 
-Текст — часть интерфейса, а не подпись к нему. Проектируется вместе с макетом, не после.
+Text is part of the interface, not a caption for it. It is designed alongside the layout, never afterwards.
 
-## Принципы
+## Principles
 
-1. **Сначала польза, потом вежливость.** «Заказ отменён» лучше, чем «Мы, к сожалению, вынуждены сообщить…».
-2. **Действие в кнопке — глагол результата.** `Оплатить`, `Отправить заявку`, `Удалить`. Не `ОК`, не `Далее` там, где известен результат.
-3. **От лица пользователя, не системы.** «Ваш заказ» → «Заказ». Система не рассказывает о себе.
-4. **Никаких извинений за штатное поведение.** Пустой список — не повод для «К сожалению».
-5. **Один термин — одна сущность** (D-14). Словарь ниже обязателен.
+1. **Usefulness first, politeness second.** "Order cancelled" beats "We regret to inform you that…".
+2. **The button verb names the outcome.** `Pay`, `Submit request`, `Delete`. Not `OK`, not `Next` where the outcome is known.
+3. **Speak from the user's side, not the system's.** "Your order" → "Order". The system does not narrate itself.
+4. **No apologies for normal behavior.** An empty list is not an occasion for "Unfortunately".
+5. **One term, one entity** (D-14). The glossary below is binding.
 
-## Тон
+## Tone
 
-Тон определяется в момент init и фиксируется здесь. Базовая рамка:
+Tone is defined at init and recorded here. The base frame:
 
-| Ситуация | Тон |
+| Situation | Tone |
 |---|---|
-| Обычное действие | нейтральный, короткий |
-| Ошибка пользователя | спокойный, без обвинения: «Проверьте формат даты», не «Вы ввели неверно» |
-| Ошибка системы | признать и дать выход: «Не удалось загрузить. Повторить» |
-| Необратимое действие | прямой: «Удалить навсегда? Восстановить не получится» |
-| Успех | короткий, со следующим шагом |
+| Ordinary action | neutral, short |
+| User error | calm, not accusatory: "Check the date format", not "You entered it wrong" |
+| System error | admit it and offer a way out: "Couldn't load. Retry" |
+| Irreversible action | direct: "Delete permanently? This can't be undone" |
+| Success | short, with the next step |
 
-## Формат по элементам
+## Format by element
 
-| Элемент | Правило |
+| Element | Rule |
 |---|---|
-| Заголовок экрана | существительное или короткая фраза, без точки |
-| Кнопка | 1–3 слова, глагол, без точки, Sentence case |
-| Метка поля | существительное, без двоеточия |
-| Подсказка под полем | как заполнять, показывается **до** ошибки |
-| Текст ошибки | что не так + что сделать, одно предложение |
-| Пустое состояние | что здесь появится + действие |
-| Тултип | ≤2 строк, не дублирует видимый текст |
-| Диалог подтверждения | вопрос в заголовке, последствие в теле, глагол в кнопке |
+| Screen title | noun or short phrase, no period |
+| Button | 1–3 words, a verb, no period, Sentence case |
+| Field label | noun, no colon |
+| Field hint | how to fill it in, shown **before** any error |
+| Error text | what is wrong plus what to do, one sentence |
+| Empty state | what will appear here plus an action |
+| Tooltip | 2 lines or fewer, does not repeat visible text |
+| Confirmation dialog | question in the title, consequence in the body, verb in the button |
 
-## Запрещённые формулировки
+## Forbidden phrasing
 
-| Запрещено | Почему | Вместо |
+| Forbidden | Why | Instead |
 |---|---|---|
-| «Что-то пошло не так» | не сообщает ничего | «Не удалось сохранить. Проверьте соединение» |
-| «Ошибка 500» в основном тексте | пользователю нечего с этим делать | человеческий текст + код мелко в деталях |
-| «Ничего не найдено» без выхода | тупик | «Ничего не найдено. Сбросить фильтры» |
-| «Вы уверены?» | не сообщает последствий | «Удалить черновик? Восстановить не получится» |
-| «Пожалуйста, подождите…» | лишняя вежливость | скелетон без текста |
-| «Кликните сюда» | привязка к устройству | «Открыть настройки» |
-| CAPS LOCK в предложениях | нечитаемо и звучит криком | Sentence case |
+| "Something went wrong" | conveys nothing | "Couldn't save. Check your connection" |
+| "Error 500" in the primary text | the user can do nothing with it | human text plus the code in fine print |
+| "Nothing found" with no way out | a dead end | "Nothing found. Clear filters" |
+| "Are you sure?" | states no consequence | "Delete draft? This can't be undone" |
+| "Please wait…" | needless politeness | a skeleton with no text |
+| "Click here" | device-bound | "Open settings" |
+| CAPS LOCK in sentences | unreadable and reads as shouting | Sentence case |
 
-## Словарь терминов
+## Glossary
 
-Ведётся здесь и обязателен для макета, спеки и кода (D-14). Заполняется при init и растёт по ходу проекта.
+Maintained here and binding for the design, the spec, and the code (D-14). Seeded at init and grown as the project runs.
 
-| Термин | Значение | Не использовать |
+| Term | Meaning | Do not use |
 |---|---|---|
 | — | — | — |
 
-Пример строки: `Заказ | оформленная покупка после оплаты | Ордер, Покупка, Сделка`.
+Example row: `Order | a completed purchase after payment | Transaction, Purchase, Deal`.
 
-## Числа, даты, единицы
+## Numbers, dates, units
 
-- Формат даты и времени — единый по всему продукту, зафиксирован в словаре.
-- Относительное время («5 минут назад») — только там, где важна свежесть; в остальных местах абсолютное.
-- Числа с разрядами и локальным разделителем; валюта — с явным символом или кодом.
-- Плюрализация учитывает все формы языка `<DEV_LANGUAGE>`; строка «1 товаров» — дефект.
+- Date and time format is uniform across the product and recorded in the glossary.
+- Relative time ("5 minutes ago") only where freshness matters; absolute time elsewhere.
+- Numbers carry thousands separators in the local convention; currency shows an explicit symbol or code.
+- Pluralization covers every form of `<DEV_LANGUAGE>`; a string reading "1 items" is a defect.
 
 ## Findings
 
-| Код | Severity | Когда |
+| Code | Severity | When |
 |---|---|---|
-| `COPY` | MINOR | точка в кнопке; лишнее «пожалуйста» |
-| `COPY` | IMPORTANT | термин вне словаря; кнопка без глагола результата; подсказка появляется только после ошибки |
-| `COPY` | CRITICAL | запрещённая формулировка в тексте ошибки; необратимое действие без описания последствий; отсутствует текст обязательного состояния |
+| `COPY` | MINOR | period in a button; a stray "please" |
+| `COPY` | IMPORTANT | term outside the glossary; a button verb that does not name the outcome; a hint that appears only after the error |
+| `COPY` | CRITICAL | forbidden phrasing in error text; an irreversible action with no stated consequence; a required state with no copy at all |
 
 ## Cross-refs
 
-- domain/states.spec.md — тексты состояний
-- domain/typography.spec.md — рост текста при локализации
-- domain/accessibility.spec.md — метки и альтернативы
+- domain/states.spec.md — state copy
+- domain/typography.spec.md — text growth under localization
+- domain/accessibility.spec.md — labels and alternatives

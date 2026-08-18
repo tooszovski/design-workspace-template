@@ -1,80 +1,80 @@
 ---
 name: components
 layer: domain
-purpose: Анатомия компонента, variants и properties, слоты, композиция, промоушен в библиотеку
+purpose: Component anatomy, variants and properties, slots, composition, promotion to the library
 applies_to:
-  task_keywords: ["компонент", "component", "variant", "инстанс", "instance", "библиотека", "detach", "слот"]
-  triggers: ["задача про создание или изменение компонента дизайн-системы"]
+  task_keywords: ["component", "variant", "instance", "library", "detach", "slot"]
+  triggers: ["task creates or changes a design-system component"]
 owner: reviewer-designsystem
 ---
 
 # Components
 
-## Анатомия
+## Anatomy
 
-Компонент состоит из:
+A component consists of:
 
-| Часть | Правило |
+| Part | Rule |
 |---|---|
-| **Контейнер** | auto-layout всегда, фиксированный размер — только там, где это физическое ограничение (иконка, аватар) |
-| **Слоты** | области, которые потребитель заменяет: instance swap property или text property |
-| **Токены** | все визуальные значения через variables (`domain/variables.spec.md`) |
-| **Properties** | внешний API компонента |
-| **Описание** | одна строка: когда применять и когда **не** применять |
+| **Container** | always auto-layout; a fixed size only where the constraint is physical (icon, avatar) |
+| **Slots** | regions the consumer swaps: instance-swap or text properties |
+| **Tokens** | every visual value through variables (`domain/variables.spec.md`) |
+| **Properties** | the component's external API |
+| **Description** | one line: when to use it and when **not** to |
 
-## Properties как API
+## Properties as an API
 
-Property — публичный контракт. Переименование ломает потребителей (D-11).
+A property is a public contract. Renaming one breaks consumers (D-11).
 
-**Правила:**
+**Rules:**
 
-- Property существует, только если у него ≥2 реальных применения. Property «на будущее» — мусор.
-- Boolean для показа/скрытия части, variant — для взаимоисключающих визуальных состояний.
-- Число вариантов = произведение значений properties. Больше 40 комбинаций — сигнал, что компонент делает слишком много: разделить.
-- Порядок properties одинаков во всех компонентах: `Variant` → `Size` → `State` → boolean-флаги → text/instance слоты.
+- A property exists only when it has 2+ real uses. A property added "for later" is clutter.
+- Boolean for showing or hiding a part; variant for mutually exclusive visual states.
+- The number of variants is the product of property values. Past forty combinations, the component is doing too much: split it.
+- Property order is identical across components: `Variant` → `Size` → `State` → boolean flags → text/instance slots.
 
-**Обязательные значения `State`** для интерактивных компонентов: `default`, `hover`, `pressed`, `focused`, `disabled`. Отсутствие `focused` — это A11Y-дефект, а не упрощение (`domain/accessibility.spec.md`).
+**Required `State` values** for interactive components: `default`, `hover`, `pressed`, `focused`, `disabled`. A missing `focused` is an accessibility defect, not a simplification (`domain/accessibility.spec.md`).
 
-## Композиция вместо конфигурации
+## Composition over configuration
 
-Если для нового сценария нужно добавить в компонент пятое boolean-property, сначала проверить, не решается ли задача композицией:
+When a new scenario seems to need a fifth boolean property, check whether composition solves it first:
 
-| Плохо | Хорошо |
+| Bad | Good |
 |---|---|
-| `Card` с `hasImage`, `hasBadge`, `hasFooter`, `hasAction` | `Card` со слотами `media`, `content`, `actions` |
+| `Card` with `hasImage`, `hasBadge`, `hasFooter`, `hasAction` | `Card` with `media`, `content`, `actions` slots |
 
-Слот через instance swap property гибче, чем набор булевых флагов, и не размножает варианты.
+A slot through an instance-swap property is more flexible than a pile of boolean flags and does not multiply variants.
 
-## Инстансы
+## Instances
 
-- Кастомизация — **только через properties**. Правка внутренних слоёв инстанса — нарушение, даже когда Figma это позволяет.
-- Detach допустим ровно в одном случае: осознанное создание нового компонента на базе существующего, сразу с заведением задачи на его добавление в библиотеку.
-- Nested-инстансы: глубина вложенности ≤3. Глубже — компонент неотлаживаем.
+- Customization happens **through properties only**. Editing internal layers of an instance is a violation, even where Figma permits it.
+- Detaching is acceptable in exactly one case: deliberately deriving a new component from an existing one, with a task filed immediately to add it to the library.
+- Nested instances: depth of 3 or less. Deeper than that and the component cannot be debugged.
 
-## Промоушен в библиотеку
+## Promotion to the library
 
-Локальный компонент (`🚧 <Name>`) переезжает в `<DS_LIBRARY_NAME>`, когда выполнено:
+A local component (`🚧 <Name>`) moves into `<DS_LIBRARY_NAME>` once:
 
-- [ ] Используется на ≥2 экранах (D-04)
-- [ ] Все значения на variables, без хардкода
-- [ ] Все состояния собраны, включая `focused` и `disabled`
-- [ ] Properties названы по `core/naming.spec.md`
-- [ ] Заполнен `per-task/COMPONENT-TEMPLATE.md`
-- [ ] Контраст проверен во всех темах (`domain/variables.spec.md` § режимы)
-- [ ] Написано описание: когда применять и когда нет
+- [ ] It is used on 2+ screens (D-04)
+- [ ] Every value is on variables, none hardcoded
+- [ ] Every state is built, including `focused` and `disabled`
+- [ ] Properties are named per `core/naming.spec.md`
+- [ ] `per-task/COMPONENT-TEMPLATE.md` is filled in
+- [ ] Contrast is verified in every theme (`domain/variables.spec.md`, modes section)
+- [ ] The description states when to use it and when not to
 
 ## Findings
 
-| Код | Severity | Когда |
+| Code | Severity | When |
 |---|---|---|
-| `DS_VIOLATION` | MINOR | глубина nested-инстансов >3; property без второго применения |
-| `DS_VIOLATION` | IMPORTANT | правка внутренних слоёв инстанса; неконсистентное имя property; отсутствует `focused` |
-| `DS_VIOLATION` | CRITICAL | detached-инстанс библиотечного компонента; локальная копия того, что уже есть в ДС; использование deprecated-компонента |
+| `DS_VIOLATION` | MINOR | nested instance depth above 3; a property with no second use |
+| `DS_VIOLATION` | IMPORTANT | edited internal layers of an instance; inconsistent property name; missing `focused` |
+| `DS_VIOLATION` | CRITICAL | detached instance of a library component; local copy of something the DS already has; use of a deprecated component |
 
 ## Cross-refs
 
-- core/design-system.spec.md — уровни и изменение библиотеки
-- core/naming.spec.md — имена компонентов и properties
-- domain/variables.spec.md — токены внутри компонента
-- domain/states.spec.md — обязательные состояния
-- per-task/COMPONENT-TEMPLATE.md — спецификация
+- core/design-system.spec.md — levels and library changes
+- core/naming.spec.md — component and property names
+- domain/variables.spec.md — tokens inside a component
+- domain/states.spec.md — required states
+- per-task/COMPONENT-TEMPLATE.md — the spec

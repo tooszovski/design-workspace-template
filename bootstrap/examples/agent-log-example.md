@@ -1,49 +1,49 @@
 # Agent Log · ACM-142
 
-## Итог
+## Outcome
 
-Спроектирован каталог товаров с фильтрацией: шесть состояний на трёх брейкпоинтах, панель фильтров через bottom sheet на мобильных и боковой панелью на широких экранах. Новых компонентов дизайн-системы не понадобилось — собрано композицией из `Card/Product`, `Sheet/Bottom` и `Chip/Filter`. Одно архитектурное решение вынесено в DDR-007. Задача заняла три дня вместо оценённых двух: сутки ушли на ответ по сохранению фильтров между сессиями.
+Designed a product catalog with filtering: six states across three breakpoints, with the filter panel as a bottom sheet on mobile and a side panel on wide screens. No new design-system components were needed — everything composes from `Card/Product`, `Sheet/Bottom`, and `Chip/Filter`. One architectural decision went into DDR-007. The task took three days against a two-day estimate; a full day went to waiting on the answer about filter persistence between sessions.
 
-## Артефакты
+## Artifacts
 
-| Что | Где |
+| What | Where |
 |---|---|
-| Макет | Figma `dEf456UvW` · секция Каталог · node 1240:3310 |
-| Спека | Projects/AcmeShop/Tasks/ACM-142/spec.md |
+| Design | Figma `dEf456UvW` · Catalog section · node 1240:3310 |
+| Spec | Projects/AcmeShop/Tasks/ACM-142/spec.md |
 | DDR | Projects/AcmeShop/Tasks/ACM-142/ddr-007.md |
-| Критика | Projects/AcmeShop/Tasks/ACM-142/critique.md |
+| Critique | Projects/AcmeShop/Tasks/ACM-142/critique.md |
 | Handoff | Projects/AcmeShop/Tasks/ACM-142/handoff.md |
 | Worklog | Projects/AcmeShop/Tasks/ACM-142/worklog.md |
 
-## Решения
+## Decisions
 
-| Решение | Почему | Tier |
+| Decision | Why | Tier |
 |---|---|---|
-| Фильтры в bottom sheet, не отдельным экраном | сохранение контекста списка; жалобы на Android-вариант | 2 (DDR-007) |
-| Панель собрана из существующих компонентов | всё нужное есть в ДС 2.3.0 | 1 |
-| 3 колонки на 768–1279, не 4 | при 4 название товара обрезается до двух слов | 1 |
-| Скелетон вместо спиннера | иначе скачок раскладки при загрузке | 1 |
+| Filters in a bottom sheet, not a separate screen | keeps the list in context; support complaints about the Android variant | 2 (DDR-007) |
+| Panel composed from existing components | Acme DS 2.3.0 had everything needed | 1 |
+| 3 columns at 768–1279, not 4 | at 4 columns product names clip to two words | 1 |
+| Skeleton instead of a spinner | otherwise the layout jumps while loading | 1 |
 
 ## Findings
 
-| Severity | Найдено | Закрыто | Осталось |
+| Severity | Found | Closed | Remaining |
 |---|---|---|---|
 | CRITICAL | 3 | 3 | 0 |
 | IMPORTANT | 7 | 6 | 1 |
 | MINOR | 3 | 1 | 2 |
 
-Из трёх CRITICAL два поймал `/design.audit` до ревьюеров (focused у чипсов, контраст вторичного текста в тёмной теме), один — ревьюер текстов (тупик в empty-filtered).
+Two of the three CRITICALs were caught by `/design.audit` before the reviewers ran (chips missing focused, secondary text contrast in dark theme); the third came from the copy reviewer (the empty-filtered dead end).
 
-## Долг
+## Debt
 
-- **IMPORTANT, обосновано:** 3 колонки на среднем брейкпоинте вместо 4 — сознательный компромисс ради читаемости названий, зафиксирован в worklog.
-- **MINOR, вынесено:** трекинг у `label/sm` в `Chip/Filter` не задан. Это дефект дизайн-системы, а не экрана — заведена задача ACM-161 на ДС.
-- **MINOR, вынесено:** во всём каталоге не проверена работа при 1000+ товаров — в текущих категориях максимум 240. Всплывёт при расширении ассортимента.
+- **IMPORTANT, justified:** 3 columns instead of 4 at the middle breakpoint — a deliberate trade-off for name readability, recorded in the worklog.
+- **MINOR, deferred:** tracking is unset on `label/sm` in `Chip/Filter`. That is a design-system defect rather than a screen defect — filed as ACM-161 against the DS.
+- **MINOR, deferred:** behavior above 1000 products was never verified anywhere in the catalog — current categories top out at 240. It will surface when the assortment grows.
 
-## Что стоит поправить в спеках
+## What the specs should fix
 
-1. **`domain/states.spec.md` не описывает, что делать с фильтрами в offline.** Пришлось решать самостоятельно (блокировать чипсы). Похожий вопрос возникнет на любом экране со списком и фильтром — стоит добавить строку про «интерактивные элементы в offline».
+1. **`domain/states.spec.md` says nothing about filters while offline.** I had to decide it myself (lock the chips). The same question will come up on any screen with a list and a filter — worth adding a line about interactive elements in offline states.
 
-2. **`workflows/clarify.spec.md` не покрывает случай, когда ответ приходит через сутки.** Умолчание сработало, но по Q2 ответ разошёлся с ним, и часть работы пришлось переделать. Возможно, стоит различать вопросы, где умолчание дёшево откатить, и те, где нет, — и вторые делать блокирующими.
+2. **`workflows/clarify.spec.md` does not cover an answer arriving a day later.** The default held, but the Q2 answer diverged from it and some work had to be redone. It may be worth distinguishing questions whose default is cheap to reverse from those where it is not, and making the latter blocking.
 
-3. **В `domain/handoff.spec.md` нет требования указывать срок жизни сохранённого состояния.** Формулировка «фильтры сохраняются» без «до конца дня» породила бы вопрос от разработки. Добавил руками, но правило это не требует.
+3. **`domain/handoff.spec.md` does not require stating the lifetime of persisted state.** Writing "filters persist" without "until end of day" would have produced a question from engineering. I added it by hand, but no rule demanded it.

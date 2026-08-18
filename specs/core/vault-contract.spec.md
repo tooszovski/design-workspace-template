@@ -1,69 +1,69 @@
 ---
 name: vault-contract
 layer: core
-purpose: Контракт с Obsidian vault и onto-агентом — symlink specs, Tasks/, запретные зоны, worklog как сигнал
+purpose: Contract with the Obsidian vault and the onto agent — specs symlink, Tasks/, forbidden zones, worklog as signal
 always_loaded: true
 owner: design-lead
 ---
 
 # Vault Contract
 
-Применяется, если при init выбрано хранение артефактов в Obsidian. Если выбран режим «только репозиторий» — весь файл сводится к тому, что `<PER_TASK_SPEC_LOCATION>` лежит внутри workspace, а раздел про onto-агента неактуален.
+Applies when init selected Obsidian for artifact storage. If the repository-only mode was chosen, this file reduces to a single fact — `<PER_TASK_SPEC_LOCATION>` sits inside the workspace — and the section about the onto agent does not apply.
 
-## Symlink-паттерн
+## The symlink pattern
 
 ```
 workspace/specs  →  <VAULT>/Projects/<PROJECT_NAME>/Specs/
 ```
 
-- Спеки физически живут в vault, чтобы быть доступными из Obsidian и попадать в дистилляцию знаний.
-- В workspace остаётся symlink, поэтому все пути `specs/...` в спеках и промптах работают без изменений.
-- `/specs` добавлен в `.gitignore` — спеки не дублируются в git.
-- **Не «возвращать» specs/ в репозиторий.** Если symlink сломан — чинить symlink, не копировать файлы.
+- Specs physically live in the vault so they are reachable from Obsidian and feed knowledge distillation.
+- A symlink stays in the workspace, so every `specs/...` path in specs and prompts keeps working unchanged.
+- `/specs` is added to `.gitignore` — specs are not duplicated in git.
+- **Do not "move specs back" into the repository.** If the symlink breaks, repair the symlink; do not copy the files.
 
-## Раскладка проекта в vault
+## Project layout in the vault
 
 ```
 <VAULT>/Projects/<PROJECT_NAME>/
-├── ТЗ/                 — входящие требования (человек пишет, агент читает)
-├── Specs/              — цель symlink'а specs/
-├── Tasks/              — <PER_TASK_SPEC_LOCATION>: по папке на задачу
+├── Requirements/       — incoming requirements (humans write, the agent reads)
+├── Specs/              — target of the specs/ symlink
+├── Tasks/              — <PER_TASK_SPEC_LOCATION>: one folder per task
 │   └── <PROJECT_PREFIX>-NNN/
 │       ├── spec.md
 │       ├── worklog.md
 │       ├── handoff.md
 │       └── agent-log.md
-└── Agent Logs/         — <AGENT_LOGS_LOCATION>: кросс-задачный журнал
+└── Agent Logs/         — <AGENT_LOGS_LOCATION>: cross-task journal
 ```
 
-## Зоны ответственности
+## Zones of responsibility
 
-Vault делят два независимых агентских контура. Таблица продублирована в CLAUDE.md workspace'а и в CLAUDE.md vault'а — **менять только синхронно**.
+Two independent agent loops share the vault. This table is duplicated in the workspace `CLAUDE.md` and in the vault's own `CLAUDE.md` — **change both at once, never one alone**.
 
-| Зона | Кто пишет | Роль дизайн-агента |
+| Zone | Who writes | Design agent's role |
 |---|---|---|
-| `Projects/<P>/Specs/`, `Projects/<P>/Tasks/` | дизайн-агент | своя зона |
-| `Projects/<P>/ТЗ/` | человек / продукт | только чтение |
-| `onto/`, `sources/`, `ontology.yaml`, `.ontovault/` | onto-агент | **не трогать никогда** |
-| Остальной vault | человек | только чтение |
+| `Projects/<P>/Specs/`, `Projects/<P>/Tasks/` | design agent | its own zone |
+| `Projects/<P>/Requirements/` | human / product | read only |
+| `onto/`, `sources/`, `ontology.yaml`, `.ontovault/` | onto agent | **never touch** |
+| The rest of the vault | human | read only |
 
-## worklog как сигнал завершения
+## The worklog as a completion signal
 
-Финальная строка `— DONE: <краткий итог>` в `worklog.md` — триггер дистилляции для onto-агента. Следствия:
+A final `— DONE: <short outcome>` line in `worklog.md` triggers distillation for the onto agent. Consequences:
 
-- Не писать `DONE`, пока DoD (`core/project.spec.md §2`) не выполнен.
-- Не писать `DONE` дважды в одном worklog.
-- Если задача откатилась после `DONE` — новая запись `— REOPENED: <причина>`, затем работа и новый `— DONE`.
+- Do not write `DONE` until the DoD (`core/project.spec.md §2`) is satisfied.
+- Do not write `DONE` twice in one worklog.
+- If work reopens after `DONE`, add `— REOPENED: <reason>`, do the work, then write a new `— DONE`.
 
-## Ссылки на артефакты
+## Linking to artifacts
 
-Всегда полным vault-относительным путём:
+Always by full vault-relative path:
 
 - ✅ `[[Projects/<PROJECT_NAME>/Tasks/<PROJECT_PREFIX>-142/handoff.md]]`
-- ❌ `[[handoff.md]]` — basename ломается при совпадении имён между задачами
+- ❌ `[[handoff.md]]` — a basename breaks the moment two tasks share a filename
 
 ## Cross-refs
 
 - core/workspace.spec.md — layout
-- core/project.spec.md §5 — состав папки задачи
-- workflows/agent-log.spec.md — формат финального отчёта
+- core/project.spec.md §5 — contents of a task folder
+- workflows/agent-log.spec.md — format of the final report

@@ -1,88 +1,88 @@
 ---
 name: layout
 layer: domain
-purpose: Auto-layout, сетка, spacing-шкала, брейкпоинты, адаптивность, поведение при переполнении
+purpose: Auto-layout, grid, spacing scale, breakpoints, adaptivity, overflow behavior
 applies_to:
-  task_keywords: ["layout", "раскладка", "auto-layout", "сетка", "grid", "отступ", "spacing", "брейкпоинт", "breakpoint", "адаптив", "responsive"]
-  triggers: ["задача про структуру экрана, адаптивность или отступы"]
+  task_keywords: ["layout", "auto-layout", "grid", "spacing", "breakpoint", "responsive", "adaptive"]
+  triggers: ["task concerns screen structure, adaptivity, or spacing"]
 owner: reviewer-designsystem
 ---
 
 # Layout
 
-## Auto-layout по умолчанию
+## Auto-layout by default
 
-Каждый контейнер — auto-layout. Абсолютное позиционирование допустимо только для наложений (бейдж на аватаре, декоративный элемент) и помечается осознанно.
+Every container is auto-layout. Absolute positioning is acceptable only for overlays (a badge on an avatar, a decorative element) and is marked deliberately.
 
-Требования к контейнеру:
+Container requirements:
 
-| Параметр | Правило |
+| Parameter | Rule |
 |---|---|
-| Направление | отражает семантику потока, а не удобство сборки |
-| Resizing | `Fill` / `Hug`; `Fixed` — только при физическом ограничении |
-| Отступы | из шкалы `<SPACING_SCALE>` |
-| Выравнивание | задано явно, не унаследовано случайно |
+| Direction | reflects the semantics of the flow, not what was convenient to build |
+| Resizing | `Fill` / `Hug`; `Fixed` only under a physical constraint |
+| Padding and gaps | from the `<SPACING_SCALE>` scale |
+| Alignment | set explicitly, never inherited by accident |
 
-Фрейм с `Fixed` шириной внутри адаптивного экрана — главная причина сломанного адаптива.
+A `Fixed`-width frame inside an adaptive screen is the single biggest cause of broken responsiveness.
 
-## Spacing-шкала
+## The spacing scale
 
-База `<SPACING_BASE>`, шкала `<SPACING_SCALE>`. Отступ вне шкалы — `DS_VIOLATION severity IMPORTANT`.
+Base `<SPACING_BASE>`, scale `<SPACING_SCALE>`. A value off the scale is a `DS_VIOLATION, severity IMPORTANT`.
 
-Семантические роли отступов:
+Semantic roles for spacing:
 
-| Роль | Что разделяет |
+| Role | What it separates |
 |---|---|
-| `space/inline-*` | элементы в строке (иконка и текст) |
-| `space/stack-*` | элементы в столбце (поля формы) |
-| `space/inset-*` | внутренний padding контейнера |
-| `space/section-*` | смысловые блоки экрана |
+| `space/inline-*` | elements in a row (icon and text) |
+| `space/stack-*` | elements in a column (form fields) |
+| `space/inset-*` | a container's internal padding |
+| `space/section-*` | meaningful blocks of a screen |
 
-**Закон близости:** расстояние между связанными элементами всегда меньше, чем до соседней группы. Равные отступы между всем — визуальный шум, в котором не читается структура.
+**The proximity law:** the distance between related elements is always smaller than the distance to the neighboring group. Equal spacing everywhere is visual noise in which structure cannot be read.
 
-## Сетка и брейкпоинты
+## Grid and breakpoints
 
-Брейкпоинты определяются платформами `<PLATFORMS>`. Для каждого зафиксированы: ширина колонки, количество колонок, gutter, поля.
+Breakpoints are determined by the `<PLATFORMS>` set. For each one, record column width, column count, gutter, and margins.
 
-Правила:
+Rules:
 
-1. Брейкпоинт добавляется, когда **ломается контент**, а не под конкретную модель устройства.
-2. Для каждого экрана в макете присутствуют минимальный и максимальный брейкпоинты (D-08). Промежуточные — только если раскладка меняется качественно.
-3. Максимальная ширина контентной колонки ограничена — текст на всю ширину монитора нечитаем (`domain/typography.spec.md`).
-4. Переход между брейкпоинтами описывается словами в handoff: что схлопывается, что переезжает, что скрывается.
+1. A breakpoint is added when the **content breaks**, not to match a specific device model.
+2. Every screen carries the smallest and largest breakpoint in the design (D-08). Intermediate ones only when the layout changes qualitatively.
+3. The content column has a maximum width — text spanning a full monitor is unreadable (`domain/typography.spec.md`).
+4. The transition between breakpoints is described in words in the handoff: what collapses, what moves, what disappears.
 
-## Переполнение и крайние случаи
+## Overflow and edge cases
 
-Для каждого блока макет отвечает, что происходит при:
+For each block, the design answers what happens when:
 
-| Случай | Что показать |
+| Case | What to show |
 |---|---|
-| Ноль элементов | empty state (`domain/states.spec.md`) |
-| Один элемент | не должно выглядеть сломанным |
-| Очень много элементов | скролл, пагинация или виртуализация — выбрать и указать |
-| Очень длинный текст | перенос или усечение — выбрать и указать |
-| Очень короткий текст | контейнер не схлопывается ниже минимума |
-| Отсутствующее изображение | плейсхолдер, не пустая дыра |
+| Zero items | an empty state (`domain/states.spec.md`) |
+| One item | it must not look broken |
+| Very many items | scroll, pagination, or virtualization — pick one and say so |
+| Very long text | wrap or truncate — pick one and say so |
+| Very short text | the container does not collapse below its minimum |
+| Missing image | a placeholder, not an empty hole |
 
-Отсутствие ответа = дефект спеки, а не «очевидно».
+No answer means a defect in the spec, not "obviously".
 
-## Безопасные зоны и касание
+## Safe areas and touch
 
-- Учитываются системные зоны: вырезы, домашний индикатор, статус-бар, клавиатура.
-- Интерактивные элементы не ближе 8pt к краю экрана.
-- Минимальный тач-таргет — 44×44pt, даже если визуально элемент меньше (`domain/accessibility.spec.md`).
+- System zones are respected: notches, home indicator, status bar, keyboard.
+- Interactive elements sit no closer than 8pt to a screen edge.
+- Minimum touch target is 44×44pt, even when the element looks smaller (`domain/accessibility.spec.md`).
 
 ## Findings
 
-| Код | Severity | Когда |
+| Code | Severity | When |
 |---|---|---|
-| `LAYOUT` | MINOR | лишний вложенный контейнер без роли |
-| `LAYOUT` | IMPORTANT | отступ вне шкалы; нарушен закон близости; `Fixed` там, где нужен `Fill` |
-| `LAYOUT` | CRITICAL | отсутствует один из обязательных брейкпоинтов; элемент под системной зоной; нет ответа на переполнение |
+| `LAYOUT` | MINOR | a redundant nested container with no role |
+| `LAYOUT` | IMPORTANT | spacing off the scale; the proximity law broken; `Fixed` where `Fill` belongs |
+| `LAYOUT` | CRITICAL | a required breakpoint missing; an element under a system zone; no answer for overflow |
 
 ## Cross-refs
 
-- domain/variables.spec.md — коллекция Spacing
-- domain/states.spec.md — пустые и переполненные состояния
-- domain/accessibility.spec.md — тач-таргеты и безопасные зоны
-- domain/handoff.spec.md — как описывать адаптив разработке
+- domain/variables.spec.md — the Spacing collection
+- domain/states.spec.md — empty and overflowing states
+- domain/accessibility.spec.md — touch targets and safe areas
+- domain/handoff.spec.md — describing adaptivity for engineering

@@ -1,72 +1,72 @@
 ---
 name: decision-gates
 layer: workflow
-purpose: Tier 1 автопродолжение и Tier 2 hard stop — когда агент решает сам, когда спрашивает человека
+purpose: Tier 1 auto-proceed and Tier 2 hard stop — when the agent decides, when it asks
 applies_to:
-  task_keywords: ["решение", "gate", "стоп", "спросить", "эскалация"]
+  task_keywords: ["decision", "gate", "stop", "ask", "escalation"]
   loaded_for_modes: ["quick", "standard", "full"]
 owner: design-lead
 ---
 
 # Decision Gates
 
-Два уровня. Tier 1 — агент решает и продолжает, записав решение. Tier 2 — агент останавливается и спрашивает человека через `AskUserQuestion`.
+Two tiers. Tier 1: the agent decides and continues, recording the decision. Tier 2: the agent stops and asks a human through `AskUserQuestion`.
 
-## Tier 1 — автопродолжение
+## Tier 1 — auto-proceed
 
-Решение принимается самостоятельно, в worklog пишется строка `— AUTO: ...`.
+The decision is made independently and logged in the worklog as `— AUTO: ...`.
 
-| Ситуация | Решение по умолчанию |
+| Situation | Default decision |
 |---|---|
-| Выбор между двумя равнозначными компонентами ДС | тот, что чаще используется в продукте |
-| Отступ не указан в ТЗ | ближайший из шкалы по закону близости |
-| Формулировка текста | по `domain/ux-writing.spec.md` |
-| Порядок второстепенных полей | как на существующих аналогичных экранах |
-| Ревью вернуло только MINOR | закрыть или зафиксировать как долг |
-| Состояние явно неприменимо | пометить `н/п` с обоснованием |
+| A choice between two equivalent DS components | the one used more often in the product |
+| Spacing not specified in the requirements | the nearest scale value under the proximity law |
+| Copy wording | per `domain/ux-writing.spec.md` |
+| Order of secondary fields | as on existing comparable screens |
+| Review returned MINORs only | close them or record them as debt |
+| A state is clearly not applicable | mark `n/a` with a reason |
 
-Правило: если решение легко откатить и оно не создаёт прецедента — это Tier 1.
+The rule: if the decision is easy to reverse and sets no precedent, it is Tier 1.
 
 ## Tier 2 — hard stop
 
-Работа останавливается, вопрос уходит человеку. Продолжать «на своё усмотрение» запрещено.
+Work halts and the question goes to a human. Continuing "at your own discretion" is forbidden.
 
-| Триггер | Почему |
+| Trigger | Why |
 |---|---|
-| **Clarify needed** — продуктовый вопрос без ответа в источниках правды | дизайн не имеет права придумывать продуктовое правило |
-| **Выбор дизайн-направления** — несколько валидных вариантов с разными последствиями | это решение продукта, не исполнителя |
-| **CRITICAL finding** любого типа | по определению блокирует |
-| **Изменение публичного компонента ДС** | breaking change для всех потребителей (D-11) |
-| **Требуется запись в Figma** | Claude read-only (D-02) |
-| **Scope violation** — правка вне заявленных фреймов | расширение задачи без согласования |
-| **Reroute limit** — 3 на пару или 5 на задачу | цикл правок означает проблему выше |
-| **Противоречие источников правды** | таблица §3 не разрешает конфликт |
-| **Clarify-ответ меняет mode** | задача перестала быть той, что оценивали |
-| **Нет доступа к Figma MCP** | продолжение работы означало бы догадки |
+| **Clarify needed** — a product question the sources of truth do not answer | design has no authority to invent a product rule |
+| **Design direction choice** — several valid options with different consequences | that is a product decision, not an executor's |
+| **Any CRITICAL finding** | blocking by definition |
+| **Changing a public DS component** | a breaking change for every consumer (D-11) |
+| **A write to Figma is required** | Claude is read-only (D-02) |
+| **Scope violation** — an edit outside the declared frames | expanding the task without agreement |
+| **Reroute limit** — 3 per pair or 5 per task | an edit loop means the problem is upstream |
+| **Conflicting sources of truth** | the §3 table does not resolve the conflict |
+| **A clarify answer changes the mode** | the task is no longer the one that was estimated |
+| **No Figma MCP access** | continuing would mean guessing |
 
-## Формат остановки
+## Stop format
 
 ```markdown
 ## Tier 2 stop · <PROJECT_PREFIX>-NNN
 
-**Триггер:** <какой из таблицы>
-**Ситуация:** <2-3 предложения>
-**Что уже сделано:** <чтобы человек не терял контекст>
-**Варианты:**
-- A — <вариант> → <последствие>
-- B — <вариант> → <последствие>
-**Рекомендация:** <какой и почему>
-**Что заблокировано:** <что нельзя продолжать без ответа>
+**Trigger:** <which one from the table>
+**Situation:** <2-3 sentences>
+**Done so far:** <so the human does not lose context>
+**Options:**
+- A — <option> → <consequence>
+- B — <option> → <consequence>
+**Recommendation:** <which one and why>
+**Blocked:** <what cannot continue without an answer>
 ```
 
-Раздел «Рекомендация» обязателен: остановка без своего мнения перекладывает работу на человека целиком.
+The Recommendation line is mandatory: stopping without an opinion hands the whole job back to the human.
 
-## Что делать во время остановки
+## What to do while stopped
 
-Не простаивать. Всё, что не зависит от ответа, доделывается: другие состояния, тексты, ассеты, черновик handoff. Останавливается только зависимая ветка работы.
+Do not idle. Everything that does not depend on the answer gets finished: other states, copy, assets, a draft handoff. Only the dependent branch of work halts.
 
 ## Cross-refs
 
-- workflows/clarify.spec.md — формат вопросов
-- workflows/review-pipeline.spec.md — reroute-лимиты
-- core/project.spec.md §3 — источники правды
+- workflows/clarify.spec.md — question format
+- workflows/review-pipeline.spec.md — reroute limits
+- core/project.spec.md §3 — sources of truth
