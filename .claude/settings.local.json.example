@@ -1,0 +1,46 @@
+{
+  "_comment": "Скопировать в .claude/settings.local.json (gitignored) и адаптировать. Снимает большинство permission prompts. Не коммитить settings.local.json.",
+  "permissions": {
+    "allow": [
+      "mcp__figma__get_figma_data",
+      "mcp__figma__download_figma_images",
+      "Bash(ls:*)",
+      "Bash(pwd)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(file:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(jq:*)",
+      "Bash(wc:*)",
+      "Bash(mkdir -p:*)",
+      "Bash(readlink:*)",
+      "Bash(git status)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git remote -v)",
+      "Bash(git rev-parse:*)",
+      "Bash(git config user.name)",
+      "Bash(git config user.email)",
+      "Bash(./scripts/validate-specs.sh)",
+      "Bash(node:*)",
+      "Bash(npx style-dictionary:*)",
+      "Bash(svgo:*)",
+      "Bash(claude --version)",
+      "Bash(claude mcp:*)",
+      "WebSearch",
+      "Read(//Users/**)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -fd:*)"
+    ]
+  }
+}

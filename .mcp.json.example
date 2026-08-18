@@ -1,0 +1,14 @@
+{
+  "_comment": "Скопировать в .mcp.json и подставить токен. .mcp.json в .gitignore — он содержит доступ.",
+  "mcpServers": {
+    "figma": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "figma-developer-mcp",
+        "--figma-api-key=YOUR_FIGMA_TOKEN",
+        "--stdio"
+      ]
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "_comment": "Коммитится в репозиторий. Хук push-guard запрещает пуш в интеграционную и релизную ветки — см. specs/core/git-policy.spec.md. Личные настройки и allow-list — в .claude/settings.local.json (gitignored).",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/git-push-guard.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

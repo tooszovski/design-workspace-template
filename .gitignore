@@ -1,0 +1,47 @@
+# Инструкции агента — не артефакт проекта.
+# В САМОМ шаблоне CLAUDE.md коммитится принудительно (git add -f): он точка входа.
+# В развёрнутом из шаблона workspace правило работает как задумано.
+CLAUDE.md
+AGENTS.md
+.cursorrules
+*-plan.md
+*-scratch.md
+
+# Доступы
+.mcp.json
+
+# Кэш выгрузок Figma
+.figma-cache/
+
+# Экспорт: ассеты — бинарники, токены — по решению init
+exports/assets/
+# exports/tokens/   ← раскомментировать, если токены не версионируются здесь
+
+# Макеты и мокапы живут в Figma
+*.fig
+*.sketch
+*.png
+*.jpg
+*.jpeg
+*.pdf
+
+# Кодовый репозиторий подключается симлинком
+code/
+
+# Спеки в Obsidian (раскомментируется init'ом при выборе vault)
+# /specs
+
+.claude/*
+!.claude/agents/
+!.claude/commands/
+!.claude/skills/
+!.claude/hooks/
+!.claude/settings.json
+!.claude/settings.local.json.example
+.claude/settings.local.json
+
+error.log
+*.log
+node_modules/
+.DS_Store
+**/.DS_Store
