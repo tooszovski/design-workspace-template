@@ -107,7 +107,7 @@ fi
 # ─── 5. Artifact storage ─────────────────────────────────────────────────────
 section "Artifact storage — requirements, task specs, worklogs"
 
-OBSIDIAN_BASE="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents"
+OBSIDIAN_BASE="$HOME/Nextcloud-classic"
 USE_OBSIDIAN_DEFAULT="n"
 [[ -d "$OBSIDIAN_BASE" ]] && USE_OBSIDIAN_DEFAULT="y"
 

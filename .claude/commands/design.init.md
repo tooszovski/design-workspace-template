@@ -87,7 +87,7 @@ When `<CODE_REPO_PATH>` is non-empty, offer to create the `./code` symlink.
 First check whether Obsidian is present:
 
 ```bash
-ls -d ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/*/ 2>/dev/null
+ls -d ~/Nextcloud-classic/*/ 2>/dev/null
 ```
 
 | Option | Offer first when |
