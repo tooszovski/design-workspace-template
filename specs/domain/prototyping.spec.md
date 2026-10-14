@@ -3,7 +3,7 @@ name: prototyping
 layer: domain
 purpose: Prototypes and motion — what to prototype, depth, timings, handing motion to engineering
 applies_to:
-  task_keywords: ["prototype", "animation", "transition", "motion", "interaction"]
+  task_keywords: ["prototype", "animation", "transition", "motion", "interaction", "prototypes", "animations", "transitions", "interactions"]
   triggers: ["task needs to show a flow or behavior over time"]
 owner: design-lead
 ---

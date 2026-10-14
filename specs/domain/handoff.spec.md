@@ -3,7 +3,7 @@ name: handoff
 layer: domain
 purpose: Structure of the engineering handoff spec, self-sufficiency requirements, in-design annotations
 applies_to:
-  task_keywords: ["handoff", "engineering spec", "developer", "implementation", "annotation"]
+  task_keywords: ["handoff", "engineering spec", "developer", "implementation", "annotation", "developers", "annotations"]
   triggers: ["task reaches the point of handing the design to engineering"]
 owner: handoff-author
 ---
@@ -60,6 +60,11 @@ Table per domain/prototyping.spec.md. Empty means platform-standard transitions.
 ## Accessibility
 The spec:* annotations from the design plus focus order and accessible names.
 
+## Privacy
+Regions marked spec:sensitive and the decisions for each: app-switcher cover,
+behavior under screen capture, masking and reveal, clipboard, lock-screen content
+(per-task/A11Y-PRIVACY-CHECKLIST.md, Part B). "none" when the screen holds no sensitive data.
+
 ## Assets
 What was exported, in what format, where it lives.
 
@@ -100,5 +105,5 @@ The designer verifies the implementation per `workflows/drift-check.spec.md`. Di
 - domain/states.spec.md — the coverage matrix
 - domain/prototyping.spec.md — the motion table
 - domain/accessibility.spec.md — annotations
-- workflows/handoff-quality.spec.md — gates G1-G6
+- workflows/handoff-quality.spec.md — gates G1-G7
 - workflows/drift-check.spec.md — accepting the implementation

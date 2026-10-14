@@ -9,9 +9,15 @@
 #   • loaded_for_modes limited to quick/standard/full
 #   • templates carry kind: template
 #   • cross-refs resolve to existing files
-#   • no <UPPER_CASE> placeholders remain
+#   • no one-word task_keywords shorter than 3 characters in domain specs
+#   • warn: unfilled <UPPER_CASE> placeholders, spec missing from INDEX.md,
+#     core spec without always_loaded
 #
-# Run after any frontmatter change or spec rename.
+#   ./scripts/validate-specs.sh                      — every check, exit 0 clean / exit 1 errors
+#   ./scripts/validate-specs.sh --keywords <spec.md> — loader dry run on task_keywords for a task
+#                                                      spec (LOADER.md §Matching): which domain specs fire
+#
+# Run after any frontmatter change or spec rename. bash 3.2 (macOS), python3.
 # ─────────────────────────────────────────────────────────────────────────────
 
 set -uo pipefail
@@ -31,6 +37,45 @@ ok()   { printf "${C_GREEN}✓${C_OFF} %s\n" "$1"; }
 sect() { printf "\n${C_BOLD}${C_BLUE}==> %s${C_OFF}\n" "$1"; }
 
 [[ -d "$SPECS_DIR" ]] || { printf "${C_RED}specs/ not found in %s${C_OFF}\n" "$WORKSPACE_DIR"; exit 1; }
+
+# Reference implementation of task_keywords matching (LOADER.md §Matching): whole tokens, phrases in order.
+keyword_hits() { # <task spec.md> -> lines "<domain> <tab> <keyword>[, <keyword>...]"
+    python3 - "$SPECS_DIR" "$1" <<'PYKW'
+import glob, os, re, sys
+specs_dir, task = sys.argv[1], sys.argv[2]
+text = open(task, encoding="utf-8").read()
+def tokens(s): return re.findall(r"[^\W_]+", s.lower())
+body = re.sub(r"\A---\n.*?\n---\n", "", text, flags=re.S)
+parts = []
+m = re.search(r"^# (.+)$", body, re.M)
+if m: parts.append(m.group(1))
+for sec in re.split(r"^## ", body, flags=re.M)[1:]:
+    title = sec.split("\n", 1)[0].strip()
+    if re.match(r"(1\.|3\.|What changes|Why|Boundaries)", title):
+        # the out list names what the task does NOT touch, so it is not matched
+        parts.append(re.split(r"^\*\*Out:?\*\*", sec, flags=re.M)[0])
+tt = tokens(" ".join(parts))
+def hit(kw):
+    kt = tokens(kw)
+    n = len(kt)
+    return n > 0 and any(tt[i:i + n] == kt for i in range(len(tt) - n + 1))
+for f in sorted(glob.glob(os.path.join(specs_dir, "domain", "*.spec.md"))):
+    fm = open(f, encoding="utf-8").read().split("---", 2)[1]
+    m = re.search(r"^\s*task_keywords:\s*\[(.*?)\]\s*$", fm, re.M)
+    if not m: continue
+    hits = [k for k in re.findall(r'"([^"]+)"', m.group(1)) if hit(k)]
+    if hits:
+        print(f"{os.path.basename(f)[:-len('.spec.md')]}\t{', '.join(hits)}")
+PYKW
+}
+
+if [[ "${1:-}" == "--keywords" ]]; then
+    [[ -f "${2:-}" ]] || { echo "usage: $0 --keywords <PER_TASK_SPEC_LOCATION>/<task-id>/spec.md"; exit 2; }
+    echo "keywords: domain specs that fire for $2 (LOADER.md §Matching):"
+    out=$(keyword_hits "$2")
+    if [[ -n "$out" ]]; then echo "$out" | sed 's/^/  /'; else echo "  (none — attachments, paths, and screen-task defaults only)"; fi
+    exit 0
+fi
 
 # Extracts a field value from frontmatter (the first --- ... --- block)
 fm_get() {
@@ -92,6 +137,26 @@ done
 
 SPEC_COUNT=$(find "$SPECS_DIR"/{core,domain,workflows} -name '*.spec.md' 2>/dev/null | wc -l | tr -d ' ')
 ok "specs checked: $SPEC_COUNT"
+
+# ─── task_keywords ───────────────────────────────────────────────────────────
+sect "task_keywords (domain)"
+
+SHORT=$(python3 - "$SPECS_DIR" <<'PYSHORT'
+import glob, os, re, sys
+for f in sorted(glob.glob(os.path.join(sys.argv[1], "domain", "*.spec.md"))):
+    fm = open(f, encoding="utf-8").read().split("---", 2)[1]
+    m = re.search(r"^\s*task_keywords:\s*\[(.*?)\]\s*$", fm, re.M)
+    if not m: continue
+    for kw in re.findall(r'"([^"]+)"', m.group(1)):
+        if " " not in kw.strip() and len(kw.strip()) < 3:
+            print(f'{os.path.relpath(f, os.path.dirname(sys.argv[1]))} — task_keyword "{kw}" is shorter than 3 characters; drop it or use a phrase')
+PYSHORT
+)
+if [[ -n "$SHORT" ]]; then
+    while IFS= read -r line; do err "$line"; done <<< "$SHORT"
+else
+    ok "no task_keywords shorter than 3 characters"
+fi
 
 # ─── Templates ───────────────────────────────────────────────────────────────
 sect "Templates: per-task / per-epic"

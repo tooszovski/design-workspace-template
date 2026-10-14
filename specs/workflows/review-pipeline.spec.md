@@ -14,7 +14,7 @@ owner: design-lead
 
 ```
 /design.audit  →  reviewers   →  critique  →  handoff-quality  →  delivery
- (automatic)      (parallel)     (meaning)    (gates G1-G6)
+ (automatic)      (parallel)     (meaning)    (gates G1-G7)
 ```
 
 Reviewers do not start until `/design.audit` is clean of CRITICALs: they should not spend a pass on what a machine catches.
@@ -59,12 +59,34 @@ A reviewer sending work back is a reroute. The limits:
 
 On reaching a limit, Tier 2 hard stop: a human decides from there. An endless edit loop means the problem is in the spec or the brief, not in the design.
 
+## Control questions before the verdict
+
+Every reviewer, and `design-lead` in critique, answers four questions at the end of the return, one line each. A question left unanswered means the review is not finished.
+
+1. **Does anything reference components, variants, tokens, styles, symbols, or platform patterns that do not exist** in the consumed `<DS_LIBRARY_NAME>` version or in the platform guidelines? Check against the `figma-analyst` report, the task's `research.md` (`workflows/research.spec.md`), and the guideline itself. An invented or deprecated reference in the design or the pre-spec is IMPORTANT; once it reaches `handoff.md` or an AC, it is CRITICAL — engineering builds from it.
+2. **Do the numbers contradict each other or the tokens?** Spacing outside `<SPACING_SCALE>`, a 44pt target drawn in a 36pt frame, a contrast ratio claimed in the spec but not matching the measured one, a type size in an annotation that differs from its text style, breakpoints that disagree between the pre-spec §9 and the frames.
+3. **Does every decision have a considered alternative?** For Full, each structural choice has a DDR with at least two options (`per-task/DDR-TEMPLATE.md`); for Standard, one line in the worklog is enough. A decision with no alternative on record is IMPORTANT in Full and MINOR in Standard.
+4. **What would the design lead ask to sink the author?** One question the frames and the spec do not answer. If the answer is in the spec, the DDR, or the frames, say where.
+
+Format, appended to the return:
+
+```
+Questions:
+  Refs: <no non-existent references | list>
+  Numbers: <consistent | mismatch: …>
+  Alternatives: <present | missing for: …>
+  Lead: <question> → <answered in … | unanswered>
+```
+
+An `unanswered` lead question is not a finding by itself; the reviewer decides whether it becomes one, and `design-lead` carries it into the consolidated critique.
+
 ## Reviewer return format
 
 ```
 Signal: COMPLETE | FAIL | REROUTE
 Checkpoint: <PER_TASK_SPEC_LOCATION>/<task-id>/critique.md
 Findings: <N critical, M important, K minor>
+Questions: <the four lines above>
 SpecsUsed: [...]
 SpecsMissing: [...]
 ```
@@ -72,6 +94,7 @@ SpecsMissing: [...]
 ## Cross-refs
 
 - workflows/critique.spec.md — what critique contains
+- workflows/research.spec.md — the fact base reviewers check references against
 - workflows/team-dispatch.spec.md — how to launch
 - workflows/decision-gates.spec.md — Tier 2
 - workflows/handoff-quality.spec.md — gates after review

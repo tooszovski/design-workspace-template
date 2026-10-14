@@ -73,10 +73,17 @@ N critical, M important, K minor. Blocks handoff: <yes/no>
 
 ## Step 6 — Return
 
+Close with the four control questions from `workflows/review-pipeline.spec.md`: non-existent references, contradicting numbers, missing alternatives, the lead's question.
+
 ```
 Signal: COMPLETE | REROUTE
 Checkpoint: <PER_TASK_SPEC_LOCATION>/<task-id>/critique.md
 Findings: N critical, M important, K minor
+Questions:
+  Refs: <no non-existent references | list>
+  Numbers: <consistent | mismatch: …>
+  Alternatives: <present | missing for: …>
+  Lead: <question> → <answered in … | unanswered>
 ```
 
 The design's author answers every finding: accepted, or rejected with a reason. A rejected CRITICAL is a Tier 2 stop.

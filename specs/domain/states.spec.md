@@ -3,7 +3,7 @@ name: states
 layer: domain
 purpose: Required screen and element states, the coverage matrix, the states contract
 applies_to:
-  task_keywords: ["state", "empty", "loading", "error", "skeleton"]
+  task_keywords: ["state", "empty", "loading", "error", "skeleton", "states", "errors", "skeletons"]
   triggers: ["any task designing a screen that displays data"]
 owner: reviewer-designsystem
 ---
@@ -26,6 +26,8 @@ D-05: a screen is not done until every applicable state is covered. This is a **
 | **data** | the normal path | the base design |
 
 **Non-applicability is stated explicitly** in the task's `spec.md`: `offline — n/a, the screen is online-only`. Silence does not count as non-applicability.
+
+Two failure modes have no column of their own but still need a designed answer: **stale data** (what is shown is older than the user would assume) and **version rollback** (data or a feature from a newer version reaches an older one). How the user exits each state is recorded in the failure-modes table of the pre-spec (`per-task/DESIGN-TASK-TEMPLATE.spec.md` §6a).
 
 ## Element states
 

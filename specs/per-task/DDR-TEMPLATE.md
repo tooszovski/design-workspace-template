@@ -21,6 +21,8 @@ What is going on and why a decision was needed at all. Without context the recor
 
 The constraints in force at the time: deadlines, technical limits, existing patterns, agreements with engineering.
 
+Platform and guideline claims behind the options link to the task's `research.md` (`workflows/research.spec.md`). An option resting on an unconfirmed claim says so.
+
 ## Options
 
 ### A — <name>
@@ -49,6 +51,10 @@ Why that one: which property tipped the balance. Not "it is better", but "it is 
 
 | Screen / component | What needs doing | Task |
 |---|---|---|
+
+## Session journal
+
+A `proposed` DDR is extended by appending lines here, never by rewriting the sections above: `> Added in session <date>: …`. An `accepted` or `superseded` DDR is immutable; a correction is a new DDR with `supersedes:` (`workflows/artifact-discipline.spec.md §2`).
 
 ## When to revisit
 

@@ -25,6 +25,10 @@ Standard and Full only. Gather every uncertainty into **one batch** and ask befo
 
 If the requirements answer everything, write `— CLARIFY: not required` in the worklog and move on.
 
+**Research before the pre-spec.** If the task leans on a platform pattern, system component, or symbol the product does not use yet, or the requirements assert platform or guideline behavior, write `research.md` first (`workflows/research.spec.md`). Its "needs verification" lines join the clarify batch.
+
+**Accessibility and privacy.** If the screen shows sensitive data or introduces an interactive pattern new to the product, start `a11y-privacy.md` from `per-task/A11Y-PRIVACY-CHECKLIST.md` here and finish it before step 7.
+
 Output: `spec.md` per `per-task/DESIGN-TASK-TEMPLATE.spec.md` with status `approved`.
 
 ## Step 2 — Context
@@ -70,7 +74,7 @@ Findings are classified; CRITICALs are closed; IMPORTANTs are closed or justifie
 
 ## Step 8 — Handoff
 
-Write `handoff.md` per `domain/handoff.spec.md`. Pass gates G1–G6 (`workflows/handoff-quality.spec.md`).
+Write `handoff.md` per `domain/handoff.spec.md`. Pass gates G1–G7 (`workflows/handoff-quality.spec.md`; G7 only when the scaffolding changed).
 
 ## Step 9 — Delivery
 

@@ -3,7 +3,7 @@ name: typography
 layer: domain
 purpose: Type scale, text styles, readability, line length, text growth under localization
 applies_to:
-  task_keywords: ["typography", "font", "text", "text style", "heading", "type size", "leading"]
+  task_keywords: ["typography", "font", "text", "text style", "heading", "type size", "leading", "fonts", "headings", "text styles"]
   triggers: ["task introduces new text styles or changes text hierarchy"]
 owner: reviewer-designsystem
 ---

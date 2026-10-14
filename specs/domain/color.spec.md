@@ -3,7 +3,7 @@ name: color
 layer: domain
 purpose: Palette, semantic color roles, contrast, dark theme, status colors
 applies_to:
-  task_keywords: ["color", "palette", "contrast", "dark theme", "gradient", "opacity"]
+  task_keywords: ["color", "palette", "contrast", "dark theme", "gradient", "opacity", "colors"]
   triggers: ["task changes a screen's color treatment or adds colors to the system"]
 owner: reviewer-designsystem
 ---

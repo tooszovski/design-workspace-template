@@ -4,7 +4,7 @@ layer: domain
 purpose: Icons, illustrations, images — formats, export, naming, optimization
 applies_to:
   paths: ["exports/assets/**"]
-  task_keywords: ["icon", "illustration", "image", "asset", "svg", "logo"]
+  task_keywords: ["icon", "illustration", "image", "asset", "svg", "logo", "icons", "illustrations", "images", "assets", "logos"]
   triggers: ["task adds or changes graphics"]
 owner: figma-analyst
 ---

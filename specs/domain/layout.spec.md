@@ -3,7 +3,7 @@ name: layout
 layer: domain
 purpose: Auto-layout, grid, spacing scale, breakpoints, adaptivity, overflow behavior
 applies_to:
-  task_keywords: ["layout", "auto-layout", "grid", "spacing", "breakpoint", "responsive", "adaptive"]
+  task_keywords: ["layout", "auto-layout", "grid", "spacing", "breakpoint", "responsive", "adaptive", "grids", "breakpoints"]
   triggers: ["task concerns screen structure, adaptivity, or spacing"]
 owner: reviewer-designsystem
 ---

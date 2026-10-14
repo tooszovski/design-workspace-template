@@ -41,15 +41,25 @@ Templates in `per-task/` and `per-epic/` follow a separate schema — instead of
 
 | Sub-field | Type | Purpose | Matching rule |
 |---|---|---|---|
-| `task_keywords` | `[string]` | words from the requirements, task title, or description | case-insensitive substring against `task.title + task.description` |
+| `task_keywords` | `[string]` | words and phrases from the task text | **whole tokens**, not substrings — see §Matching `task_keywords` |
 | `paths` | `[string]` (glob) | paths in scope, for specs that work with files (`code/`, `exports/`) | any `scope.paths[i]` matches any `applies_to.paths[j]` |
 | `loaded_for_modes` | `[string]` | `layer: workflow` only — auto-load by mode | the mode is in the list |
 | `task_attachments` | `[string]` | `figma_link` / `screenshot` / `reference` / `recording` | any attachment matches |
 | `triggers` | `[string]` | free-form description for the LLM orchestrator, a fallback | orchestrator judgment, with the reason logged |
 
+### Matching `task_keywords`
+
+Matching works on **whole words (tokens)**, not substrings: a substring match on short keywords (`text`, `mode`, `state`, `file`) catches almost any spec and loads domain specs into tasks that have nothing to do with them.
+
+- **Task text** = the H1 title + §1 "The user problem" + §3 "Scope" **up to** the `**Out:**` list of a DESIGN-TASK spec (QUICK: H1 + "What changes" + "Why" + "Boundaries"). The out list names what the task does not touch and is not matched; the rest of the spec (AC, state matrix, failure modes) is not matched either — `task_attachments`, `paths`, and the screen-task defaults cover it.
+- **Tokenizing:** text and keyword are lowercased and split on every character that is not a letter (any alphabet) or a digit. `auto-layout` → `auto`, `layout`; `[DEVICE]` → `device`; `dark mode` → `dark`, `mode`.
+- **A match:** all of a keyword's tokens appear in the text consecutively and in order. A one-word keyword is one whole token (`mode` does not match `modes`, `state` does not match `statement`, `icon` does not match `iconography`).
+- **No morphology:** a keyword must match a real word form. List the common forms in `applies_to.task_keywords` (`component`, `components`), not a stem. When `<DEV_LANGUAGE>` is not English, the same applies to local-language keywords.
+- The reference implementation is `keyword_hits` in `scripts/validate-specs.sh`; `./scripts/validate-specs.sh --keywords <spec.md>` prints which domain specs fire for that task spec and on which words.
+
 ### Schema rules
 
-- `task_keywords` are **lowercase** natural language, English by default. When `<DEV_LANGUAGE>` is not English, add local-language keywords alongside the English ones — requirements arrive in the local language while design terms stay English, and the loader matches either.
+- `task_keywords` are **lowercase** natural language, English by default. A one-word keyword shorter than 3 characters is a validator error; words that appear in almost any spec (`screen`, `design`, `user`, `button`) do not go into keywords. When `<DEV_LANGUAGE>` is not English, add local-language keywords alongside the English ones — requirements arrive in the local language while design terms stay English, and the loader matches either.
 - `paths` are globs. In a design workspace they apply only to `code/**`, `exports/**`, and `<TOKENS_EXPORT_PATH>`; designs have no paths, and `task_keywords` plus `task_attachments` play that role instead.
 - **Unknown fields are ignored** by the loader but are a smell — fix them at review time.
 
@@ -81,7 +91,8 @@ Algorithm:
    - `checkpoint` — when `mode: full` or the estimate exceeds 2 hours
    - `drift-check` — when the task is about accepting an implementation
    - `clarify` — Standard/Full, before work starts
-4. **Domain by keyword:** `domain/*.spec.md` whose `applies_to.task_keywords` intersect the task's keywords.
+   - `research` — Standard/Full, when the task leans on a platform pattern, component, or symbol new to the product, or the requirements assert platform behavior
+4. **Domain by keyword:** `domain/*.spec.md` with at least one `applies_to.task_keywords` entry matching the **task text** by the §Matching rules (whole tokens; text = title + problem + scope without the out list).
 5. **Domain by attachment:** specs whose `applies_to.task_attachments` match `task.attachments`.
 6. **Domain by path:** only for tasks touching `code/**` or `exports/**`.
 7. **Domain defaults for any screen task:** `states`, `accessibility`, `layout` — they apply almost always; skip them only for pure token or asset tasks.
@@ -138,6 +149,14 @@ It checks that:
 - `loaded_for_modes` contains only `quick` / `standard` / `full`
 - templates in `per-task/` and `per-epic/` carry `kind: template`
 - every cross-ref resolves to an existing file
-- no `<UPPER_CASE>` placeholders remain after init
+- `task_keywords` in domain specs: no one-word keyword shorter than 3 characters
 
-Run it after any frontmatter change and after adding or renaming a spec.
+At **warn** level (printed, exit code unchanged):
+
+- unfilled `<UPPER_CASE>` placeholders: required ones (the workspace is not configured — `/design.init`) and optional ones for modules that are off, printed separately
+- a spec in `core/`, `domain/`, or `workflows/` not listed in `INDEX.md`
+- a `core/` spec without `always_loaded: true`
+
+`./scripts/validate-specs.sh --keywords <spec.md>` is not a check but a loader dry run on keywords: it prints the domain specs that fire for the task and the matched words.
+
+Run it after any frontmatter change, after adding or renaming a spec, and before handing a task spec over.

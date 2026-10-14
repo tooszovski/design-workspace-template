@@ -46,22 +46,26 @@ schema_version: 2
 
 **Project-specific domain specs** to add as needed: industry specifics, regulatory UI requirements, brand book, email templates, print materials, data visualization.
 
-## Workflows (by mode — 13 files)
+## Workflows (by mode — 17 files)
 
 | Name | Path | Loaded for |
 |---|---|---|
-| task-modes | workflows/task-modes.spec.md | **always_loaded** — needed for classification |
+| task-modes | workflows/task-modes.spec.md | **always_loaded** — needed for classification; explicit mode is a starting point, only a human downgrades |
+| template-sync | workflows/template-sync.spec.md | **always_loaded** — reconciliation with the template: `.template-sync` marker, session-start hook, G7 `Upstream` on every scaffolding change, journal `docs/template-sync.md` |
+| verify | workflows/verify.spec.md | quick, standard, full — checks before a commit and the full re-check before closing a task, DDR, or epic |
+| artifact-discipline | workflows/artifact-discipline.spec.md | quick, standard, full — checkboxes with `✅` links, immutable closed tasks and DDRs, four checks after a breakdown, session start and end protocols |
 | design-workflow | workflows/design-workflow.spec.md | quick, standard, full — steps 0-10 |
 | review-pipeline | workflows/review-pipeline.spec.md | quick, standard, full — who reviews and when |
 | decision-gates | workflows/decision-gates.spec.md | quick, standard, full — Tier 1 / Tier 2 |
 | anti-patterns | workflows/anti-patterns.spec.md | quick, standard, full |
 | clarify | workflows/clarify.spec.md | standard, full — question batch, drift guard |
-| critique | workflows/critique.spec.md | standard, full — design critique |
-| handoff-quality | workflows/handoff-quality.spec.md | standard, full — gates G1-G6 |
+| research | workflows/research.spec.md | standard, full — primary sources (HIG, SF Symbols, Material, WCAG) before a pre-spec or DDR: confirmed / needs verification / refuted, plus outdated claims |
+| critique | workflows/critique.spec.md | standard, full — design critique, text signs S-17..S-20 in design docs and UI copy |
+| handoff-quality | workflows/handoff-quality.spec.md | standard, full — gates G1-G7 (G7 for scaffolding changes) |
 | drift-check | workflows/drift-check.spec.md | standard, full (plus trigger: accepting an implementation) |
-| team-dispatch | workflows/team-dispatch.spec.md | standard, full — roster, lean return |
+| team-dispatch | workflows/team-dispatch.spec.md | standard, full — roster, model routing, lean return, inbox drain, crash recovery |
 | agent-log | workflows/agent-log.spec.md | standard, full — worklog and final report |
-| checkpoint | workflows/checkpoint.spec.md | full (plus trigger: estimate above 2h) |
+| checkpoint | workflows/checkpoint.spec.md | full (plus trigger: estimate above 2h) — also the session handover |
 | versioning | workflows/versioning.spec.md | full (plus trigger: the task touches the DS) |
 
 ## Per-epic (SDD level 2)
@@ -75,11 +79,16 @@ schema_version: 2
 
 | Path | Purpose |
 |---|---|
-| per-task/DESIGN-TASK-TEMPLATE.spec.md | Pre-spec: problem, requirements, AC, state matrix, guardrails, DoR |
+| per-task/DESIGN-TASK-TEMPLATE.spec.md | Pre-spec: problem, requirements, AC, state matrix, failure modes (§6a), guardrails, DoR |
 | per-task/QUICK-TEMPLATE.spec.md | Thin spec for Quick |
 | per-task/COMPONENT-TEMPLATE.md | DS component spec: API, anatomy, states, promotion checklist |
 | per-task/DDR-TEMPLATE.md | Design Decision Record |
+| per-task/A11Y-PRIVACY-CHECKLIST.md | Per-screen accessibility and privacy checklist: measured contrast, text scaling, screen-reader order, targets, hiding and masking sensitive data |
 | per-task/README.md | Which template to take when |
+
+## Drills
+
+`drills/` (outside `specs/`) holds a fixed set of design tasks and a scoring rubric for regression runs of the scaffolding after edits to specs, agents, or commands.
 
 ## Examples
 

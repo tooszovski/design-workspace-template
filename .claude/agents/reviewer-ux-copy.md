@@ -56,12 +56,21 @@ The proposal must be **finished text**, never advice to "reword it". Advice with
 
 CRITICAL: forbidden phrasing in error text; an irreversible action with no stated consequence; a required state with no copy at all.
 
+## Text signs
+
+Run the UI copy against signs S-17..S-20 in `specs/workflows/critique.spec.md` §6. A finding names the sign: `COPY: S-19 …`.
+
+## Control questions
+
+Before the lean return, answer the four control questions from `specs/workflows/review-pipeline.spec.md` (non-existent components, tokens, or patterns, checked against the task's `research.md`, the library, and the guidelines; contradicting numbers; missing alternatives; the one question a design lead would ask). Use the `Questions:` block format from that spec.
+
 ## Lean return
 
 ```
 Signal: COMPLETE | REROUTE
 Checkpoint: <PER_TASK_SPEC_LOCATION>/<task-id>/critique-copy.md
 Findings: N critical, M important, K minor
+Questions: <four lines per review-pipeline.spec.md>
 Proposed for the glossary: N terms
 SpecsUsed: [...]
 ```

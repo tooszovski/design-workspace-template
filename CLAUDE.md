@@ -74,16 +74,17 @@ specs/
 │       states, accessibility, prototyping, ux-writing, tokens-export,
 │       handoff, assets
 ├── workflows/         — by mode
-│   └── task-modes, design-workflow, clarify, critique, review-pipeline,
-│       handoff-quality, drift-check, decision-gates, versioning,
-│       team-dispatch, agent-log, checkpoint, anti-patterns
+│   └── task-modes, template-sync, verify, artifact-discipline, design-workflow,
+│       clarify, research, critique, review-pipeline, handoff-quality, drift-check,
+│       decision-gates, versioning, team-dispatch, agent-log, checkpoint, anti-patterns
 ├── per-epic/
 │   └── EPIC-TEMPLATE.md        — design epic (SDD level 2)
 └── per-task/
     ├── DESIGN-TASK-TEMPLATE.spec.md — task pre-spec (problem, AC, guardrails, DoR)
     ├── QUICK-TEMPLATE.spec.md       — thin spec for Quick mode
     ├── COMPONENT-TEMPLATE.md        — DS component specification
-    └── DDR-TEMPLATE.md              — Design Decision Record
+    ├── DDR-TEMPLATE.md              — Design Decision Record
+    └── A11Y-PRIVACY-CHECKLIST.md    — per-screen accessibility and privacy checklist
 ```
 
 **A worked example:** `bootstrap/examples/` holds an end-to-end mock feature with every artifact.
@@ -112,6 +113,8 @@ For a new task:
    - Quick → `specs/per-task/QUICK-TEMPLATE.spec.md`
    - A new DS component → `specs/per-task/COMPONENT-TEMPLATE.md`
    - A contested decision to record → `specs/per-task/DDR-TEMPLATE.md`
+   - The task leans on a platform pattern, system component, or symbol the product does not use yet, or the brief asserts platform behavior → first `research.md` per `specs/workflows/research.spec.md`.
+   - The screen shows personal, financial, health, or credential data, or introduces a new interactive pattern → `a11y-privacy.md` per `specs/per-task/A11Y-PRIVACY-CHECKLIST.md`.
 4. **Where per-task artifacts live** — `<PER_TASK_SPEC_LOCATION>/<task-id>/`, see `specs/core/project.spec.md §5`.
 
 ## Slash commands
@@ -124,6 +127,7 @@ For a new task:
 | `/design.tokens` | Figma variables → tokens JSON, plus platform export |
 | `/design.drift` | compare the implementation in `./code` against the design |
 | `/design.critique` | design critique: hierarchy, states, accessibility, copy |
+| `/template-sync` | reconcile the scaffolding with its template: `down`, `up`, or `all` |
 
 ## Hard rules (always applied)
 
@@ -137,6 +141,8 @@ These live in core and are **always** active, regardless of mode and domain:
 - **WCAG `<WCAG_LEVEL>` is the floor**, not an aspiration — `specs/domain/accessibility.spec.md`
 - **Conventional Commits (terse, no body), no AI mentions** — `specs/core/commits.spec.md`
 - **Never commit:** CLAUDE.md, `*-plan.md`, `.md` instructions, exported PNG mockups, `.figma-cache/` — `specs/core/git-policy.spec.md`
+- **`[x]` only after the check, with a `✅` link; delivered tasks and accepted DDRs are immutable** — `specs/workflows/artifact-discipline.spec.md`, checks in `specs/workflows/verify.spec.md`
+- **The scaffolding syncs with its template both ways** — a change touching `specs/`, `.claude/`, `drills/`, `scripts/`, `CLAUDE.md` carries an `Upstream` section (G7); down-sync by the `.template-sync` marker and the session-start hook reminder, command `/template-sync` — `specs/workflows/template-sync.spec.md`
 
 ## Stop conditions (Tier 2 — hard stop)
 
@@ -165,3 +171,4 @@ This workspace was built from the `design-workspace-template`. After cloning:
 5. Open `specs/domain/*` — tune scales, variable collections, and breakpoints to the real project.
 6. Optionally copy `.claude/settings.local.json.example` → `.claude/settings.local.json`.
 7. Open the workspace `README.md` — it holds the step-by-step guide and the full placeholder table.
+8. Point the `template` remote at this template (`git remote add template git@github.com:tooszovski/design-workspace-template.git`), write `.template-sync` (`sha=<template commit> date=<today>`), and start `docs/template-sync.md` per `specs/workflows/template-sync.spec.md`.

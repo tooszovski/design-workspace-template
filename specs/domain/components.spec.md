@@ -3,7 +3,7 @@ name: components
 layer: domain
 purpose: Component anatomy, variants and properties, slots, composition, promotion to the library
 applies_to:
-  task_keywords: ["component", "variant", "instance", "library", "detach", "slot"]
+  task_keywords: ["component", "variant", "instance", "library", "detach", "slot", "components", "variants", "instances", "slots"]
   triggers: ["task creates or changes a design-system component"]
 owner: reviewer-designsystem
 ---

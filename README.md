@@ -14,25 +14,31 @@ It wraps the design process in agent scaffolding: design-system rules as executa
 ├── README.md                       — this file
 ├── .gitignore                      — what not to commit
 ├── .mcp.json.example               — Figma MCP config
+├── .template-sync                  — upstream commit last reconciled against
+├── docs/template-sync.md           — template sync journal: to send, sent upstream, down
 ├── scripts/
 │   ├── setup-tools.sh              — environment check: Claude Code, node, Figma MCP
 │   ├── init.sh                     — shell setup wizard (alternative to /design.init)
 │   └── validate-specs.sh           — validates frontmatter, cross-refs, placeholders
 ├── .claude/
-│   ├── commands/                   — /design.init · audit · handoff · tokens · drift · critique
+│   ├── commands/                   — /design.init · audit · handoff · tokens · drift · critique · /template-sync
 │   ├── agents/                     — design-lead · figma-analyst · handoff-author + 3 reviewers
 │   ├── hooks/git-push-guard.sh     — blocks pushes to protected branches
+│   ├── hooks/template-sync-check.sh — session-start reminder when the template moved past the marker
 │   ├── skills/                     — local skills (empty by default)
 │   ├── settings.json               — hooks, committed
 │   └── settings.local.json.example — allow-list, removes permission prompts
-├── specs/                          — SDD spec structure (33 specs plus templates)
+├── specs/                          — SDD spec structure (37 specs plus templates)
 │   ├── INDEX.md                    — spec map with triggers
 │   ├── LOADER.md                   — on-demand loading contract, schema v2
 │   ├── core/       (7)             — always loaded
 │   ├── domain/     (13)            — on demand, by trigger
-│   ├── workflows/  (13)            — by task mode
+│   ├── workflows/  (17)            — by task mode
 │   ├── per-epic/                   — epic template
-│   └── per-task/                   — task, component, and DDR templates
+│   └── per-task/                   — task, component, DDR, and a11y/privacy checklist templates
+├── drills/                         — fixed design tasks plus a rubric for regression runs of the scaffolding
+│   ├── README.md
+│   └── typical-tasks.md
 └── bootstrap/
     ├── REQUIREMENTS.md             — dependency matrix
     └── examples/                   — a worked end-to-end example
@@ -162,3 +168,5 @@ After any frontmatter change:
 ```bash
 ./scripts/validate-specs.sh
 ```
+
+Scaffolding changes travel both ways with the template (`specs/workflows/template-sync.spec.md`). `.template-sync` records the upstream commit last reconciled against, `docs/template-sync.md` is the journal, and `/template-sync down|up` runs a reconciliation. This template's own upstream for process rules is the sibling iOS workspace template `tooszovski/ai-workspace`.

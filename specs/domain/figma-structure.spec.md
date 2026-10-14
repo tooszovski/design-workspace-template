@@ -3,7 +3,7 @@ name: figma-structure
 layer: domain
 purpose: Figma file organization — pages, sections, statuses, cover, working through MCP
 applies_to:
-  task_keywords: ["figma", "file", "structure", "page", "section", "file navigation", "cover"]
+  task_keywords: ["figma", "file", "structure", "page", "section", "file navigation", "cover", "pages", "sections"]
   triggers: ["need to locate a frame inside a file", "audit of file organization"]
 owner: figma-analyst
 ---

@@ -1,7 +1,7 @@
 ---
 name: handoff-quality
 layer: workflow
-purpose: Handoff gates G1-G6 — what is verified before design reaches engineering
+purpose: Handoff gates G1-G7 — what is verified before design reaches engineering, plus the upstream gate for scaffolding changes
 applies_to:
   task_keywords: ["handoff", "gate", "readiness", "definition of done", "delivery"]
   loaded_for_modes: ["standard", "full"]
@@ -10,7 +10,7 @@ owner: handoff-author
 
 # Handoff Quality Gates
 
-Six gates. A task is not delivered until all of them pass. A failed gate sends the task back; it is not delivered "with caveats".
+Seven gates. A task is not delivered until all of them pass. A failed gate sends the task back; it is not delivered "with caveats".
 
 ## G1 — State completeness
 
@@ -63,6 +63,15 @@ How to check this gate: **read the spec as an engineer who has not seen the task
 - [ ] The task is in `<TRACKER_TESTING_STATUS>`
 - [ ] A link to `handoff.md` is in the tracker
 
+## G7 — Upstream (scaffolding changes)
+
+Applies when the change touches `specs/`, `.claude/`, `drills/`, `scripts/`, or `CLAUDE.md`, in every mode, Quick included.
+
+- [ ] The PR description (or, for a direct commit to the template, the journal entry) has an `Upstream` section: one line per scaffolding file labeled `generic` / `generic after generalizing` / `design-only`
+- [ ] Every `generic` line is copied into `docs/template-sync.md` "To send"
+
+Without the section the change is not ready. Rule and format: `workflows/template-sync.spec.md`.
+
 ## Order
 
 Gates run in sequence. Failing G2 means G5 is not checked yet: there is no point proofreading a spec for a design that will still change.
@@ -73,3 +82,5 @@ Gates run in sequence. Failing G2 means G5 is not checked yet: there is no point
 - domain/states.spec.md — the states contract
 - domain/accessibility.spec.md — the a11y checklist
 - core/project.spec.md §2 — the DoD
+- workflows/verify.spec.md — the full re-check before closing
+- workflows/template-sync.spec.md — G7, the up and down flows

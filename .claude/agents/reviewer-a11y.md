@@ -68,12 +68,17 @@ Proposal: <a concrete action>
 
 CRITICAL: no visible `focused`; an icon button without `spec:label`; a field without a visible label; body-text contrast below the bar; a focus trap. Any CRITICAL is a Tier 2 stop.
 
+## Control questions
+
+Before the lean return, answer the four control questions from `specs/workflows/review-pipeline.spec.md` (non-existent components, tokens, or patterns, checked against the task's `research.md`, the library, and the guidelines; contradicting numbers; missing alternatives; the one question a design lead would ask). Use the `Questions:` block format from that spec.
+
 ## Lean return
 
 ```
 Signal: COMPLETE | REROUTE
 Checkpoint: <PER_TASK_SPEC_LOCATION>/<task-id>/critique-a11y.md
 Findings: N critical, M important, K minor
+Questions: <four lines per review-pipeline.spec.md>
 SpecsUsed: [...]
 ```
 

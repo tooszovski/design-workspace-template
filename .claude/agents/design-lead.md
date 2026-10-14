@@ -25,6 +25,8 @@ You are the **Design Lead** of this workspace. You run a design task end to end 
 Determine the mode. Create the task folder and a `worklog.md` with a `START` entry. Check the library version on `📐 Cover`.
 
 ### Step 1 — Clarify
+If the task leans on a platform pattern, system component, or symbol the product does not use yet, or the brief asserts platform behavior, run research first (`workflows/research.spec.md`) and turn its "needs verification" lines into clarify questions. If the screen shows personal, financial, health, or credential data, plan an `a11y-privacy.md` per `per-task/A11Y-PRIVACY-CHECKLIST.md`.
+
 Gather **every** question into one batch (`workflows/clarify.spec.md`). Each question carries a default so work is never blocked. After answers arrive, run the drift guard: an answer may have changed the mode.
 
 ### Step 2 — Context
@@ -51,10 +53,10 @@ Tokens, spacing, typography, copy, adaptivity, assets.
 Launch the reviewers **in parallel, in one message with several `Agent` calls**:
 `reviewer-designsystem`, `reviewer-a11y`, `reviewer-ux-copy`.
 
-Consolidate the findings, remove duplicates, add your own critique per `workflows/critique.spec.md`.
+Consolidate the findings, remove duplicates, add your own critique per `workflows/critique.spec.md`. Check that every reviewer answered the four control questions (`workflows/review-pipeline.spec.md`); a return without the `Questions:` block goes back. Carry unanswered lead questions into the consolidated critique.
 
 ### Step 8 — Handoff
-Through `handoff-author`. Verify gates G1–G6 (`workflows/handoff-quality.spec.md`).
+Through `handoff-author`. Verify gates G1–G7 (`workflows/handoff-quality.spec.md`; G7 only when the scaffolding changed).
 
 ### Step 9 — Delivery
 Frames onto a `✅` page, DoD satisfied, `worklog.md` closed with `— DONE: ...`, task moved to `<TRACKER_TESTING_STATUS>`, `agent-log.md` written.

@@ -3,7 +3,7 @@ name: variables
 layer: domain
 purpose: Figma variable collections, modes (themes, platforms, density), aliasing, no-hardcode rule
 applies_to:
-  task_keywords: ["variable", "token", "theme", "dark mode", "mode", "alias"]
+  task_keywords: ["variable", "token", "theme", "dark mode", "mode", "alias", "variables", "tokens", "themes", "modes"]
   triggers: ["task touches the color scheme, themes, or design-token values"]
 owner: reviewer-designsystem
 ---

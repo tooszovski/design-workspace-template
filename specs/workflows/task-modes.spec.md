@@ -1,10 +1,10 @@
 ---
 name: task-modes
 layer: workflow
-purpose: Classifying a design task as Quick/Standard/Full, criteria, escalation
+purpose: Classifying a design task as Quick/Standard/Full, criteria, explicit mode versus escalation, who may downgrade
 always_loaded: true
 applies_to:
-  task_keywords: ["mode", "quick", "standard", "full"]
+  task_keywords: ["mode", "quick", "standard", "full", "escalate", "escalation", "downgrade"]
   loaded_for_modes: ["quick", "standard", "full"]
 owner: design-lead
 ---
@@ -15,9 +15,11 @@ The mode sets the depth of the workflow: the simpler the task, the less ceremony
 
 ## Order of determination
 
-1. An explicit line in `spec.md`: `**Mode:** quick`
+1. An explicit `mode:` in the yaml block of `spec.md`
 2. An explicit instruction from a human
 3. Auto-detection by the criteria below
+
+**An explicit mode is a starting point, not a ceiling.** When the actual work exceeds the stated mode's criteria (frame count, a new component, a DS change, a new pattern, a critical flow), escalation per §Escalation wins. This also covers a stale explicit `quick` in a backlog spec: when the task is picked up, the mode is re-assessed against the current design, not against the draft. **Only a human downgrades a mode** (`standard → quick`, `full → standard`).
 
 ## The modes
 
@@ -43,9 +45,13 @@ If a Quick task turns out to be bigger, **escalate to Standard** rather than str
 
 Escalation triggers: a new component turned out to be needed; a product question surfaced; more than two states appeared; the edit pulled in neighboring screens.
 
-Record it in the worklog: `### HH:MM — ESCALATE Quick→Standard, reason: ...`.
+Escalation is recorded in three places:
 
-De-escalation is forbidden: a task that started as Full is not downgraded midway.
+1. **`spec.md`:** raise `mode:` and add one line: `Escalated quick → standard (<date>): <reason>`. A Quick spec that became Standard is rewritten on `per-task/DESIGN-TASK-TEMPLATE.spec.md`.
+2. **`worklog.md`:** `### HH:MM — ESCALATE Quick→Standard, reason: ...`.
+3. **`agent-log.md`:** a line in the decisions section with the reason (`workflows/agent-log.spec.md`).
+
+Escalation needs no human confirmation. A downgrade does: an agent never lowers the mode on its own, and a human's downgrade is recorded in the same three places with a link to the decision.
 
 ## State requirements per mode
 
@@ -70,3 +76,4 @@ See `LOADER.md`.
 - workflows/design-workflow.spec.md — the steps
 - workflows/review-pipeline.spec.md — review depth
 - workflows/checkpoint.spec.md — checkpoints in Full
+- workflows/agent-log.spec.md — recording an escalation

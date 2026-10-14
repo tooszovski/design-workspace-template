@@ -1,7 +1,7 @@
 ---
 name: team-dispatch
 layer: workflow
-purpose: Agent roster, team size, parallel launch, the lean return contract
+purpose: Agent roster, team size, parallel launch, model routing, the lean return contract, inbox drain and crash recovery
 applies_to:
   task_keywords: ["dispatch", "team", "agents", "parallel", "subagent"]
   loaded_for_modes: ["standard", "full"]
@@ -66,6 +66,29 @@ SpecsMissing: [...]
 An agent does not retell its work in the reply — the detail lives in the checkpoint file. Retelling inflates the orchestrator's context with exactly what is already on disk.
 
 `SpecsMissing` is feedback for the loader: triggers in `INDEX.md` get corrected from it.
+
+## Model routing
+
+Two tiers: a **base model** by default and a **senior model** on signals. The project picks the concrete models. At setup the project pins a role's model with `model:` in the frontmatter of `.claude/agents/*.md`: senior for `design-lead`, base for `figma-analyst`, `handoff-author`, and the reviewers. Without the field, an agent runs on the session model. For a manual dispatch, pass `model` to the Agent tool.
+
+| Model | When |
+|---|---|
+| **Base** (default) | tasks with complete requirements, Quick edits, exports and breakdowns, handoff writing from a final design, reviewers on small scopes |
+| **Senior**, signal 1 | design thinking: pre-spec, DDR, epic charter, a new pattern; `design-lead` |
+| **Senior**, signal 2 | the final critique of a whole epic; escalating a review loop after the third round |
+| **Senior**, signal 3 | hard diagnosis: an implementation drifts from the design and nobody knows why, contradictory requirements |
+| **Senior**, signal 4 | the automatic-Full zones in `workflows/task-modes.spec.md`: public DS components, semantic variables, a new interaction pattern, critical flows (onboarding, payment, authentication), product-wide changes |
+| **Senior**, signal 5 | repeated failure: the base model failed the task twice |
+| **Senior**, signal 6 | large uncertainty in the requirements |
+
+- Signal 4 lifts **design and review** to the senior model. Building an approved design into a handoff stays on the base model.
+- An agent does not switch models itself. Hitting signal 3, 5, or 6, it writes `needs escalation to the senior model: <reason>` in its report, and the orchestrator re-dispatches.
+- A switch to the senior model is recorded with its reason in the task's agent-log (`workflows/agent-log.spec.md`).
+
+## Operational rules
+
+- **Inbox drain before a status report.** The orchestrator reads every incoming message before claiming "reports have not arrived" or "rework 0". The typical failure: reporting "reviewers are silent" while their reports, CRITICALs included, already sit in the inbox.
+- **Crash recovery when an agent dies** (API error, session limit). Before re-dispatching, check the working tree and the task folder for the dead agent's results. Verify anything salvaged by re-running the relevant check and commit it separately. If there is nothing to salvage, the re-dispatch brief says so explicitly: "previous run killed, nothing salvaged, start from scratch".
 
 ## Constraints
 

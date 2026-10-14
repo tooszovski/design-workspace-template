@@ -66,6 +66,22 @@ Filled in at step 4a. Values: `✅` built · `n/a` not applicable, with a reason
 **Reasons for `n/a`:**
 - <state> — <why>
 
+### 6a. Failure modes
+
+The matrix says a state exists; this table says how the user gets out of it. Mandatory for screens that load, sync, or submit data. One row per mode; `n/a` only with a reason, never a silent omission. Each applicable row maps to a frame from the matrix or to a line in the handoff.
+
+| Mode | Matrix column | What the user sees | How they get out |
+|---|---|---|---|
+| No network | offline | <…> | <…> |
+| Service error or timeout | error | <…> | <…> |
+| Empty data | empty / empty-filtered | <…> | <…> |
+| Stale data on screen | data, with a staleness marker | <…> | <…> |
+| Long loading, past 3 s | loading | <…> | <…> |
+| Partial response | partial | <…> | <…> |
+| Version rollback: data or a feature from a newer version seen on an older one | error or data | <…> | <…> |
+
+"How they get out" names an action or an automatic exit: retry, pull to refresh, clear the filter, go back, wait with a visible reason. "Contact support" alone is not a way out.
+
 ## 7. Guardrails
 
 Constraints that must not be broken:
@@ -91,6 +107,7 @@ Constraints that must not be broken:
 | What | Link |
 |---|---|
 | Requirements | |
+| Research (primary sources) | `research.md`, if the task needed one |
 | A comparable screen in the product | |
 | `<REFERENCE_PLATFORM>` | |
 
@@ -102,7 +119,9 @@ Work can start when:
 - [ ] Scope, including the "out" list, is filled in
 - [ ] Every AC is written and verifiable
 - [ ] Clarify is closed, or defaults are adopted
-- [ ] The state matrix is marked up (step 4a)
+- [ ] The state matrix is marked up (step 4a), and failure modes §6a are filled in
+- [ ] `research.md` exists if the task leans on a platform pattern, component, or symbol new to the product (`workflows/research.spec.md`)
+- [ ] `a11y-privacy.md` is started if the screen shows sensitive data or introduces new interactive patterns (`per-task/A11Y-PRIVACY-CHECKLIST.md`)
 - [ ] The DS version is recorded
 - [ ] Guardrails are listed
 

@@ -10,6 +10,9 @@ Templates for task-level artifacts. These are **forms**, not filled-in documents
 | `QUICK-TEMPLATE.spec.md` | Quick: editing 1–2 frames with no new states or components |
 | `COMPONENT-TEMPLATE.md` | a `<DS_LIBRARY_NAME>` component is created or changed |
 | `DDR-TEMPLATE.md` | one of several valid options was chosen, and the choice has to survive six months |
+| `A11Y-PRIVACY-CHECKLIST.md` | the screen shows sensitive data or introduces a new interactive pattern; saved as `a11y-privacy.md` next to `spec.md` |
+
+Next to `spec.md`, a task may also hold `research.md` (`workflows/research.spec.md`) when it leans on a platform pattern, component, or symbol new to the product.
 
 ## The selection rule
 

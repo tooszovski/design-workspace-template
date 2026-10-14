@@ -3,7 +3,7 @@ name: ux-writing
 layer: domain
 purpose: Interface copy — tone, structure, buttons, errors, empty states, glossary
 applies_to:
-  task_keywords: ["copy", "microcopy", "wording", "error message", "label", "tone of voice", "terminology"]
+  task_keywords: ["copy", "microcopy", "wording", "error message", "label", "tone of voice", "terminology", "error messages", "labels"]
   triggers: ["interface text appears or changes in the design"]
 owner: reviewer-ux-copy
 ---

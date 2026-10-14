@@ -59,6 +59,7 @@ Design is responsible for making sure the engineer knows what to build. Add `spe
 | `spec:focus-order` | traversal order when it differs from the visual one |
 | `spec:live` | a region whose changes a screen reader announces (cart counter, upload status) |
 | `spec:hit-area` | the enlarged tap region |
+| `spec:sensitive` | a region with sensitive data: hidden in the app switcher and under capture, masked by default (privacy, `per-task/A11Y-PRIVACY-CHECKLIST.md`) |
 
 An icon button without `spec:label` is CRITICAL: to a screen reader it is an unnamed button.
 
