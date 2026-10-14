@@ -84,3 +84,4 @@ Range `efc2879..834f7f7`. Items marked "morning port" were brought over earlier 
 | 2026-10-14 | 834f7f7 | .claude/agents/reviewer-concurrency.md | rejected | code role |
 | 2026-10-14 | 834f7f7 | .claude/agents/reviewer-networking.md | rejected | code role |
 | 2026-10-14 | 834f7f7 | .claude/agents/reviewer-swiftui.md | rejected | code role |
+| 2026-10-14 | 1c0b6d5 | .claude/agents/tech-lead.md, .claude/commands/speckit.implement.md | reject | code roles only: Step 6/8 end with a PR instead of a local merge |
