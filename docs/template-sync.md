@@ -24,7 +24,7 @@ Design workspaces built from this template use this repository (`tooszovski/desi
 
 ## Down
 
-Range `efc2879..1c0b6d5` (marker `1c0b6d5e4ad7e61a6d9642c6583ee63b4684d757`). Items marked "morning port" were brought over earlier on 2026-10-14 and verified in this sync.
+Range `efc2879..3430c92` (marker `3430c920ed13bb5496fa25267c7fa08a311743cf`). Items marked "morning port" were brought over earlier on 2026-10-14 and verified in this sync.
 
 | Date | Upstream commit | File | Taken / adapted / rejected | Reason |
 |---|---|---|---|---|
@@ -86,3 +86,12 @@ Range `efc2879..1c0b6d5` (marker `1c0b6d5e4ad7e61a6d9642c6583ee63b4684d757`). It
 | 2026-10-14 | 834f7f7 | .claude/agents/reviewer-swiftui.md | rejected | code role |
 | 2026-10-14 | 1c0b6d5 | .claude/agents/tech-lead.md | rejected | code role; ending with a PR instead of a local merge is already covered by the local git-policy |
 | 2026-10-14 | 1c0b6d5 | .claude/commands/speckit.implement.md | rejected | Spec Kit implement command, code only |
+| 2026-10-14 | b788dd5 | specs/core/workspace.spec.md | rejected | code workspace spec with `code_base_branch` and Codex review; no counterpart here |
+| 2026-10-14 | b788dd5 | specs/workflows/task-modes.spec.md | rejected | Codex review was rejected in 834f7f7; no `/codex:` mentions in this workspace |
+| 2026-10-14 | b788dd5 | specs/workflows/blast-radius.spec.md | rejected | code contract checks; not part of this workspace |
+| 2026-10-14 | b788dd5 | .claude/agents/tech-lead.md | rejected | code role; the design lead has no Codex step |
+| 2026-10-14 | b788dd5 | .claude/commands/speckit.implement.md | rejected | Spec Kit implement command, code only |
+| 2026-10-14 | b788dd5 | README.md | rejected | README has no Codex entries to replace |
+| 2026-10-14 | b788dd5 | bootstrap/REQUIREMENTS.md | rejected | no Codex plugin or CLI among design requirements |
+| 2026-10-14 | b788dd5 | bootstrap/examples/worklog-example.md | rejected | code worklog example; no Codex line here |
+| 2026-10-14 | 3430c92 | scripts/validate-specs.sh (Cross-refs) | adapted | local validator walks files with `find`; switched to `find -L` so a symlinked `specs/` is not skipped |

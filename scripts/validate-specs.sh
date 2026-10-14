@@ -181,7 +181,8 @@ while IFS= read -r line; do
     [[ -f "$SPECS_DIR/$ref" ]] || { err "${src#$WORKSPACE_DIR/} → missing specs/$ref"; BROKEN=$((BROKEN+1)); }
 done < <(
     grep -rhoE '^.*$' /dev/null 2>/dev/null
-    for f in $(find "$SPECS_DIR" -name '*.md'); do
+    # find -L: specs/ may be a symlink into a vault; without -L find does not descend into it and the check passes vacuously
+    for f in $(find -L "$SPECS_DIR" -name '*.md'); do
         grep -oE '(core|domain|workflows|per-task|per-epic)/[a-zA-Z0-9._-]+\.(spec\.)?md' "$f" 2>/dev/null \
             | sort -u | sed "s|^|$f:|"
     done
