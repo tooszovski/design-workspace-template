@@ -84,6 +84,5 @@ Range `efc2879..1c0b6d5` (marker `1c0b6d5e4ad7e61a6d9642c6583ee63b4684d757`). It
 | 2026-10-14 | 834f7f7 | .claude/agents/reviewer-concurrency.md | rejected | code role |
 | 2026-10-14 | 834f7f7 | .claude/agents/reviewer-networking.md | rejected | code role |
 | 2026-10-14 | 834f7f7 | .claude/agents/reviewer-swiftui.md | rejected | code role |
-| 2026-10-14 | 1c0b6d5 | .claude/agents/tech-lead.md, .claude/commands/speckit.implement.md | reject | code roles only: Step 6/8 end with a PR instead of a local merge |
 | 2026-10-14 | 1c0b6d5 | .claude/agents/tech-lead.md | rejected | code role; ending with a PR instead of a local merge is already covered by the local git-policy |
 | 2026-10-14 | 1c0b6d5 | .claude/commands/speckit.implement.md | rejected | Spec Kit implement command, code only |
