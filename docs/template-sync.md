@@ -95,3 +95,4 @@ Range `efc2879..3430c92` (marker `3430c920ed13bb5496fa25267c7fa08a311743cf`). It
 | 2026-10-14 | b788dd5 | bootstrap/REQUIREMENTS.md | rejected | no Codex plugin or CLI among design requirements |
 | 2026-10-14 | b788dd5 | bootstrap/examples/worklog-example.md | rejected | code worklog example; no Codex line here |
 | 2026-10-14 | 3430c92 | scripts/validate-specs.sh (Cross-refs) | adapted | local validator walks files with `find`; switched to `find -L` so a symlinked `specs/` is not skipped |
+| 2026-10-14 | 8cdc0c9 | .claude/settings.json, core/commits.spec.md | take | attribution and Co-Authored-By switched off in settings; owner's call: no trailer anywhere |
